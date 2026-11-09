@@ -8,14 +8,12 @@ function plain(values) {
   return values.map((value) => ({ value, label: titleOf(value) }));
 }
 
-function colored(data, values) {
-  return values.map((value) => ({ value, label: titleOf(value), swatch: swatchColor(data, value) }));
-}
+function colored(data, values, token) {
+  return values.map((value) => {
+    const row = data.swatches[value].find((entry) => entry[0] === token) || ["", "transparent", "transparent"];
 
-function swatchColor(data, name) {
-  const row = data.swatches[name].find((entry) => entry[0] === "primary");
-
-  return row ? row[2] : "transparent";
+    return { value, label: titleOf(value), swatch: row[1], swatchDark: row[2] };
+  });
 }
 
 function fontChoices(data) {
@@ -23,11 +21,11 @@ function fontChoices(data) {
 }
 
 export function optionsFor(data, state) {
-  const hues = colored(data, [state.base, ...data.accents]);
+  const hues = colored(data, [state.base, ...data.accents], "primary");
 
   return {
     look: data.looks.map((value) => ({ value, label: LOOK_TITLES[value] || titleOf(value), mark: LOOK_MARKS[value] || "" })),
-    base: colored(data, data.bases),
+    base: colored(data, data.bases, "muted-foreground"),
     theme: hues,
     chart: hues,
     heading: [{ value: INHERIT, label: "Inherit" }, ...fontChoices(data)],

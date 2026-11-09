@@ -640,32 +640,110 @@ fn navTile(heading: Str, entries: &Array[(Icon.Glyph, Str)], active: Int) -> H.N
   Card.card().css("flex", "1").css("padding-block", "var(--fui-space-2)").holding([Sidebar.group().holding([Sidebar.groupLabel().says(heading), Sidebar.menu().holding(rows)])])
 }
 
-/// The mosaic on the home page.
-fn demoHome() -> H.Node {
+/// A card with a heading, a line under it, and its body.
+fn headed(heading: Str, note: Str, body: Array[H.Node]) -> H.Node {
+  tile([Card.header().holding([Card.title().says(heading), Card.description().says(note)]), Card.content().holding(body)])
+}
+
+/// Children spread along a row.
+fn spread(children: Array[H.Node]) -> H.Node {
+  H.div().css("display", "flex").css("align-items", "center").css("justify-content", "space-between").css("gap", "var(--fui-space-2)").holding(children)
+}
+
+/// Children one above another.
+fn pile(children: Array[H.Node]) -> H.Node {
+  H.div().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-4)").holding(children)
+}
+
+/// A figure over its name, on a quiet surface.
+fn figureBox(name: Str, value: Str) -> H.Node {
+  H.div().css("flex", "1").css("padding", "var(--fui-space-3)").css("background", "color-mix(in oklab, var(--fui-muted) 60%, transparent)").css("border-radius", "var(--fui-radius-xl)").holding([
+      H.div().css("font-size", "var(--fui-text-xs)").css("color", "var(--fui-muted-foreground)").says(name),
+      H.div().css("font-size", "1.125rem").css("font-weight", "600").says(value)
+    ])
+}
+
+/// A row of a team list.
+fn memberRow(letters: Str, name: Str, role: Str) -> H.Node {
+  Row.small(Row.Plain).holding([Row.media().holding([Avatar.initials(letters, name, Avatar.Medium)]), Row.content().holding([Row.title().says(name), Row.description().says(role)]), Row.actions().holding([Button.button(Button.props().variant(Button.Ghost).size(Button.IconSmall)).label("Options for " + name).holding([Icon.icon(Icon.More)])])])
+}
+
+/// A row of the releases table.
+fn releaseRow(version: Str, date: Str, status: Badge.Variant, caption: Str) -> H.Node {
+  Table.row().holding([Table.cell().css("font-weight", "500").says(version), Table.cell().says(date), Table.cell().css("text-align", "right").holding([Badge.badge(status).says(caption)])])
+}
+
+/// The first column of the mosaic on the home page.
+fn homeControls() -> Array[H.Node] {
   let outline = Button.props().variant(Button.Outline)
   let secondary = Button.props().variant(Button.Secondary)
 
-  H.div().css("columns", "19rem").css("column-gap", "var(--fui-space-6)").css("padding", "var(--fui-space-6)").holding([
-      tile([Card.content().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-4)").holding([
-              H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([Button.button(Button.props()).holding([H.words("Button"), Icon.icon(Icon.ArrowRight)]), Button.button(secondary).says("Secondary"), Button.button(outline).says("Outline")]),
-              InputGroup.group().holding([InputGroup.input("name").placeholder("Name"), InputGroup.addon(InputGroup.End).holding([Icon.icon(Icon.Search)])]),
-              Textarea.textarea("message").placeholder("Message"),
-              H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("Badge"), Badge.badge(Badge.Secondary).says("Secondary"), H.div().css("flex", "1"), RadioGroup.radio("r", "a", true), RadioGroup.radio("r", "b"), Checkbox.checkbox("c", Checkbox.props().checked()), Switch.switcher("s", true)]),
-              H.div().css("display", "flex").css("align-items", "center").css("justify-content", "space-between").css("gap", "var(--fui-space-2)").holding([Button.button(outline).says("Alert Dialog"), ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Button Group"), Button.button(outline.size(Button.IconMedium)).label("More").holding([Icon.icon(Icon.ChevronUp)])])])
-            ])]),
-      H.div().css("display", "flex").css("gap", "var(--fui-space-4)").css("break-inside", "avoid").css("margin-block-end", "var(--fui-space-6)").holding([
-          navTile("Workspace", &[(Icon.File, "Documents"), (Icon.Folder, "Projects"), (Icon.Calendar, "Calendar")], 9),
-          navTile("Account", &[(Icon.User, "Profile"), (Icon.Settings, "Settings"), (Icon.Star, "Favorites")], 1)
-        ]),
-      tile([Card.header().holding([Card.title().says("Build history"), Card.description().says("Last five releases")]), Card.content().holding([Chart.labelled(Chart.Bars, "Builds", ["Jul", "Aug", "Sep", "Oct", "Nov"], [Chart.series("Builds", [4.0, 8.0, 6.0, 9.0, 5.0])])]), Card.footer().holding([Button.button(Button.props()).css("inline-size", "100%").says("View full report")])]),
-      tile([Card.header().holding([Card.title().says("Plan a release"), Card.description().says("Pick a target and we will pace the work.")]), Card.content().holding([Field.group().holding([Field.field().holding([Field.label("goal").says("Release name"), Input.input("goal", Input.props()).placeholder("e.g. Spring update")]), Button.button(Button.props()).says("Create plan"), Button.button(outline).says("Cancel")])])]),
-      tile([Empty.empty().holding([Empty.media().holding([Icon.icon(Icon.Plus)]), Empty.title().says("Publish a package"), Empty.description().says("Share your first release with everyone using Pudu."), Empty.content().holding([Button.button(Button.props()).says("Create release")])])]),
-      tile([Card.header().holding([Card.title().says("Traffic"), Card.description().says("418,200 visitors"), Card.action().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("View")])]), Card.content().holding([Chart.chart(Chart.Areas, "Visits", [Chart.series("Visits", [4.0, 7.0, 5.0, 3.0, 6.0, 6.0])])])]),
-      tile([Card.header().holding([Card.title().says("Notifications"), Card.description().says("Choose what reaches you.")]), Card.content().holding([Field.group().holding([
-                  Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("n1", Checkbox.props().checked()), Field.content().holding([Field.title().says("Build alerts"), Field.description().says("Failures and recoveries.")])]),
-                  Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("n2", Checkbox.props().checked()), Field.content().holding([Field.title().says("Security alerts"), Field.description().says("Sign-ins and account changes.")])])
-                ])])])
-    ])
+  [
+    tile([Card.content().holding([pile([
+                H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([Button.button(Button.props()).holding([H.words("Publish"), Icon.icon(Icon.ArrowRight)]), Button.button(secondary).says("Preview"), Button.button(outline).says("Discard")]),
+                InputGroup.group().holding([InputGroup.input("home-find").placeholder("Find a package"), InputGroup.addon(InputGroup.End).holding([Icon.icon(Icon.Search)])]),
+                spread([H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("stable"), Badge.badge(Badge.Secondary).says("nightly")]), H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-2)").holding([RadioGroup.radio("home-r", "a", true), RadioGroup.radio("home-r", "b"), Checkbox.checkbox("home-c", Checkbox.props().checked()), Switch.switcher("home-s", true)])]),
+                spread([Button.button(outline).says("Open log"), ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Run tests"), Button.button(outline.size(Button.IconMedium)).label("More").holding([Icon.icon(Icon.ChevronDown)])])])
+              ])])]),
+    H.div().css("display", "flex").css("gap", "var(--fui-space-4)").css("break-inside", "avoid").css("margin-block-end", "var(--fui-space-6)").holding([
+        navTile("Project", &[(Icon.File, "Sources"), (Icon.Folder, "Packages"), (Icon.Flag, "Releases"), (Icon.List, "Issues")], 1),
+        navTile("Tools", &[(Icon.Terminal, "Shell"), (Icon.Wrench, "Builds"), (Icon.Book, "Guides"), (Icon.Settings, "Settings")], 9)
+      ]),
+    headed("Team", "Who can publish to this registry.", [pile([memberRow("AL", "Ada Lovelace", "Maintainer"), memberRow("GH", "Grace Hopper", "Reviewer"), memberRow("KJ", "Katherine Johnson", "Contributor")])]),
+    headed("Verify your account", "Enter the code we sent to your phone.", [pile([InputOtp.inputOtp("home-otp", 6, "4096"), Button.button(Button.props()).says("Confirm")])]),
+    headed("Frequently asked", "Before you add your first part.", [Accordion.accordion().holding([
+            Accordion.item("home-faq", "Who owns the code?", true).holding([Accordion.content().says("You do. The generator copies each part into your project.")]),
+            Accordion.item("home-faq", "Does it need a build step?").holding([Accordion.content().says("No. A page carries only the styles it rendered.")]),
+            Accordion.item("home-faq", "Can it follow my brand?").holding([Accordion.content().says("Every look reads from tokens you control.")])
+          ])]),
+    headed("Keyboard", "The shortcuts worth learning.", [pile([spread([H.span().says("Open commands"), Kbd.group().holding([Kbd.key("⌘"), Kbd.key("K")])]), spread([H.span().says("Toggle sidebar"), Kbd.group().holding([Kbd.key("⌘"), Kbd.key("B")])]), spread([H.span().says("Switch look"), Kbd.key("L")])])])
+  ]
+}
+
+/// The second column of the mosaic on the home page.
+fn homeBuilds() -> Array[H.Node] {
+  [
+    tile([Card.header().holding([Card.title().says("Compile times"), Card.description().says("Seconds per build, last five days")]), Card.content().holding([pile([Chart.labelled(Chart.Bars, "Compile times", ["Mon", "Tue", "Wed", "Thu", "Fri"], [Chart.series("Seconds", [38.0, 61.0, 47.0, 72.0, 42.0])]), H.div().css("display", "flex").css("gap", "var(--fui-space-3)").holding([figureBox("Median", "42 s"), figureBox("Cache hits", "91%")])])]), Card.footer().holding([Button.button(Button.props()).css("inline-size", "100%").says("Open build report")])]),
+    H.div().css("break-inside", "avoid").css("margin-block-end", "var(--fui-space-6)").holding([Terminal.terminal("pudu test", "282 assertions held in 13 suites")]),
+    headed("Test run", "Latest results on the main branch.", [pile([Progress.progress(92, 100, "Suites finished"), TestResults.testResults([TestResults.suite("Layout", TestResults.Passed), TestResults.suite("Theme", TestResults.Passed), TestResults.suite("Registry", TestResults.Failed, ["unknown item"])])])]),
+    headed("Release calendar", "Pick the day this version ships.", [Calendar.calendar(2026, 11, dayLink, monthLink, Calendar.props().today(Calendar.date(2026, 11, 9)).selected(Calendar.date(2026, 11, 18)))]),
+    headed("Worker limits", "How much each job may use.", [pile([spread([Label.label("home-memory").says("Memory"), H.span().css("font-size", "var(--fui-text-sm)").css("color", "var(--fui-muted-foreground)").says("2 GB")]), Slider.slider("home-memory", 40), ToggleGroup.styled("Region", ToggleGroup.Outline).holding([ToggleGroup.item(ToggleGroup.One, "home-region", "us", true).holding([H.words("US")]), ToggleGroup.item(ToggleGroup.One, "home-region", "eu").holding([H.words("EU")]), ToggleGroup.item(ToggleGroup.One, "home-region", "ap").holding([H.words("AP")])])])])
+  ]
+}
+
+/// The third column of the mosaic on the home page.
+fn homeReleases() -> Array[H.Node] {
+  let outline = Button.props().variant(Button.Outline)
+
+  [
+    tile([Card.header().holding([Card.title().says("Plan a release"), Card.description().says("Name it and we will pace the work.")]), Card.content().holding([Field.group().holding([Field.field().holding([Field.label("home-goal").says("Release name"), Input.input("home-goal", Input.props()).placeholder("e.g. Spring update")]), H.div().css("display", "grid").css("grid-template-columns", "1fr 1fr").css("gap", "var(--fui-space-3)").holding([Field.field().holding([Field.label("home-version").says("Version"), Input.input("home-version", Input.props()).value("0.2.0")]), Field.field().holding([Field.label("home-train").says("Channel"), Select.select("home-train").css("inline-size", "100%").holding([Select.option("stable", "Stable", true), Select.option("nightly", "Nightly")])])]), Button.button(Button.props()).says("Create plan"), Button.button(outline).says("Cancel")])])]),
+    headed("Releases", "What has shipped so far.", [Table.table([Table.body().holding([releaseRow("0.1.3", "Nov 4", Badge.Primary, "Latest"), releaseRow("0.1.2", "Oct 21", Badge.Secondary, "Stable"), releaseRow("0.1.1", "Oct 2", Badge.Secondary, "Stable"), releaseRow("0.1.0", "Sep 12", Badge.Outline, "Archived")])])]),
+    tile([Empty.empty().holding([Empty.header().holding([Empty.media().holding([Icon.icon(Icon.Plus)]), Empty.title().says("Publish a package"), Empty.description().says("Share your first release with everyone using Pudu.")]), Empty.content().holding([Button.button(Button.props()).says("Create release")])])]),
+    headed("Plan", "What the agent is doing now.", [Plan.plan("Fix the failing suite", [Plan.step("Read the report", Trace.Done), Plan.step("Patch the fixture", Trace.Running), Plan.step("Run every gate", Trace.Pending)])]),
+    headed("Diagnostics", "From the last check.", [pile([Alert.alert(Alert.Destructive).holding([Icon.icon(Icon.ErrorCircle), Alert.title().says("Type mismatch"), Alert.description().says("Expected Int, found Str at line 12.")]), Alert.alert(Alert.Neutral).holding([Icon.icon(Icon.Info), Alert.title().says("One warning"), Alert.description().says("A binding shadows an import.")])])]),
+    headed("Channels", "Install the version that fits.", [Tabs.tabs("home-channel", "stable", [Tabs.tab("stable", "Stable", H.p().css("margin", "var(--fui-space-2) 0 0").css("font-size", "var(--fui-text-sm)").says("Tested and released every month.")), Tabs.tab("nightly", "Nightly", H.p().css("margin", "var(--fui-space-2) 0 0").css("font-size", "var(--fui-text-sm)").says("Fresh from the main branch."))], Tabs.Pill)])
+  ]
+}
+
+/// The fourth column of the mosaic on the home page.
+fn homeActivity() -> Array[H.Node] {
+  [
+    tile([Card.header().holding([Card.title().says("Package installs"), Card.description().says("418,200 this quarter"), Card.action().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("Export")])]), Card.content().holding([Chart.chart(Chart.Areas, "Installs", [Chart.series("Installs", [4.0, 7.0, 5.0, 3.0, 6.0, 6.0])])])]),
+    headed("Assistant", "Ask about this repository.", [pile([Bubble.group().holding([Bubble.bubble(Bubble.Secondary, Bubble.Start).says("Why did the build slow down?"), Bubble.bubble(Bubble.Primary, Bubble.End).says("The cache missed after the lockfile changed.")]), PromptInput.promptInput("#", "Ask a follow-up", PromptInput.Idle)])]),
+    headed("Notifications", "Choose what reaches you.", [Field.group().holding([
+            Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("home-n1", Checkbox.props().checked()), Field.content().holding([Field.title().says("Build alerts"), Field.description().says("Failures and recoveries.")])]),
+            Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("home-n2", Checkbox.props()), Field.content().holding([Field.title().says("Security alerts"), Field.description().says("Sign-ins and account changes.")])])
+          ])]),
+    headed("Lines by layer", "Where the code lives.", [Chart.labelled(Chart.Donut, "Lines by layer", ["Parts", "Theme", "Generator", "Tools"], [Chart.series("Lines", [52.0, 21.0, 18.0, 9.0])])]),
+    headed("Changed files", "On this branch.", [FileTree.fileTree([FileTree.folder("src", [FileTree.file("Slider.pudu", FileTree.Modified), FileTree.file("Combobox.pudu", FileTree.Added)])])]),
+    headed("Commands", "Everything, one search away.", [Command.command().holding([Command.input("home-command", "Search commands"), Command.list().holding([Command.group("Project").holding([Command.item().holding([Icon.icon(Icon.Plus), H.words("Add a part")]), Command.item().holding([Icon.icon(Icon.Search), H.words("Search the registry")])]), Command.empty("Nothing matches.")])])]),
+    headed("Payload size", "Per page, after compression.", [Chart.labelled(Chart.Lines, "Payload size", ["W1", "W2", "W3", "W4", "W5"], [Chart.series("Kilobytes", [18.0, 16.0, 17.0, 12.0, 11.0])])])
+  ]
+}
+
+/// The mosaic on the home page.
+fn demoHome() -> H.Node {
+  H.div().css("columns", "19rem").css("column-gap", "var(--fui-space-6)").css("padding", "var(--fui-space-6)").holding(homeControls().concat(homeBuilds()).concat(homeReleases()).concat(homeActivity()))
 }
 
 /// Writes a file, reporting a failure on the error stream.

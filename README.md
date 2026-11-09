@@ -58,8 +58,8 @@ It needs [Pudu 0.1.3 or later](https://www.pudu-lang.org/download).
 - **The code is yours.** `fui add` copies a component into your project and keeps your edits. The
   core stays a dependency, so fixes still arrive through `pudu update`.
 - **Typed props.** A misspelled variant is a compile error.
-- **No client runtime and no build step.** Interaction comes from the platform. A page ships the
-  styles of the components it rendered, and nothing else.
+- **No framework runtime and no build step.** Interaction comes from the platform, with a short
+  script only for the parts that need one. A page ships what it rendered, and nothing else.
 - **No specificity fights.** Library rules sit in a cascade layer, so a rule of yours always wins.
 - **Audited themes.** Every text and surface pairing is checked for contrast in both color modes.
 - **Right to left and dark mode** need no extra code.

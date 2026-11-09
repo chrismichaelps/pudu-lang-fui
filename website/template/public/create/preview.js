@@ -133,7 +133,11 @@ export function applyDesign(data, state, frame, mode) {
   if (!page || !page.head) return;
 
   page.documentElement.setAttribute("data-mode", mode);
-  ensureElement(page, "link", "fui-look").href = new URL(`looks/${state.look}.css`, PREVIEW_ROOT).href;
+  const look = ensureElement(page, "link", "fui-look");
+  const lookUrl = new URL(`looks/${state.look}.css`, PREVIEW_ROOT).href;
+
+  if (look.href !== lookUrl) look.href = lookUrl;
+
   ensureElement(page, "style", "fui-menu").textContent = data.menus[state.menu] + data.menuAccents[state.accent];
   applyColors(data, state, page);
   applyRadius(data, state, page);

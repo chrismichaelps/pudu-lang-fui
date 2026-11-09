@@ -10,7 +10,7 @@ const RENDERERS = {
     element("span", { text: option.label }),
   ]),
   swatches: (option, onPick) => choiceButton(option, onPick, "fui-design-dot", [
-    element("span", { style: `background: ${option.swatch}`, "aria-hidden": "true" }),
+    element("span", { style: `--swatch-light: ${option.swatch}; --swatch-dark: ${option.swatchDark}`, "aria-hidden": "true" }),
   ]),
   segments: (option, onPick) => choiceButton(option, onPick, "fui-design-segment", [element("span", { text: option.label })]),
 };

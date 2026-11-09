@@ -23,8 +23,9 @@ project and it is yours to edit.
 
 ## What is different
 
-- **No client runtime.** Dialogs, menus, tabs, and accordions come from the browser itself. Three
-  components carry a short optional script, and only on pages that use them.
+- **No framework runtime.** Dialogs, menus, tabs, and accordions come from the browser itself. Parts
+  the platform cannot finish alone, such as a slider's fill or a combobox's list, carry a short
+  script, and only on pages that use them.
 - **No build step.** The stylesheet comes from the components a page rendered.
 - **No specificity fights.** Library rules live in a cascade layer, so your rule always wins.
 - **Legible by construction.** Every theme is audited for contrast in both color modes.

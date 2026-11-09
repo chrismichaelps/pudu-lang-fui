@@ -25,6 +25,7 @@ function start(holder, data) {
   let item = HOME_ITEM;
   let mode = currentSiteMode();
   const frame = element("iframe", { title: "Design preview", src: previewUrl(item) });
+  const stage = element("div", { class: "fui-design-stage is-loading" }, [frame]);
   const controls = {};
 
   function refresh() {
@@ -73,6 +74,7 @@ function start(holder, data) {
   } } });
   const itemSelect = element("select", { class: "fui-design-items", "aria-label": "Previewed item", on: { change: (event) => {
     item = event.target.value;
+    stage.classList.add("is-loading");
     frame.src = previewUrl(item);
   } } }, [HOME_ITEM, ...data.items].map((name) => element("option", { value: name, text: titleOf(name) })));
   const step = (by) => {
@@ -112,13 +114,20 @@ function start(holder, data) {
   ]);
 
   holder.replaceChildren(
-    element("div", { class: "fui-design-canvas" }, [toolbar, element("div", { class: "fui-design-stage" }, [frame])]),
+    element("div", { class: "fui-design-canvas" }, [toolbar, stage]),
     inspector,
     getCode.node,
     openPreset.node,
   );
 
-  frame.addEventListener("load", () => applyDesign(data, state, frame, mode));
+  frame.addEventListener("load", () => {
+    applyDesign(data, state, frame, mode);
+    stage.classList.remove("is-loading");
+  });
+  new MutationObserver(() => {
+    mode = currentSiteMode();
+    refresh();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   addEventListener("popstate", () => {
     state = initialState(data);
     refresh();
