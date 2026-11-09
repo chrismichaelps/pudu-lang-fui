@@ -5,7 +5,6 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
 /** @Fui.Elements.FileTree.Change — what happened to a file */
 export type Change = Unchanged | Added | Modified | Deleted
 
@@ -26,12 +25,12 @@ fn written(entry: &Entry) -> H.Node {
   match entry {
     case FileEntry(name, change) => H.li().slot("file-tree-file").data("change", Core.spelled(change)).holding([
         Icon.sized(Icon.File, Icon.Small),
-        H.words(name),
+        H.span().says(name),
         Core.inline("file-tree-mark").says(Core.picked(&MARKS, change, ""))
       ])
     case FolderEntry(name, entries) => H.li().holding([
         H.details().slot("file-tree-folder").flag("open").holding([
-            H.summary().slot("file-tree-name").holding([Icon.sized(Icon.Folder, Icon.Small), H.words(name)]),
+            H.summary().slot("file-tree-name").holding([Core.inline("file-tree-chevron").holding([Icon.sized(Icon.ChevronRight, Icon.Small)]), Icon.sized(Icon.Folder, Icon.Small), H.span().says(name)]),
             H.ul().slot("file-tree-list").holding(entries.map(|inner: Entry| written(&inner)))
           ])
       ])
@@ -46,14 +45,19 @@ export fn fileTree(entries: Array[Entry]) -> H.Node {
 /// The styles of a file tree.
 export fn style() -> Css.Block {
   Css.block("file-tree", [
-      Css.base("margin: 0; padding: 0; list-style: none; font-family: $font-mono; font-size: $text-xs"),
-      Css.slot("file-tree-list", "margin: 0; padding-inline-start: $space-4; list-style: none"),
-      Css.slot("file-tree-file", "display: flex; align-items: center; gap: $space-1; padding-block: 2px"),
+      Css.base("list-style: none; font-size: $text-sm"),
+      Css.slot("file-tree-list", "padding-inline-start: $space-4; list-style: none"),
+      Css.slot("file-tree-file", "display: flex; align-items: center; gap: calc($unit * 1.5); padding: $unit $space-2; padding-inline-start: 1.625rem; border-radius: $radius-md; cursor: default"),
+      Css.slotWhen("file-tree-file", ":hover", "background: $muted"),
       Css.slot("file-tree-folder", "display: block"),
-      Css.slot("file-tree-name", "display: flex; align-items: center; gap: $space-1; padding-block: 2px; cursor: pointer; list-style: none"),
-      Css.slot("file-tree-mark", "margin-inline-start: auto; font-weight: $weight-semibold"),
-      Css.slotWhen("file-tree-file", "[data-change=\"added\"]", "color: $success"),
-      Css.slotWhen("file-tree-file", "[data-change=\"deleted\"]", "color: $destructive"),
-      Css.slotWhen("file-tree-file", "[data-change=\"modified\"]", "color: $warning")
+      Css.slot("file-tree-name", "display: flex; align-items: center; gap: calc($unit * 1.5); padding: $unit $space-2; border-radius: $radius-md; cursor: pointer; list-style: none"),
+      Css.slotWhen("file-tree-name", ":hover", "background: $muted"),
+      Css.slotWhen("file-tree-name", "::-webkit-details-marker", "display: none"),
+      Css.slot("file-tree-chevron", "display: inline-flex; color: $muted-foreground; transition: rotate $duration-base $ease-standard"),
+      Css.rule("[data-slot=\"file-tree-folder\"][open] > [data-slot=\"file-tree-name\"] > [data-slot=\"file-tree-chevron\"]", "rotate: 90deg"),
+      Css.slot("file-tree-mark", "margin-inline-start: auto; font-family: $font-mono; font-size: $text-xs; font-weight: $weight-semibold"),
+      Css.rule("[data-slot=\"file-tree-file\"][data-change=\"added\"] > [data-slot=\"file-tree-mark\"]", "color: $success"),
+      Css.rule("[data-slot=\"file-tree-file\"][data-change=\"deleted\"] > [data-slot=\"file-tree-mark\"]", "color: $destructive"),
+      Css.rule("[data-slot=\"file-tree-file\"][data-change=\"modified\"] > [data-slot=\"file-tree-mark\"]", "color: $warning")
     ])
 }

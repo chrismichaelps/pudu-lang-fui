@@ -14,11 +14,19 @@ export fn chat(caption: Str, turns: Array[H.Node], prompt: H.Node) -> H.Node {
     ])
 }
 
+/// A bar over the thread naming it, with anything placed at its end.
+export fn header(title: Str, note: Str, actions: Array[H.Node] = []) -> H.Node {
+  Core.part("chat-header").holding([H.div().holding([Core.part("chat-title").says(title), Core.part("chat-note").says(note)]), H.div().holding(actions)])
+}
+
 /// The styles of a chat.
 export fn style() -> Css.Block {
   Css.block("chat", [
       Css.base("display: flex; flex-direction: column; block-size: 100%; min-block-size: 20rem"),
       Css.inside("> [data-slot=\"message-scroller\"]", "flex: 1; min-block-size: 0"),
-      Css.slot("chat-prompt", "padding: $space-3")
+      Css.slot("chat-prompt", "padding: $space-3"),
+      Css.slot("chat-header", "display: flex; align-items: center; justify-content: space-between; padding: $space-3 $space-4; border-block-end: $border-width solid $border"),
+      Css.slot("chat-title", "font-size: $text-sm; font-weight: $weight-medium"),
+      Css.slot("chat-note", "font-size: $text-xs; color: $muted-foreground")
     ])
 }

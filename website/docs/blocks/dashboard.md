@@ -18,7 +18,7 @@ fui add dashboard
 ## Usage
 
 ```pudu
-H.div().css("inline-size", "100%").css("block-size", "26rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))])
+H.div().css("inline-size", "100%").css("block-size", "36rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))])
 ```
 
 ## API

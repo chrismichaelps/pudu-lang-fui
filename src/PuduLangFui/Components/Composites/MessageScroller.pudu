@@ -26,6 +26,7 @@ export fn item(id: Str) -> H.Node { Core.part("message-scroller-item").id(id) }
 export fn style() -> Css.Block {
   Css.block("message-scroller", [
       Css.base("display: flex; flex-direction: column-reverse; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: $border transparent; outline: none"),
+      Css.rule("[data-slot=\"message-scroller-content\"] > *", "flex: none"),
       Css.focusRing(),
       Css.slot("message-scroller-content", "display: flex; flex-direction: column; gap: $space-8; padding: $space-4"),
       Css.slot("message-scroller-jump", "position: sticky; inset-block-end: $space-2; align-self: center; display: inline-flex; padding: $space-1; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; box-shadow: $shadow-sm"),

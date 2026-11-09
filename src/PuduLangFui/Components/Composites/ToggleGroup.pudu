@@ -35,7 +35,7 @@ export fn style() -> Css.Block {
       Css.rule("[data-slot=\"toggle-group\"][data-variant=\"outline\"] > [data-slot=\"toggle-group-item\"]", "border-color: $input"),
       Css.rule("[data-slot=\"toggle-group-item\"] > input", "position: absolute; opacity: 0; pointer-events: none"),
       Css.slotWhen("toggle-group-item", ":hover", "background: $muted"),
-      Css.slotWhen("toggle-group-item", ":has(> input:checked)", "background: $muted"),
+      Css.slotWhen("toggle-group-item", ":has(> input:checked)", "background: $muted !important"),
       Css.slotWhen("toggle-group-item", ":has(> input:focus-visible)", "outline: 2px solid $ring; outline-offset: 1px")
     ])
 }

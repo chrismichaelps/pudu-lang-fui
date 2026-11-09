@@ -33,8 +33,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A trace line with a disclosure showing input and output as code
-2. a table maps the state to its status word.
+1. A step whose heading opens to its input and output.
 
 ## Negative Logic (Prohibited Paths)
 

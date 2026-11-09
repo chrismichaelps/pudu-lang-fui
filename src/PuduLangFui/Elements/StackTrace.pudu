@@ -2,30 +2,26 @@
 module PuduLangFui.Elements.StackTrace
 
 import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
+/// One frame of the stack.
+fn written(frame: Str) -> H.Node { H.li().slot("stack-trace-frame").holding([Icon.sized(Icon.File, Icon.Small), H.span().says(frame)]) }
 
-/// The failure's message over its frames.
+/// The failure's message, opening to its frames.
 export fn stackTrace(message: Str, frames: &Array[Str]) -> H.Node {
   Core.part("stack-trace").holding([
-      Core.part("stack-trace-message").says(message),
-      if frames.isEmpty() {
-        H.nothing()
-      } else {
-        H.details().holding([
-            H.summary().slot("stack-trace-summary").says(show(frames.length()) + " frames"),
-            H.ol().slot("stack-trace-frames").holding(frames.map(|frame: Str| H.li().says(frame)))
-          ])
-      }
+      Trace.disclosure([Icon.sized(Icon.ErrorCircle, Icon.Small), H.words(message)], !frames.isEmpty()).holding([H.ol().slot("stack-trace-frames").holding(frames.map(written))])
     ])
 }
 
 /// The styles of a stack trace.
 export fn style() -> Css.Block {
   Css.block("stack-trace", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2; padding: $space-3; border: $border-width solid $destructive; border-radius: $radius-md; font-family: $font-mono; font-size: $text-xs"),
-      Css.slot("stack-trace-message", "color: $destructive; font-weight: $weight-medium"),
-      Css.slot("stack-trace-summary", "cursor: pointer; color: $muted-foreground"),
-      Css.slot("stack-trace-frames", "margin: $space-2 0 0; padding-inline-start: $space-4")
+      Css.base("display: block"),
+      Css.rule("[data-slot=\"stack-trace\"] [data-slot=\"trace-summary\"]", "color: $destructive"),
+      Css.slot("stack-trace-frames", "display: flex; flex-direction: column; gap: $unit; list-style: none"),
+      Css.slot("stack-trace-frame", "display: flex; align-items: center; gap: calc($unit * 1.5); color: $muted-foreground; font-family: $font-mono; font-size: $text-xs")
     ])
 }

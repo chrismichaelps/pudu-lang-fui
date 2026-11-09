@@ -24,7 +24,7 @@ The agent's thinking as it streams.
 ```pudu
 export type State = Thinking | Finished
 
-export fn reasoning(state: State, thought: H.Node, duration: Str = "") -> H.Node
+export fn reasoning(state: State, thought: H.Node, duration: Str = "", open: Bool = false) -> H.Node
 
 export fn style() -> Css.Block
 ```
@@ -35,8 +35,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A table maps thinking and done to captions
-2. thinking shimmers and renders open.
+1. A caption opens to the thought, and starts open while thinking is under way.
 
 ## Negative Logic (Prohibited Paths)
 

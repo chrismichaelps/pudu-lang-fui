@@ -22,22 +22,22 @@ The links an agent used for a reply.
 ### Signatures
 
 ```pudu
-export type Source = { title: Str, target: Str }
+export type Source =
 
 export fn source(title: Str, target: Str) -> Source
 
-export fn sources(all: Array[Source]) -> H.Node
+export fn sources(all: Array[Source], open: Bool = false) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A disclosure with a count over a list of links.
+1. A count opens to the links.
 
 ## Negative Logic (Prohibited Paths)
 

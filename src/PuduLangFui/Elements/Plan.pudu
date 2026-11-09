@@ -3,34 +3,30 @@ module PuduLangFui.Elements.Plan
 
 import Std.Html.Build as H
 import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
 /** @Fui.Elements.Plan.Step — one planned step */
 export type Step = { title: Str, status: Trace.Status }
 
 /// A planned step.
 export fn step(title: Str, status: Trace.Status) -> Step { Step{title: title, status: status} }
 
-/// The plan with a count of finished steps.
+/// The plan under a heading counting its finished steps.
 export fn plan(title: Str, steps: Array[Step]) -> H.Node {
   let finished = steps.filter(|one: Step| one.status == Trace.Done).length()
 
   Core.part("plan").holding([
-      Core.part("plan-header").holding([
-          Core.inline("plan-title").says(title),
-          Core.inline("plan-count").says(show(finished) + " of " + show(steps.length()))
-        ]),
-      Trace.trace().holding(steps.map(|one: Step| Trace.line(one.status).holding([Trace.body().holding([Trace.title().says(one.title)])])))
+      Trace.disclosure([Icon.sized(Icon.List, Icon.Small), H.words(title), Core.inline("plan-count").says(show(finished) + " of " + show(steps.length()) + " done")], true).holding([
+          Trace.trace().holding(steps.map(|one: Step| Trace.line(one.status).holding([Trace.body().holding([Trace.title().says(one.title)])])))
+        ])
     ])
 }
 
 /// The styles of a plan.
 export fn style() -> Css.Block {
   Css.block("plan", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2"),
-      Css.slot("plan-header", "display: flex; justify-content: space-between; gap: $space-4; font-size: $text-sm"),
-      Css.slot("plan-title", "font-weight: $weight-medium"),
-      Css.slot("plan-count", "color: $muted-foreground")
+      Css.base("display: block"),
+      Css.slot("plan-count", "opacity: 0.7")
     ])
 }

@@ -2,22 +2,18 @@
 module PuduLangFui.Elements.ModelSelector
 
 import Std.Html.Build as H
-import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Composites.Select as Select
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
-/// Options with the current value selected.
-fn choices(values: &Array[Str], current: Str) -> Array[H.Node] {
-  values.map(|value: Str| NativeSelect.option(value, value, value == current))
+/// One borderless menu of the values with the current one selected.
+fn menu(name: Str, caption: Str, values: &Array[Str], current: Str) -> H.Node {
+  Select.select(name).label(caption).css("inline-size", "fit-content").css("background", "transparent").css("border-color", "transparent").css("box-shadow", "none").holding(values.map(|value: Str| Select.option(value, value, value == current)))
 }
 
-/// Two selects for the model and how hard it works.
+/// Two menus for the model and how hard it works.
 export fn modelSelector(models: &Array[Str], efforts: &Array[Str], model: Str, effort: Str) -> H.Node {
-  Core.part("model-selector").holding([
-      NativeSelect.select("model").label("Model").holding(choices(models, model)),
-      NativeSelect.select("effort").label("Effort").holding(choices(efforts, effort))
-    ])
+  Core.part("model-selector").holding([menu("model", "Model", models, model), menu("effort", "Effort", efforts, effort)])
 }
 
 /// The styles of a selector.
-export fn style() -> Css.Block { Css.block("model-selector", [Css.base("display: inline-flex; gap: $space-2")]) }
+export fn style() -> Css.Block { Css.block("model-selector", [Css.base("display: inline-flex; align-items: center; gap: $unit")]) }

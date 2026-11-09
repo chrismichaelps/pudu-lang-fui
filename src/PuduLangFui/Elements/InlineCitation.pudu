@@ -5,14 +5,13 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.HoverCard as HoverCard
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
-/// A numbered link whose card shows the source's title and summary.
-export fn inlineCitation(number: Int, target: Str, title: Str, summary: Str) -> H.Node {
+/// A short named link whose card shows the source's title and summary.
+export fn inlineCitation(label: Str, target: Str, title: Str, summary: Str) -> H.Node {
   HoverCard.hoverCard(
-    H.a().slot("inline-citation").href(target).at("rel", "noopener noreferrer").says(show(number)),
-    Core.part("inline-citation-card").holding([
-        Core.part("inline-citation-title").says(title),
-        Core.part("inline-citation-summary").says(summary)
+    H.a().slot("inline-citation").href(target).at("rel", "noopener noreferrer").says(label),
+    Core.inline("inline-citation-card").holding([
+        Core.inline("inline-citation-title").says(title),
+        Core.inline("inline-citation-summary").says(summary)
       ])
   )
 }
@@ -20,8 +19,9 @@ export fn inlineCitation(number: Int, target: Str, title: Str, summary: Str) -> 
 /// The styles of a citation.
 export fn style() -> Css.Block {
   Css.block("inline-citation", [
-      Css.base("display: inline-flex; align-items: center; justify-content: center; min-inline-size: 1.1rem; block-size: 1.1rem; padding-inline: 3px; background: $muted; color: $muted-foreground; border-radius: $radius-full; font-size: 0.7rem; text-decoration: none; vertical-align: super"),
-      Css.slot("inline-citation-card", "display: flex; flex-direction: column; gap: $space-1"),
+      Css.base("display: inline-flex; align-items: center; block-size: 1.25rem; padding-inline: calc($unit * 1.5); background: $muted; color: $muted-foreground; border-radius: $radius-sm; font-size: $text-xs; text-decoration: none; vertical-align: baseline"),
+      Css.when(":hover", "color: $foreground"),
+      Css.slot("inline-citation-card", "display: flex; flex-direction: column; gap: $unit"),
       Css.slot("inline-citation-title", "font-weight: $weight-medium"),
       Css.slot("inline-citation-summary", "color: $muted-foreground")
     ])

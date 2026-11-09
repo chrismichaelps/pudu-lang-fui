@@ -60,25 +60,6 @@ addEventListener("resize", function () {
   document.querySelectorAll(".fui-home iframe").forEach(fit);
 });
 
-document.querySelectorAll("[data-copy]").forEach(function (button) {
-  function copy() {
-    var hint = button.querySelector(".fui-install-hint");
-
-    navigator.clipboard.writeText(button.getAttribute("data-copy")).then(function () {
-      hint.textContent = "Copied";
-      setTimeout(function () { hint.textContent = "Copy"; }, 1200);
-    });
-  }
-
-  button.addEventListener("click", copy);
-  button.addEventListener("keydown", function (event) {
-    if (event.key !== "Enter" && event.key !== " ") return;
-
-    event.preventDefault();
-    copy();
-  });
-});
-
 /* Keeps the phone menus exclusive, and closes them from outside. */
 var PANELS = [[".menu-toggle", "#sidebar"], [".nav-toggle", "#navbar"]];
 

@@ -7,6 +7,7 @@ import PuduLangFui.Blocks.Dashboard as Dashboard
 import PuduLangFui.Blocks.Login as Login
 import PuduLangFui.Blocks.Pricing as Pricing
 import PuduLangFui.Catalog.Catalog as Catalog
+import PuduLangFui.Components.Composites.Accordion as Accordion
 import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
 import PuduLangFui.Components.Composites.Attachment as Attachment
 import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
@@ -37,7 +38,6 @@ import PuduLangFui.Components.Patterns.DataTable as DataTable
 import PuduLangFui.Components.Patterns.DatePicker as DatePicker
 import PuduLangFui.Components.Patterns.Menubar as Menubar
 import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
-import PuduLangFui.Components.Composites.Accordion as Accordion
 import PuduLangFui.Components.Primitives.Alert as Alert
 import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
 import PuduLangFui.Components.Primitives.Avatar as Avatar
@@ -298,7 +298,7 @@ fn textAndAgents() -> Array[H.Node] {
                 Turn.turn("Fix the failing test", [
                     Reasoning.reasoning(Reasoning.Finished, H.p().says("The fixture is stale."), "4s"),
                     Trace.trace().holding([Tool.tool("edit_file", Trace.Done, "path: a.pudu", "1 line changed"), Tool.tool("run_tests", Trace.Running, "suite: all", "")]),
-                    H.p().holding([H.words("Fixed in the fixture"), InlineCitation.inlineCitation(1, "#", "Fixture", "The stale data."), H.words(".")])
+                    H.p().holding([H.words("Fixed in the fixture"), InlineCitation.inlineCitation("fixture", "#", "Fixture", "The stale data."), H.words(".")])
                   ]),
                 Checkpoint.checkpoint("Checkpoint 2", "/restore"),
                 Marker.marker(Marker.System).says("Session resumed"),

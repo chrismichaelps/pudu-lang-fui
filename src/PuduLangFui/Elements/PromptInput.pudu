@@ -7,21 +7,22 @@ import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Components.Primitives.Textarea as Textarea
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
 /** @Fui.Elements.PromptInput.State — whether a reply is under way */
 export type State = Idle | Running
 
 /// The icon and caption of the button each state shows.
-const SEND: Map[Str, (Icon.Glyph, Str)] = mapOf([("idle", (Icon.Send, "Send")), ("running", (Icon.Stop, "Stop"))])
+const SEND: Map[Str, (Icon.Glyph, Str)] = mapOf([("idle", (Icon.ArrowUp, "Send")), ("running", (Icon.Stop, "Stop"))])
 
-/// A form posting `prompt` to `action`, holding any attachments above the field.
-export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = []) -> H.Node {
-  let (glyph, caption) = Core.picked(&SEND, state, (Icon.Send, "Send"))
+/// A form posting `prompt` to `action`, holding any attachments above the field and any controls beside send.
+export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = []) -> H.Node {
+  let (glyph, caption) = Core.picked(&SEND, state, (Icon.ArrowUp, "Send"))
 
   H.form().slot("prompt-input").method("post").action(action).data("state", Core.spelled(state)).holding(attachments.concat([
-        Textarea.textarea("prompt").placeholder(hint).label(hint),
+        Textarea.textarea("prompt").placeholder(hint).label(hint).css("background", "transparent").css("border", "0").css("box-shadow", "none").css("padding", "0").css("min-block-size", "2.75rem").css("resize", "none"),
         Core.part("prompt-input-toolbar").holding([
-            Button.submit(Button.props().size(Button.IconSmall)).label(caption).holding([Icon.icon(glyph)])
+            Button.button(Button.props().variant(Button.Outline).size(Button.IconSmall)).css("border-radius", "9999px").label("Add an attachment").holding([Icon.icon(Icon.Plus)]),
+            Core.part("prompt-input-controls").holding(controls),
+            Button.submit(Button.props().size(Button.IconSmall)).css("border-radius", "9999px").label(caption).holding([Icon.icon(glyph)])
           ])
       ]))
 }
@@ -29,9 +30,9 @@ export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H
 /// The styles of a prompt.
 export fn style() -> Css.Block {
   Css.block("prompt-input", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: $space-3; background: $background; border: $border-width solid $input; border-radius: $radius-xl"),
-      Css.when(":focus-within", "outline: 2px solid $ring; outline-offset: 1px"),
-      Css.inside("[data-slot=\"textarea\"]", "padding: 0; border: 0; outline: none; resize: none"),
-      Css.slot("prompt-input-toolbar", "display: flex; justify-content: flex-end; gap: $space-2")
+      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: $space-3; background: color-mix(in oklab, $muted 70%, transparent); border-radius: calc($radius * 2)"),
+      Css.when(":focus-within", "box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.slot("prompt-input-toolbar", "display: flex; align-items: center; gap: $space-2"),
+      Css.slot("prompt-input-controls", "display: flex; flex: 1; align-items: center; justify-content: flex-end; gap: $unit")
     ])
 }

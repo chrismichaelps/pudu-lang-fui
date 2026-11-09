@@ -33,7 +33,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. Heading, then a trace of steps.
+1. A heading opens to its steps.
 
 ## Negative Logic (Prohibited Paths)
 

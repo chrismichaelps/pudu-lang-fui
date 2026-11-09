@@ -28,6 +28,8 @@ export fn trace() -> H.Node
 
 export fn line(state: Status) -> H.Node
 
+export fn step(state: Status, caption: Str) -> H.Node
+
 export fn body() -> H.Node
 
 export fn title() -> H.Node
@@ -35,6 +37,8 @@ export fn title() -> H.Node
 export fn description() -> H.Node
 
 export fn note() -> H.Node
+
+export fn disclosure(heading: Array[H.Node], open: Bool = false) -> H.Node
 
 export fn details(headline: Str, open: Bool = false) -> H.Node
 
@@ -70,4 +74,4 @@ DEPTH 0.61 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/_MOC]] · [[src/PuduLangFui/Elements/ChainOfThought]] · [[src/PuduLangFui/Elements/Plan]] · [[src/PuduLangFui/Elements/Queue]] · [[src/PuduLangFui/Elements/Reasoning]] · [[src/PuduLangFui/Elements/Subagent]] · [[src/PuduLangFui/Elements/Task]] · [[src/PuduLangFui/Elements/Tool]]
+[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/_MOC]] · [[src/PuduLangFui/Elements/ChainOfThought]] · [[src/PuduLangFui/Elements/Plan]] · [[src/PuduLangFui/Elements/Queue]] · [[src/PuduLangFui/Elements/Reasoning]] · [[src/PuduLangFui/Elements/Subagent]] · [[src/PuduLangFui/Elements/Task]] · [[src/PuduLangFui/Elements/Tool]] · [[src/PuduLangFui/Elements/Sources]] · [[src/PuduLangFui/Elements/StackTrace]] · [[src/PuduLangFui/Elements/TestResults]]

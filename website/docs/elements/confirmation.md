@@ -18,7 +18,7 @@ fui add confirmation
 ## Usage
 
 ```pudu
-column("24rem", [Confirmation.confirmation("Run this command?", "rm -rf build", "#")])
+Turn.turn("Clean the build folder.", [Confirmation.confirmation("Run this command?", "rm -rf build", "#")]).css("inline-size", "30rem")
 ```
 
 ## API

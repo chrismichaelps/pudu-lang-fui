@@ -27,7 +27,7 @@ export fn style() -> Css.Block {
       Css.base("display: inline-flex; align-items: center; justify-content: center; gap: $space-1; block-size: $control-md; min-inline-size: $control-md; padding-inline: $space-3; background: transparent; color: $foreground; border: $border-width solid transparent; border-radius: $radius-3xl; font-size: $text-sm; font-weight: $weight-medium; cursor: pointer; user-select: none; transition: background-color $duration-fast $ease-standard, color $duration-fast $ease-standard"),
       Css.inside("> input", "position: absolute; opacity: 0; pointer-events: none"),
       Css.hover("background: $muted"),
-      Css.when(":has(> input:checked)", "background: $muted; color: $foreground"),
+      Css.when(":has(> input:checked)", "background: $muted !important; color: $foreground"),
       Css.when(":has(> input:focus-visible)", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
       Css.when(":has(> input:disabled)", "opacity: 0.5; pointer-events: none"),
       Css.variant("variant", "outline", "border-color: $input"),

@@ -24,7 +24,7 @@ A test run with suites and failures.
 ```pudu
 export type Outcome = Passed | Failed | Skipped
 
-export type Suite = { name: Str, outcome: Outcome, failures: Array[Str] }
+export type Suite =
 
 export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite
 
@@ -35,11 +35,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Badge]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. Totals, then a row for each suite with a table mapping outcome to tone.
+1. A count of what ran opens to a step per suite, with failures under the suite.
 
 ## Negative Logic (Prohibited Paths)
 

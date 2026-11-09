@@ -18,7 +18,7 @@ fui add context
 ## Usage
 
 ```pudu
-column("20rem", [Context.context(32000, 200000)])
+Context.context(16000, 200000)
 ```
 
 ## API

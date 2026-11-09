@@ -5,16 +5,10 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Composites.Trace as Trace
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
-/// A heading over the given steps.
+/// A heading that opens to the given steps.
 export fn steps(heading: Str, lines: Array[H.Node]) -> H.Node {
-  Core.part("task").holding([Core.part("task-heading").says(heading), Trace.trace().holding(lines)])
+  Core.part("task").holding([Trace.details(heading, true).holding([Trace.trace().holding(lines)])])
 }
 
 /// The styles of a task.
-export fn style() -> Css.Block {
-  Css.block("task", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2"),
-      Css.slot("task-heading", "font-size: $text-sm; font-weight: $weight-medium")
-    ])
-}
+export fn style() -> Css.Block { Css.block("task", [Css.base("display: block")]) }

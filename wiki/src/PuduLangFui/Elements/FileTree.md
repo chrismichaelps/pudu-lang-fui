@@ -41,8 +41,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A recursive walk writes nested `details` for folders and rows for files
-2. a table maps each change to its mark.
+1. Folders open to their entries, and files carry a mark for what changed.
 
 ## Negative Logic (Prohibited Paths)
 

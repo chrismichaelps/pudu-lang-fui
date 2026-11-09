@@ -129,52 +129,16 @@ a:hover { text-decoration: none; }
 .kind-landing .content { max-inline-size: none; }
 .layout-landing .main, .layout-landing .content { max-inline-size: none; padding: 0; }
 .layout-landing .content > h1:first-child { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
-.fui-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); align-items: center; gap: 3.5rem; max-inline-size: 76rem; margin-inline: auto; padding: 72px 32px 40px; }
-.fui-hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-.fui-eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; color: var(--brand-text); font-size: 13px; font-weight: 500; background: var(--brand-soft); border-radius: 999px; }
-.fui-eyebrow::before { content: ""; inline-size: 6px; block-size: 6px; background: currentColor; border-radius: 999px; }
-.content .fui-hero h1 { margin: 0; font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
-.content .fui-hero p { margin: 0; max-inline-size: 36rem; font-size: 17px; line-height: 1.55; color: var(--text-muted); text-wrap: pretty; }
-.fui-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block-start: 4px; }
-.content a.fui-pill { display: inline-flex; align-items: center; block-size: 40px; padding-inline: 16px; border: 1px solid var(--border-strong); border-radius: 8px; color: var(--text); font-size: 14px; font-weight: 500; text-decoration: none; }
-.content a.fui-pill:hover { background: var(--bg-muted); }
-.content a.fui-pill-primary, .content a.fui-pill-primary:hover { color: white; background: var(--brand); border-color: var(--brand); }
-.fui-install { display: inline-flex; align-items: center; gap: 10px; block-size: 36px; padding-inline: 12px; color: var(--text); background: var(--bg-muted); border: 0; border-radius: 8px; font-size: 13px; cursor: pointer; }
-.fui-install code { background: none; padding: 0; font-size: 13px; }
-.fui-install-mark, .fui-install-hint { color: var(--text-muted); }
-.fui-install-hint { margin-inline-start: 8px; font-size: 12px; }
-.fui-sample { min-inline-size: 0; margin: 0; overflow: hidden; background: var(--code-bg); border-radius: 14px; box-shadow: 0 0 0 1px var(--border), 0 24px 48px -28px oklch(0.2 0.05 268 / 0.45); }
-.fui-sample figcaption { padding: 10px 16px; color: var(--text-muted); font-size: 12px; font-family: var(--font-mono); border-block-end: 1px solid var(--border); }
-.content .fui-sample pre { margin: 0; padding: 16px; overflow-x: auto; background: none; border: 0; font-size: 13px; line-height: 1.7; }
-.content .fui-sample code { padding: 0; background: none; font-size: inherit; }
-.fui-sample i { font-style: normal; }
-.fui-sample i.k { color: var(--brand-text); }
-.fui-sample i.s { color: var(--text-muted); }
-.fui-sample i.f { font-weight: 600; }
-.content .fui-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); max-inline-size: 76rem; margin: 16px auto 48px; padding: 0; list-style: none; border-block: 1px solid var(--border); }
-.content .fui-stats li { display: flex; flex-direction: column; margin: 0; padding: 18px 32px; border-inline-start: 1px solid var(--border); }
-.content .fui-stats li:first-child { border-inline-start: 0; }
-.fui-stats b { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
-.fui-stats span { color: var(--text-muted); font-size: 13px; }
 .fui-home { position: relative; max-inline-size: 92rem; margin-inline: auto; overflow: hidden; }
 .fui-home::before, .fui-home::after { content: ""; position: absolute; inset-inline: 0; inset-block-end: 0; z-index: 1; pointer-events: none; }
 .fui-home::before { block-size: 24rem; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); -webkit-mask-image: linear-gradient(to bottom, transparent, black 45%); mask-image: linear-gradient(to bottom, transparent, black 45%); }
 .fui-home::after { block-size: 16rem; background: linear-gradient(to bottom, transparent, var(--bg) 88%); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%); mask-image: linear-gradient(to bottom, transparent, black 40%); }
-.fui-home-end { position: relative; z-index: 2; display: flex; justify-content: center; margin-block: -5rem 4rem; }
-.fui-install:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 @media (max-width: 640px) {
   .brand { flex: none; }
   .brand-name { max-inline-size: none; overflow: visible; white-space: nowrap; }
   .header-tools { flex: 1 1 0; min-inline-size: 0; justify-content: flex-end; }
   .search { flex: 1 1 40px; min-inline-size: 0; max-inline-size: 7.5rem; }
   .search input { inline-size: 100%; }
-}
-@media (max-width: 62rem) {
-  .fui-hero { grid-template-columns: minmax(0, 1fr); gap: 2rem; padding: 48px 20px 24px; }
-  .content .fui-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-inline: 20px; }
-  .content .fui-stats li { padding: 14px 16px; }
-  .content .fui-stats li:nth-child(3) { border-inline-start: 0; }
-  .content .fui-stats li:nth-child(n + 3) { border-block-start: 1px solid var(--border); }
 }
 @media (max-width: 1024px) {
   .sidebar { background: var(--bg); box-shadow: 0 16px 40px oklch(0 0 0 / 0.28); }

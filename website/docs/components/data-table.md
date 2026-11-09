@@ -19,18 +19,18 @@ fui add data-table
 
 ```pudu
 let payments = [
-  Customer{name: "ken99@example.com", plan: "Success"},
-  Customer{name: "abe45@example.com", plan: "Success"},
-  Customer{name: "monserrat44@example.com", plan: "Processing"},
-  Customer{name: "silas22@example.com", plan: "Success"},
-  Customer{name: "carmella@example.com", plan: "Failed"}
+  Customer{name: "ken99@example.com", plan: "Success", amount: "$316.00"},
+  Customer{name: "abe45@example.com", plan: "Success", amount: "$242.00"},
+  Customer{name: "monserrat44@example.com", plan: "Processing", amount: "$837.00"},
+  Customer{name: "silas22@example.com", plan: "Success", amount: "$874.00"},
+  Customer{name: "carmella@example.com", plan: "Failed", amount: "$721.00"}
 ]
 let outline = Button.props().variant(Button.Outline).size(Button.Small)
 
 column("36rem", [
-    DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), Button.button(Button.props().variant(Button.Outline)).holding([H.words("Columns"), Icon.sized(Icon.ChevronDown, Icon.Small)])]),
+    DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), DataTable.visibility("columns", &tableColumns(), &[])]),
     DataTable.dataTable(
-      [DataTable.selection("rows", |row: &Customer| row.name), DataTable.column("status", "Status", |row: &Customer| H.words(row.plan)), DataTable.sortable("email", "Email", |row: &Customer| H.words(row.name)), DataTable.column("actions", "", |_row: &Customer| Button.button(Button.props().variant(Button.Ghost).size(Button.IconTiny)).label("Open menu").holding([Icon.icon(Icon.More)]))],
+      tableColumns(),
       payments,
       DataTable.View{sort: "", descending: false, page: 1, lastPage: 1},
       DataTable.Links{sortBy: sorted, pageAt: here},

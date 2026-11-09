@@ -7,7 +7,7 @@ import PuduLangFui.Domain.Css as Css
 
 /// A link with a card revealed on hover or keyboard focus.
 export fn hoverCard(link: H.Node, card: H.Node) -> H.Node {
-  Core.inline("hover-card").holding([link, Core.part("hover-card-content").holding([card])])
+  Core.inline("hover-card").holding([link, Core.inline("hover-card-content").holding([card])])
 }
 
 /// The styles of a hover card.

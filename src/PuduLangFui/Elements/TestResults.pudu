@@ -2,18 +2,19 @@
 module PuduLangFui.Elements.TestResults
 
 import Std.Html.Build as H
-import PuduLangFui.Components.Primitives.Badge as Badge
+import Std.Option as Option
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
 /** @Fui.Elements.TestResults.Outcome — how a suite ended */
 export type Outcome = Passed | Failed | Skipped
 
 /** @Fui.Elements.TestResults.Suite — one suite's result */
 export type Suite = { name: Str, outcome: Outcome, failures: Array[Str] }
 
-/// The badge each outcome wears.
-const TONES: Map[Str, Badge.Variant] = mapOf([("passed", Badge.Success), ("failed", Badge.Destructive), ("skipped", Badge.Secondary)])
+/// The step status each outcome reads as.
+const STATUSES: Map[Str, Trace.Status] = mapOf([("passed", Trace.Done), ("failed", Trace.Failed), ("skipped", Trace.Pending)])
 
 /// A suite's result.
 export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite {
@@ -22,33 +23,29 @@ export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite
 
 /// One suite written out.
 fn written(one: &Suite) -> H.Node {
-  H.li().slot("test-results-suite").holding([
-      Core.part("test-results-row").holding([
-          H.span().says(one.name),
-          Badge.badge(Core.picked(&TONES, one.outcome, Badge.Secondary)).says(Core.spelled(one.outcome))
-        ]),
-      if one.failures.isEmpty() { H.nothing() } else { H.ul().slot("test-results-failures").holding(one.failures.map(|failure: Str| H.li().says(failure))) }
+  Trace.line(Option.unwrapOr(STATUSES.get(Core.spelled(one.outcome)), Trace.Pending)).holding([
+      Trace.body().holding([
+          Trace.title().says(one.name),
+          if one.failures.isEmpty() { H.nothing() } else { H.pre().slot("test-results-failures").says(one.failures.join("\n")) }
+        ])
     ])
 }
 
-/// Totals over a row per suite.
+/// A count of what ran, opening to a row per suite.
 export fn testResults(suites: Array[Suite]) -> H.Node {
-  let passed = suites.filter(|one: Suite| one.outcome == Passed).length()
+  let failed = suites.filter(|one: Suite| one.outcome == Failed).length()
+  let glyph = if failed > 0 { Icon.ErrorCircle } else { Icon.Success }
 
-  Core.part("test-results").holding([
-      Core.part("test-results-summary").says(show(passed) + " of " + show(suites.length()) + " suites passed"),
-      H.ul().slot("test-results-list").holding(suites.map(|one: Suite| written(&one)))
+  Core.part("test-results").data("failed", show(failed)).holding([
+      Trace.disclosure([Icon.sized(glyph, Icon.Small), H.words("Ran " + show(suites.length()) + " suites, " + show(failed) + " failed")], true).holding([Trace.trace().holding(suites.map(|one: Suite| written(&one)))])
     ])
 }
 
 /// The styles of test results.
 export fn style() -> Css.Block {
   Css.block("test-results", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2; font-size: $text-sm"),
-      Css.slot("test-results-summary", "font-weight: $weight-medium"),
-      Css.slot("test-results-list", "display: flex; flex-direction: column; gap: $space-1; margin: 0; padding: 0; list-style: none"),
-      Css.slot("test-results-suite", "display: flex; flex-direction: column"),
-      Css.slot("test-results-row", "display: flex; justify-content: space-between; gap: $space-4"),
-      Css.slot("test-results-failures", "margin: $space-1 0 0; padding-inline-start: $space-4; color: $destructive; font-family: $font-mono; font-size: $text-xs")
+      Css.base("display: block"),
+      Css.rule("[data-slot=\"test-results\"]:not([data-failed=\"0\"]) > [data-slot=\"trace-details\"] > [data-slot=\"trace-summary\"]", "color: $destructive"),
+      Css.slot("test-results-failures", "margin: $unit 0 0; padding: $space-3; background: color-mix(in oklab, $muted 60%, transparent); color: $foreground; border-radius: $radius-lg; font-family: $font-mono; font-size: $text-xs; white-space: pre-wrap")
     ])
 }

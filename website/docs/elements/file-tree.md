@@ -18,7 +18,7 @@ fui add file-tree
 ## Usage
 
 ```pudu
-column("20rem", [FileTree.fileTree([FileTree.folder("src", [FileTree.file("main.pudu", FileTree.Modified), FileTree.file("new.pudu", FileTree.Added)])])])
+column("20rem", [FileTree.fileTree([FileTree.folder("app", [FileTree.file("layout.pudu", FileTree.Unchanged), FileTree.file("page.pudu", FileTree.Modified)]), FileTree.folder("components", [FileTree.folder("ui", [FileTree.file("button.pudu", FileTree.Added), FileTree.file("login-form.pudu", FileTree.Deleted)])])])])
 ```
 
 ## API

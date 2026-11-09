@@ -24,7 +24,7 @@ A message field with attachments and a send button.
 ```pudu
 export type State = Idle | Running
 
-export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = []) -> H.Node
+export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = []) -> H.Node
 
 export fn style() -> Css.Block
 ```
@@ -35,7 +35,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A form: a growing text area, attached files, and a send or stop button chosen by a table of states.
+1. A field over a row of attach, controls, and send.
 
 ## Negative Logic (Prohibited Paths)
 

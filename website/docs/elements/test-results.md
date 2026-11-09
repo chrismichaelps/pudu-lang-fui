@@ -18,7 +18,7 @@ fui add test-results
 ## Usage
 
 ```pudu
-column("24rem", [TestResults.testResults([TestResults.suite("Layout", TestResults.Passed), TestResults.suite("Theme", TestResults.Failed, ["contrast"])])])
+Turn.turn("Run the checkout tests.", [TestResults.testResults([TestResults.suite("cart suite, 3 tests", TestResults.Passed), TestResults.suite("payment suite, 2 tests, 1 failed", TestResults.Failed, ["Expected 2 charge attempts, received 1\n  at checkout/retry.pudu:58"])]), H.p().css("margin", "0").says("One test failed. The payment client does not retry a declined card, so the second charge attempt never happens.")]).css("inline-size", "30rem")
 ```
 
 ## API

@@ -18,7 +18,7 @@ fui add tool
 ## Usage
 
 ```pudu
-column("26rem", [Trace.trace().holding([Tool.tool("run_tests", Trace.Done, "suite: all", "12 passed", true)])])
+Turn.turn("Which package managers are installed?", [Trace.trace().holding([Tool.tool("Ran pudu --version", Trace.Done, "pudu --version", "0.1.3"), Tool.tool("Ran git --version", Trace.Done, "git --version", "2.47.0"), Tool.tool("Failed to run npm --version", Trace.Failed, "npm --version", "command not found: npm", true)]), H.p().css("margin", "0").says("Pudu 0.1.3 and git 2.47 are installed, npm is not.")]).css("inline-size", "30rem")
 ```
 
 ## API

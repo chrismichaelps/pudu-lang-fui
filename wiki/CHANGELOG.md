@@ -12,6 +12,8 @@ tags: [changelog]
 - Sliders keep their fill on the thumb in both directions. Charts animate as they appear, and respect reduced motion.
 - Base styles carry structure only; each look carries appearance, and the shared base layer resets boxes.
 - The Create page is an inspector of its own design, on the site's theme.
+- Agent elements share one disclosure from the trace, and their demonstrations read as conversations.
+- The home page opens straight into the component mosaic.
 - The site gained its own identity: a two-column hero, a broader mosaic that fades under a blur, solid phone menus with a backdrop, and a mark and icon of its own.
 
 ## 2026-11-09 — Initial system

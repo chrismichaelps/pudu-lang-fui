@@ -63,4 +63,4 @@ DEPTH 0.62 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/_MOC]]
+[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/_MOC]] · [[src/PuduLangFui/Elements/ModelSelector]]

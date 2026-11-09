@@ -22,7 +22,7 @@ An agent's todo list, split into left and done.
 ### Signatures
 
 ```pudu
-export type Entry = { title: Str, done: Bool }
+export type Entry =
 
 export fn entry(title: Str, done: Bool = false) -> Entry
 
@@ -37,7 +37,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. Partition the entries and write two traces.
+1. Entries split into what is left and what is done, each section opening under its count.
 
 ## Negative Logic (Prohibited Paths)
 

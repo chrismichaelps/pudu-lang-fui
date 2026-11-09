@@ -5,15 +5,11 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Composites.Trace as Trace
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
 /// A run named `title` holding its steps and its result.
 export fn subagent(title: Str, status: Trace.Status, steps: Array[H.Node], result: H.Node, open: Bool = false) -> H.Node {
-  Trace.line(status).slot("subagent").holding([
+  Trace.line(status).holding([
       Trace.body().holding([
-          Trace.details(title, open).holding([
-              Trace.trace().holding(steps),
-              Core.part("subagent-result").holding([result])
-            ])
+          Trace.details(title, open).holding([Core.part("subagent-body").holding([Trace.trace().holding(steps), Core.part("subagent-result").holding([result])])])
         ])
     ])
 }
@@ -21,7 +17,8 @@ export fn subagent(title: Str, status: Trace.Status, steps: Array[H.Node], resul
 /// The styles of a subagent.
 export fn style() -> Css.Block {
   Css.block("subagent", [
-      Css.base("display: grid; grid-template-columns: auto 1fr auto; gap: $space-2"),
-      Css.slot("subagent-result", "margin-block-start: $space-2; padding-block-start: $space-2; border-block-start: $border-width solid $border")
+      Css.base("display: block"),
+      Css.slot("subagent-body", "display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("subagent-result", "color: $muted-foreground; font-size: $text-sm")
     ])
 }

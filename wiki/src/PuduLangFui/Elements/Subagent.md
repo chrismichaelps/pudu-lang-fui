@@ -33,7 +33,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A trace line with a disclosure holding the nested steps and result.
+1. A step whose heading opens to its own steps and its result.
 
 ## Negative Logic (Prohibited Paths)
 

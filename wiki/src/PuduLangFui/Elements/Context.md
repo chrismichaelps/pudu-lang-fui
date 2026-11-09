@@ -29,11 +29,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Progress]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/HoverCard]] · [[src/PuduLangFui/Components/Primitives/Progress]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A progress bar and a caption of used and limit.
+1. A short reading opens to a meter on hover.
 
 ## Negative Logic (Prohibited Paths)
 

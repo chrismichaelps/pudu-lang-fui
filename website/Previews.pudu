@@ -119,7 +119,7 @@ import PuduLangFui.Theme.Presets.Design as Design
 import PuduLangFui.Utils.Spelling as Spelling
 
 /** @Website.Previews.Customer — a row of the example table */
-type Customer = { name: Str, plan: Str }
+type Customer = { name: Str, plan: Str, amount: Str }
 
 /// Where the generated pages and previews go.
 const DOCS: Str = "website/docs"
@@ -161,9 +161,6 @@ fn tagRows() -> Array[H.Node] {
 fn sizeField(name: Str, caption: Str, value: Str) -> H.Node {
   H.div().css("display", "grid").css("grid-template-columns", "1fr 2fr").css("align-items", "center").css("gap", "var(--fui-space-4)").holding([Field.label(name).says(caption), Input.input(name, Input.props()).value(value)])
 }
-
-/// An example row of a menu.
-fn line(status: Trace.Status, caption: Str) -> H.Node { Trace.line(status).holding([Trace.body().holding([Trace.title().says(caption)])]) }
 
 /// Every component's demonstration.
 const DEMOS: Map[Str, fn() -> H.Node] = mapOf([
@@ -317,20 +314,25 @@ fn demoContextMenu() -> H.Node {
     ])
 }
 
+/// The columns of the data table's demonstration.
+fn tableColumns() -> Array[DataTable.Column[Customer]] {
+  [DataTable.selection("rows", |row: &Customer| row.name), DataTable.column("status", "Status", |row: &Customer| H.words(row.plan)), DataTable.sortable("email", "Email", |row: &Customer| H.words(row.name)), DataTable.column("amount", "Amount", |row: &Customer| H.words(row.amount)), DataTable.column("actions", "", |_row: &Customer| Button.button(Button.props().variant(Button.Ghost).size(Button.IconSmall)).label("Open menu").holding([Icon.icon(Icon.More)]))]
+}
+
 fn demoDataTable() -> H.Node {
   let payments = [
-    Customer{name: "ken99@example.com", plan: "Success"},
-    Customer{name: "abe45@example.com", plan: "Success"},
-    Customer{name: "monserrat44@example.com", plan: "Processing"},
-    Customer{name: "silas22@example.com", plan: "Success"},
-    Customer{name: "carmella@example.com", plan: "Failed"}
+    Customer{name: "ken99@example.com", plan: "Success", amount: "$316.00"},
+    Customer{name: "abe45@example.com", plan: "Success", amount: "$242.00"},
+    Customer{name: "monserrat44@example.com", plan: "Processing", amount: "$837.00"},
+    Customer{name: "silas22@example.com", plan: "Success", amount: "$874.00"},
+    Customer{name: "carmella@example.com", plan: "Failed", amount: "$721.00"}
   ]
   let outline = Button.props().variant(Button.Outline).size(Button.Small)
 
   column("36rem", [
-      DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), Button.button(Button.props().variant(Button.Outline)).holding([H.words("Columns"), Icon.sized(Icon.ChevronDown, Icon.Small)])]),
+      DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), DataTable.visibility("columns", &tableColumns(), &[])]),
       DataTable.dataTable(
-        [DataTable.selection("rows", |row: &Customer| row.name), DataTable.column("status", "Status", |row: &Customer| H.words(row.plan)), DataTable.sortable("email", "Email", |row: &Customer| H.words(row.name)), DataTable.column("actions", "", |_row: &Customer| Button.button(Button.props().variant(Button.Ghost).size(Button.IconTiny)).label("Open menu").holding([Icon.icon(Icon.More)]))],
+        tableColumns(),
         payments,
         DataTable.View{sort: "", descending: false, page: 1, lastPage: 1},
         DataTable.Links{sortBy: sorted, pageAt: here},
@@ -566,55 +568,68 @@ fn demoToggleGroup() -> H.Node { ToggleGroup.styled("Text formatting", ToggleGro
 
 fn demoTooltip() -> H.Node { Tooltip.tooltip("Add to library", Button.button(Button.props().variant(Button.Outline)).says("Hover")) }
 
-fn demoTrace() -> H.Node { column("22rem", [Trace.trace().holding([line(Trace.Done, "Read the file"), line(Trace.Running, "Run the tests"), line(Trace.Pending, "Open a pull request")])]) }
+fn demoTrace() -> H.Node { column("22rem", [Trace.trace().holding([Trace.step(Trace.Done, "Read the file"), Trace.step(Trace.Running, "Run the tests"), Trace.step(Trace.Pending, "Open a pull request")])]) }
 
 fn demoTypeset() -> H.Node { Typeset.typeset(Typeset.props()).raw("<h2>Rendered document</h2><p>A paragraph with <code>code</code> and a <a href='#'>link</a>.</p><ul><li>One</li><li>Two</li></ul>") }
 
 fn demoTypography() -> H.Node { column("28rem", [Typography.text(Typography.H1).says("The heading"), Typography.text(Typography.Lead).says("A lead paragraph."), Typography.text(Typography.Paragraph).says("Body text reads at a comfortable size.")]) }
 
-fn demoChainOfThought() -> H.Node { column("24rem", [ChainOfThought.chainOfThought("Thought through 2 steps", [line(Trace.Done, "Read the file"), line(Trace.Done, "Compared the results")], true)]) }
+fn demoChainOfThought() -> H.Node { Turn.turn("Why is the checkout deploy so slow?", [ChainOfThought.chainOfThought("Researched in 3 steps", [Trace.step(Trace.Done, "Read the build log"), Trace.step(Trace.Done, "Compared the last two deploys"), Trace.step(Trace.Done, "Traced the slow step")], true), H.p().css("margin", "0").says("Image optimization takes almost four minutes because its cache key includes the commit hash. Key it on the image directory instead.")]).css("inline-size", "30rem") }
 
-fn demoChat() -> H.Node { column("28rem", [H.div().css("block-size", "22rem").holding([Chat.chat("Conversation", [Turn.turn("Fix the failing test", [H.p().says("Fixed in the fixture.")])], PromptInput.promptInput("#", "Ask anything", PromptInput.Idle))])]) }
+fn demoChat() -> H.Node {
+  H.div().css("inline-size", "34rem").css("block-size", "26rem").css("border", "1px solid var(--fui-border)").css("border-radius", "var(--fui-radius-xl)").css("overflow", "hidden").holding([
+      Chat.header("New thread", "Ask the agent to change your code.", [Button.button(Button.props().variant(Button.Ghost).size(Button.IconSmall)).label("Start over").holding([Icon.icon(Icon.Edit)])]),
+      H.div().css("block-size", "calc(100% - 3.75rem)").holding([Chat.chat("Conversation", [H.div().at("data-demo-thread", "").css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-3)").css("padding", "var(--fui-space-4)").holding([
+                  Bubble.bubble(Bubble.Secondary, Bubble.End).css("display", "none").at("data-demo-template", ""),
+                  Empty.empty().holding([Empty.header().holding([Empty.media().holding([Icon.icon(Icon.Spark)]), Empty.title().says("What should we build?"), Empty.description().says("The agent can read your code, run commands, and make changes. Press send to start.")])])
+                ])], PromptInput.promptInput("#", "Add a dark mode toggle to the settings page.", PromptInput.Idle))])
+    ])
+}
 
-fn demoCheckpoint() -> H.Node { column("24rem", [Checkpoint.checkpoint("Checkpoint 2", "#")]) }
+fn demoCheckpoint() -> H.Node { Turn.turn("Add a settings page.", [H.p().css("margin", "0").says("Added the page and a link in the header."), Checkpoint.checkpoint("Checkpoint", "#"), H.div().css("align-self", "flex-end").holding([Bubble.bubble(Bubble.Secondary, Bubble.End).says("Now add a dark mode toggle.")])]).css("inline-size", "30rem") }
 
-fn demoConfirmation() -> H.Node { column("24rem", [Confirmation.confirmation("Run this command?", "rm -rf build", "#")]) }
+fn demoConfirmation() -> H.Node { Turn.turn("Clean the build folder.", [Confirmation.confirmation("Run this command?", "rm -rf build", "#")]).css("inline-size", "30rem") }
 
-fn demoContext() -> H.Node { column("20rem", [Context.context(32000, 200000)]) }
+fn demoContext() -> H.Node { Context.context(16000, 200000) }
 
-fn demoFileTree() -> H.Node { column("20rem", [FileTree.fileTree([FileTree.folder("src", [FileTree.file("main.pudu", FileTree.Modified), FileTree.file("new.pudu", FileTree.Added)])])]) }
+fn demoFileTree() -> H.Node { column("20rem", [FileTree.fileTree([FileTree.folder("app", [FileTree.file("layout.pudu", FileTree.Unchanged), FileTree.file("page.pudu", FileTree.Modified)]), FileTree.folder("components", [FileTree.folder("ui", [FileTree.file("button.pudu", FileTree.Added), FileTree.file("login-form.pudu", FileTree.Deleted)])])])]) }
 
-fn demoInlineCitation() -> H.Node { H.p().holding([H.words("Fixed in the fixture"), InlineCitation.inlineCitation(1, "#", "The fixture", "Stale data caused the failure."), H.words(".")]) }
+fn demoInlineCitation() -> H.Node {
+  column("30rem", [
+      H.p().css("margin", "0").css("font-size", "var(--fui-text-sm)").css("line-height", "1.625").holding([H.words("A page streams a route in chunks, so it shows up before every request finishes "), InlineCitation.inlineCitation("pudu-lang.org", "#", "Streaming a page", "How a route is sent in chunks."), H.words(".")]),
+      H.p().css("margin", "0").css("font-size", "var(--fui-text-sm)").css("line-height", "1.625").holding([H.words("A loading file does the same for a whole route segment "), InlineCitation.inlineCitation("guides", "#", "Loading states", "What a segment shows while it waits."), H.words(".")])
+    ])
+}
 
-fn demoModelSelector() -> H.Node { ModelSelector.modelSelector(&["fast", "deep"], &["low", "high"], "deep", "high") }
+fn demoModelSelector() -> H.Node { column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle, [], [ModelSelector.modelSelector(&["Fast", "Deep"], &["Low", "Medium", "High"], "Deep", "Medium")])]) }
 
-fn demoPlan() -> H.Node { column("22rem", [Plan.plan("Plan", [Plan.step("Read", Trace.Done), Plan.step("Change", Trace.Running), Plan.step("Test", Trace.Pending)])]) }
+fn demoPlan() -> H.Node { Turn.turn("Migrate the dialog components.", [Plan.plan("Plan: migrate the dialogs", [Plan.step("Install the new package", Trace.Done), Plan.step("Replace the imports", Trace.Done), Plan.step("Rename the render props", Trace.Running), Plan.step("Run the type checker", Trace.Pending)]), H.p().css("margin", "0").says("Migrated Dialog and AlertDialog. The type checker passes.")]).css("inline-size", "30rem") }
 
-fn demoPromptInput() -> H.Node { column("28rem", [PromptInput.promptInput("#", "Ask anything", PromptInput.Idle)]) }
+fn demoPromptInput() -> H.Node { column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle)]) }
 
-fn demoQueue() -> H.Node { column("22rem", [Queue.queue([Queue.entry("Write docs"), Queue.entry("Ship", true)])]) }
+fn demoQueue() -> H.Node { Turn.turn("Add dark mode to the settings page.", [Queue.queue([Queue.entry("Add a dark variant to the theme tokens", true), Queue.entry("Read the theme from a cookie", true), Queue.entry("Add a toggle to the settings page"), Queue.entry("Check contrast on the charts")]), H.p().css("margin", "0").says("Dark mode is in. The toggle is under Settings, Appearance.")]).css("inline-size", "30rem") }
 
-fn demoReasoning() -> H.Node { column("24rem", [Reasoning.reasoning(Reasoning.Thinking, H.p().says("Comparing the two approaches."))]) }
+fn demoReasoning() -> H.Node { Turn.turn("Why is the checkout deploy so slow?", [Reasoning.reasoning(Reasoning.Finished, H.p().css("margin", "0").says("The deploy log has three phases. Install takes 38 seconds and the next build 52, both normal. Image optimization takes three and a half minutes because its cache key includes the commit hash."), "for 5s", true), H.p().css("margin", "0").says("Image optimization is the bottleneck. Key its cache on the lockfile and the image directory.")]).css("inline-size", "30rem") }
 
-fn demoSources() -> H.Node { column("22rem", [Sources.sources([Sources.source("Guide", "#"), Sources.source("Specification", "#")])]) }
+fn demoSources() -> H.Node { Turn.turn("How do I start a project with pudu?", [H.p().css("margin", "0").says("Run pudu new and follow the prompts. It scaffolds the project and installs the dependencies."), Sources.sources([Sources.source("Installation | pudu-lang.org", "#"), Sources.source("Project layout | pudu-lang.org", "#"), Sources.source("The pudu command | guides", "#")], true)]).css("inline-size", "30rem") }
 
-fn demoStackTrace() -> H.Node { column("26rem", [StackTrace.stackTrace("TypeError: expected Int", &["at one (a.pudu:1)", "at two (b.pudu:2)"])]) }
+fn demoStackTrace() -> H.Node { Turn.turn("Reset the database and seed it.", [Trace.trace().holding([Trace.step(Trace.Done, "Ran pudu run migrate --reset")]), StackTrace.stackTrace("Failed: TypeError: cannot read a field of None", &["seed/users.pudu:23", "seed/main.pudu:51"]), H.p().css("margin", "0").says("The migrations ran, but the seed failed in users. One fixture has no profile, so the name is missing.")]).css("inline-size", "30rem") }
 
-fn demoSubagent() -> H.Node { column("24rem", [Trace.trace().holding([Subagent.subagent("Explore the repository", Trace.Done, [line(Trace.Done, "Listed files")], H.p().says("Found three modules."), true)])]) }
+fn demoSubagent() -> H.Node { Turn.turn("Why does image optimization rerun on every deploy?", [Trace.trace().holding([Subagent.subagent("Ran the research subagent", Trace.Done, [Trace.step(Trace.Done, "Ran grep -rn cache build/"), Trace.step(Trace.Done, "Ran pudu run cache --stats")], H.p().css("margin", "0").says("The cache is keyed on the commit, which changes on every deploy."), true)]), H.p().css("margin", "0").says("Key the cache on a hash of the image folder, and unchanged images will be skipped.")]).css("inline-size", "30rem") }
 
-fn demoSuggestion() -> H.Node { Suggestion.suggestions("#", &["Explain this", "Add a test"]) }
+fn demoSuggestion() -> H.Node { column("30rem", [Suggestion.suggestions("#", &["Add a dark mode toggle", "Fix the failing build", "Write tests for the form"]), PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle)]) }
 
-fn demoTask() -> H.Node { column("22rem", [Task.steps("Searching", [line(Trace.Running, "Looking through files")])]) }
+fn demoTask() -> H.Node { Turn.turn("Add metadata to the home page.", [Task.steps("Updated the page metadata", [Trace.step(Trace.Done, "Found the project files"), Trace.step(Trace.Done, "Updated the page metadata")]), H.p().css("margin", "0").says("Added the metadata to the layout, with a title and description.")]).css("inline-size", "30rem") }
 
-fn demoTerminal() -> H.Node { column("26rem", [Terminal.terminal("pudu test", "12 passed")]) }
+fn demoTerminal() -> H.Node { Turn.turn("Run the checks, then build the app.", [Trace.trace().holding([Trace.step(Trace.Done, "Ran pudu lint"), Trace.step(Trace.Done, "Ran pudu test")]), Terminal.terminal("pudu build", "Compiled 167 modules in 4.2s\nPages       241\nFirst load  18 kB"), H.p().css("margin", "0").says("Lint and tests pass, and the build compiled both routes.")]).css("inline-size", "30rem") }
 
-fn demoTestResults() -> H.Node { column("24rem", [TestResults.testResults([TestResults.suite("Layout", TestResults.Passed), TestResults.suite("Theme", TestResults.Failed, ["contrast"])])]) }
+fn demoTestResults() -> H.Node { Turn.turn("Run the checkout tests.", [TestResults.testResults([TestResults.suite("cart suite, 3 tests", TestResults.Passed), TestResults.suite("payment suite, 2 tests, 1 failed", TestResults.Failed, ["Expected 2 charge attempts, received 1\n  at checkout/retry.pudu:58"])]), H.p().css("margin", "0").says("One test failed. The payment client does not retry a declined card, so the second charge attempt never happens.")]).css("inline-size", "30rem") }
 
-fn demoTool() -> H.Node { column("26rem", [Trace.trace().holding([Tool.tool("run_tests", Trace.Done, "suite: all", "12 passed", true)])]) }
+fn demoTool() -> H.Node { Turn.turn("Which package managers are installed?", [Trace.trace().holding([Tool.tool("Ran pudu --version", Trace.Done, "pudu --version", "0.1.3"), Tool.tool("Ran git --version", Trace.Done, "git --version", "2.47.0"), Tool.tool("Failed to run npm --version", Trace.Failed, "npm --version", "command not found: npm", true)]), H.p().css("margin", "0").says("Pudu 0.1.3 and git 2.47 are installed, npm is not.")]).css("inline-size", "30rem") }
 
-fn demoTurn() -> H.Node { column("28rem", [Turn.turn("Fix the failing test", [H.p().says("Fixed in the fixture.")])]) }
+fn demoTurn() -> H.Node { column("30rem", [Turn.turn("How do I add a settings dialog?", [H.p().css("margin", "0").says("Run fui add dialog, then open it from the gear icon in the header.")])]) }
 
-fn demoDashboard() -> H.Node { H.div().css("inline-size", "100%").css("block-size", "26rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))]) }
+fn demoDashboard() -> H.Node { H.div().css("inline-size", "100%").css("block-size", "36rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))]) }
 
 fn demoLogin() -> H.Node { column("24rem", [Login.login("#", &[])]) }
 
@@ -762,7 +777,7 @@ fn saved(path: Str, text: Str) -> Bool {
 
 /// A standalone preview page holding one demonstration.
 fn previewPage(title: Str, look: Str, body: H.Node, blocks: &Array[Css.Block]) -> Str {
-  Fui.document(&Fui.page(title, Theme.defaults().look([]), *blocks).inHead([lookLink(look)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
+  Fui.document(&Fui.page(title, Theme.defaults().look([]), *blocks).inHead([lookLink(look), H.script().raw(DEMO_SCRIPT)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
 }
 
 /// The text between a demonstration's signature and its end.
@@ -816,6 +831,9 @@ fn tocOf(items: &Array[Item.Item]) -> Str {
 
   lines.join("\n") + "\n"
 }
+
+/// Gives the demonstrations something to do where a real page would call its server.
+const DEMO_SCRIPT: Str = "document.addEventListener('submit', function (event) \{\n  event.preventDefault();\n  var form = event.target, pressed = event.submitter;\n  if (form.matches('[data-slot=confirmation]')) \{ form.querySelector('[data-slot=card-footer]').textContent = pressed.value === 'approve' ? 'Approved' : 'Denied'; return; \}\n  if (form.matches('[data-slot=suggestions]')) \{ var field = document.querySelector('[data-slot=prompt-input] textarea'); field.value = pressed.value; field.focus(); return; \}\n  if (form.matches('[data-slot=prompt-input]')) \{\n    var text = form.querySelector('textarea'), thread = document.querySelector('[data-demo-thread]');\n    if (!text.value.trim()) \{ text.value = text.placeholder; \}\n    if (thread) \{ var bubble = thread.querySelector('[data-demo-template]').cloneNode(false); bubble.style.display = ''; bubble.removeAttribute('data-demo-template'); bubble.textContent = text.value; var empty = thread.querySelector('[data-slot=empty]'); if (empty) empty.remove(); thread.appendChild(bubble); \}\n    text.value = '';\n    return;\n  \}\n  if (form.matches('[data-slot=checkpoint]')) \{ pressed.textContent = 'Restored'; pressed.disabled = true; return; \}\n  if (form.matches('[data-slot=questionnaire]')) \{ form.textContent = 'Thanks, your answers were saved.'; return; \}\n  if (form.closest('[data-slot=data-table-visibility]')) \{ form.closest('[popover]').hidePopover(); return; \}\n  if (pressed && pressed.type === 'submit') \{ var before = pressed.textContent; pressed.textContent = 'Saved'; pressed.disabled = true; setTimeout(function () \{ pressed.textContent = before; pressed.disabled = false; \}, 1200); \}\n\});\ndocument.addEventListener('input', function (event) \{\n  if (!event.target.closest('[data-slot=data-table-filter]')) return;\n  var query = event.target.value.toLowerCase();\n  document.querySelectorAll('[data-slot=data-table] tbody tr').forEach(function (row) \{ row.hidden = row.textContent.toLowerCase().indexOf(query) < 0; \});\n\});\ndocument.addEventListener('change', function (event) \{\n  var choice = event.target.closest('[data-slot=data-table-column] input');\n  if (!choice) return;\n  var position = Array.prototype.indexOf.call(event.target.closest('form').querySelectorAll('input'), choice);\n  document.querySelectorAll('[data-slot=data-table] tr').forEach(function (row) \{ if (row.children[position]) row.children[position].style.display = choice.checked ? '' : 'none'; \});\n\});"
 
 /// The look the reference pages show; the home page shows the default look.
 const DOCS_LOOK: Str = "classic"

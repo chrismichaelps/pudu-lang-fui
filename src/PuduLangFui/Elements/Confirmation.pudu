@@ -12,7 +12,7 @@ export fn confirmation(title: Str, detail: Str, action: Str) -> H.Node {
   H.form().slot("confirmation").method("post").action(action).holding([
       Card.sized(Card.Compact).holding([
           Card.header().holding([Card.title().says(title), Card.description().says(detail)]),
-          Card.footer().holding([
+          Card.footer().css("justify-content", "flex-end").css("gap", "var(--fui-space-2)").holding([
               Button.submit(Button.props().variant(Button.Outline).size(Button.Small)).name("decision").value("deny").says("Deny"),
               Button.submit(Button.props().size(Button.Small)).name("decision").value("approve").says("Approve")
             ])

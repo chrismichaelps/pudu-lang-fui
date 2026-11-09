@@ -18,7 +18,7 @@ fui add terminal
 ## Usage
 
 ```pudu
-column("26rem", [Terminal.terminal("pudu test", "12 passed")])
+Turn.turn("Run the checks, then build the app.", [Trace.trace().holding([Trace.step(Trace.Done, "Ran pudu lint"), Trace.step(Trace.Done, "Ran pudu test")]), Terminal.terminal("pudu build", "Compiled 167 modules in 4.2s\nPages       241\nFirst load  18 kB"), H.p().css("margin", "0").says("Lint and tests pass, and the build compiled both routes.")]).css("inline-size", "30rem")
 ```
 
 ## API

@@ -22,7 +22,7 @@ The steps an agent plans and how far it has got.
 ### Signatures
 
 ```pudu
-export type Step = { title: Str, status: Trace.Status }
+export type Step =
 
 export fn step(title: Str, status: Trace.Status) -> Step
 
@@ -33,11 +33,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A count of done steps over a trace.
+1. The heading counts finished steps and opens to them.
 
 ## Negative Logic (Prohibited Paths)
 

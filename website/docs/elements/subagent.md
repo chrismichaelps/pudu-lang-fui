@@ -18,7 +18,7 @@ fui add subagent
 ## Usage
 
 ```pudu
-column("24rem", [Trace.trace().holding([Subagent.subagent("Explore the repository", Trace.Done, [line(Trace.Done, "Listed files")], H.p().says("Found three modules."), true)])])
+Turn.turn("Why does image optimization rerun on every deploy?", [Trace.trace().holding([Subagent.subagent("Ran the research subagent", Trace.Done, [Trace.step(Trace.Done, "Ran grep -rn cache build/"), Trace.step(Trace.Done, "Ran pudu run cache --stats")], H.p().css("margin", "0").says("The cache is keyed on the commit, which changes on every deploy."), true)]), H.p().css("margin", "0").says("Key the cache on a hash of the image folder, and unchanged images will be skipped.")]).css("inline-size", "30rem")
 ```
 
 ## API

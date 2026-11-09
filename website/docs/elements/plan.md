@@ -18,7 +18,7 @@ fui add plan
 ## Usage
 
 ```pudu
-column("22rem", [Plan.plan("Plan", [Plan.step("Read", Trace.Done), Plan.step("Change", Trace.Running), Plan.step("Test", Trace.Pending)])])
+Turn.turn("Migrate the dialog components.", [Plan.plan("Plan: migrate the dialogs", [Plan.step("Install the new package", Trace.Done), Plan.step("Replace the imports", Trace.Done), Plan.step("Rename the render props", Trace.Running), Plan.step("Run the type checker", Trace.Pending)]), H.p().css("margin", "0").says("Migrated Dialog and AlertDialog. The type checker passes.")]).css("inline-size", "30rem")
 ```
 
 ## API

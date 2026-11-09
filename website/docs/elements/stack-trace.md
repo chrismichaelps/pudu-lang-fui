@@ -18,7 +18,7 @@ fui add stack-trace
 ## Usage
 
 ```pudu
-column("26rem", [StackTrace.stackTrace("TypeError: expected Int", &["at one (a.pudu:1)", "at two (b.pudu:2)"])])
+Turn.turn("Reset the database and seed it.", [Trace.trace().holding([Trace.step(Trace.Done, "Ran pudu run migrate --reset")]), StackTrace.stackTrace("Failed: TypeError: cannot read a field of None", &["seed/users.pudu:23", "seed/main.pudu:51"]), H.p().css("margin", "0").says("The migrations ran, but the seed failed in users. One fixture has no profile, so the name is missing.")]).css("inline-size", "30rem")
 ```
 
 ## API

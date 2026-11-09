@@ -2,24 +2,30 @@
 module PuduLangFui.Elements.Context
 
 import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.HoverCard as HoverCard
 import PuduLangFui.Components.Primitives.Progress as Progress
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-
-/// A meter of `used` out of `limit`.
+/// A short reading of `used` out of `limit` that opens to a meter on hover.
 export fn context(used: Int, limit: Int) -> H.Node {
   let percent = if limit > 0 { used * 100 / limit } else { 0 }
 
-  Core.part("context").holding([
-      Progress.progress(used, if limit > 0 { limit } else { 1 }, "Context used"),
-      Core.inline("context-caption").says(show(percent) + "% · " + show(used) + " of " + show(limit))
-    ])
+  HoverCard.hoverCard(
+    Button.button(Button.props().variant(Button.Ghost).size(Button.Small)).says(show(percent) + "% context"),
+    Core.part("context").holding([
+        Core.part("context-row").holding([H.span().says("Context used"), H.span().says(show(percent) + "%")]),
+        Progress.progress(used, if limit > 0 { limit } else { 1 }, "Context used"),
+        Core.inline("context-caption").says(show(used) + " of " + show(limit) + " tokens")
+      ])
+  )
 }
 
 /// The styles of a context meter.
 export fn style() -> Css.Block {
   Css.block("context", [
-      Css.base("display: flex; flex-direction: column; gap: $space-1"),
+      Css.base("display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("context-row", "display: flex; justify-content: space-between; font-weight: $weight-medium"),
       Css.slot("context-caption", "font-size: $text-xs; color: $muted-foreground")
     ])
 }

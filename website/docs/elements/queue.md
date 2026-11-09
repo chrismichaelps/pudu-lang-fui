@@ -18,7 +18,7 @@ fui add queue
 ## Usage
 
 ```pudu
-column("22rem", [Queue.queue([Queue.entry("Write docs"), Queue.entry("Ship", true)])])
+Turn.turn("Add dark mode to the settings page.", [Queue.queue([Queue.entry("Add a dark variant to the theme tokens", true), Queue.entry("Read the theme from a cookie", true), Queue.entry("Add a toggle to the settings page"), Queue.entry("Check contrast on the charts")]), H.p().css("margin", "0").says("Dark mode is in. The toggle is under Settings, Appearance.")]).css("inline-size", "30rem")
 ```
 
 ## API
@@ -27,5 +27,5 @@ column("22rem", [Queue.queue([Queue.entry("Write docs"), Queue.entry("Ship", tru
 export type Entry = title: Str, done: Bool }
 export fn entry(title: Str, done: Bool = false) -> Entry Entry{title: title, done: done} }
 export fn queue(entries: Array[Entry]) -> H.Node
-export fn style() -> Css.Block
+export fn style() -> Css.Block Css.block("queue", [Css.base("display: flex; flex-direction: column; gap: $space-2")]) }
 ```

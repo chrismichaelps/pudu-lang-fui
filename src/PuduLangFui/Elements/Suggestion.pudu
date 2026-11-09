@@ -8,7 +8,7 @@ import PuduLangFui.Domain.Css as Css
 
 /// Suggestions in a row, posted as `prompt` to `action`.
 export fn suggestions(action: Str, prompts: &Array[Str]) -> H.Node {
-  H.form().slot("suggestions").method("post").action(action).holding(prompts.map(|prompt: Str| Button.submit(Button.props().variant(Button.Outline).size(Button.Small)).name("prompt").value(prompt).says(prompt)))
+  H.form().slot("suggestions").method("post").action(action).holding(prompts.map(|prompt: Str| Button.submit(Button.props().variant(Button.Outline).size(Button.Small)).css("border-radius", "9999px").name("prompt").value(prompt).says(prompt)))
 }
 
 /// The styles of suggestions.

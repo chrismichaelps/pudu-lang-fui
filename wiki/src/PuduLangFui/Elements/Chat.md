@@ -24,6 +24,8 @@ The thread and the field under it.
 ```pudu
 export fn chat(caption: Str, turns: Array[H.Node], prompt: H.Node) -> H.Node
 
+export fn header(title: Str, note: Str, actions: Array[H.Node] = []) -> H.Node
+
 export fn style() -> Css.Block
 ```
 

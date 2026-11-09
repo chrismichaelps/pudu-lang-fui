@@ -18,7 +18,7 @@ fui add suggestion
 ## Usage
 
 ```pudu
-Suggestion.suggestions("#", &["Explain this", "Add a test"])
+column("30rem", [Suggestion.suggestions("#", &["Add a dark mode toggle", "Fix the failing build", "Write tests for the form"]), PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle)])
 ```
 
 ## API

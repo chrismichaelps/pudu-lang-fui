@@ -18,7 +18,7 @@ fui add checkpoint
 ## Usage
 
 ```pudu
-column("24rem", [Checkpoint.checkpoint("Checkpoint 2", "#")])
+Turn.turn("Add a settings page.", [H.p().css("margin", "0").says("Added the page and a link in the header."), Checkpoint.checkpoint("Checkpoint", "#"), H.div().css("align-self", "flex-end").holding([Bubble.bubble(Bubble.Secondary, Bubble.End).says("Now add a dark mode toggle.")])]).css("inline-size", "30rem")
 ```
 
 ## API

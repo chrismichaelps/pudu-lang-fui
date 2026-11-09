@@ -22,7 +22,7 @@ A source in the sentence that opens on hover.
 ### Signatures
 
 ```pudu
-export fn inlineCitation(number: Int, target: Str, title: Str, summary: Str) -> H.Node
+export fn inlineCitation(label: Str, target: Str, title: Str, summary: Str) -> H.Node
 
 export fn style() -> Css.Block
 ```
@@ -33,7 +33,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A numbered link wrapped in a hover card.
+1. A short name in the sentence opens a card on hover.
 
 ## Negative Logic (Prohibited Paths)
 

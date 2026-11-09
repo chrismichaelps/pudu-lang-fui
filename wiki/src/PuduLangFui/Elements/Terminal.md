@@ -33,7 +33,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A dark panel with the prompt line and output as text.
+1. A command over what it printed, on a quiet surface.
 
 ## Negative Logic (Prohibited Paths)
 

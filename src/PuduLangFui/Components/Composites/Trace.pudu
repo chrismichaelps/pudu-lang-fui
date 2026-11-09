@@ -28,6 +28,9 @@ export fn line(state: Status) -> H.Node {
 /// The icon a status shows, hidden from assistive software.
 fn statusIcon(state: Status) -> H.Node { Icon.sized(Core.picked(&GLYPHS, state, Icon.Circle), Icon.Small) }
 
+/// A finished line of text at a status.
+export fn step(state: Status, caption: Str) -> H.Node { line(state).holding([body().holding([title().says(caption)])]) }
+
 /// The step's text.
 export fn body() -> H.Node { Core.part("trace-body") }
 
@@ -40,27 +43,35 @@ export fn description() -> H.Node { Core.part("trace-description") }
 /// A short word at the end of a step.
 export fn note() -> H.Node { Core.inline("trace-status") }
 
-/// A disclosure inside a step: a headline and what opens under it.
-export fn details(headline: Str, open: Bool = false) -> H.Node {
-  H.details().slot("trace-details").flagIf(open, "open").holding([H.summary().slot("trace-summary").says(headline)])
+/// A disclosure whose heading is the given nodes, followed by a chevron.
+export fn disclosure(heading: Array[H.Node], open: Bool = false) -> H.Node {
+  H.details().slot("trace-details").flagIf(open, "open").holding([H.summary().slot("trace-summary").holding(heading.concat([Core.inline("trace-chevron").holding([Icon.sized(Icon.ChevronRight, Icon.Small)])]))])
 }
+
+/// A disclosure inside a step: a headline and what opens under it.
+export fn details(headline: Str, open: Bool = false) -> H.Node { disclosure([H.words(headline)], open) }
 
 /// The styles of a trace.
 export fn style() -> Css.Block {
   Css.block("trace", [
       Css.keyframes("fui-trace-spin", [("to", "rotate: 360deg")]),
-      Css.base("display: flex; flex-direction: column; gap: $space-3; margin: 0; padding: 0; list-style: none; font-size: $text-sm"),
-      Css.slot("trace-line", "display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: $space-2"),
-      Css.rule("[data-slot=\"trace-line\"] > [data-slot=\"icon\"]", "translate: 0 0.2em; color: $muted-foreground"),
-      Css.rule("[data-slot=\"trace-line\"][data-status=\"running\"] > [data-slot=\"icon\"]", "animation: fui-trace-spin 800ms linear infinite; color: $primary"),
-      Css.rule("[data-slot=\"trace-line\"][data-status=\"done\"] > [data-slot=\"icon\"]", "color: $success"),
-      Css.rule("[data-slot=\"trace-line\"][data-status=\"failed\"] > [data-slot=\"icon\"]", "color: $destructive"),
-      Css.slot("trace-body", "display: flex; flex-direction: column; gap: $space-1; min-inline-size: 0"),
-      Css.slot("trace-title", "font-weight: $weight-medium"),
-      Css.slot("trace-description", "color: $muted-foreground"),
+      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: 0; list-style: none; font-size: $text-sm"),
+      Css.slot("trace-line", "display: flex; align-items: flex-start; gap: $space-2; min-inline-size: 0; color: $muted-foreground"),
+      Css.slotWhen("trace-line", "[data-status=\"failed\"]", "color: $destructive !important"),
+      Css.rule("[data-slot=\"trace-line\"][data-status=\"failed\"] [data-slot=\"trace-title\"]", "color: $destructive !important"),
+      Css.rule("[data-slot=\"trace-line\"] > [data-slot=\"icon\"]", "flex: none; align-self: flex-start; translate: 0 0.15em; color: inherit"),
+      Css.rule("[data-slot=\"trace-line\"][data-status=\"running\"] > [data-slot=\"icon\"]", "animation: fui-trace-spin 800ms linear infinite"),
+      Css.slot("trace-body", "display: flex; flex: 1; flex-direction: column; gap: $unit; min-inline-size: 0"),
+      Css.slot("trace-description", "color: $muted-foreground; opacity: 0.7"),
       Css.slot("trace-status", "color: $muted-foreground; font-size: $text-xs"),
-      Css.slot("trace-details", "display: block"),
-      Css.slot("trace-summary", "cursor: pointer; font-weight: $weight-medium"),
-      Css.slotWhen("trace-summary", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px")
+      Css.slot("trace-details", "display: block; min-inline-size: 0"),
+      Css.slot("trace-summary", "display: flex; align-items: center; gap: calc($unit * 1.5); inline-size: fit-content; max-inline-size: 100%; color: $muted-foreground; font-size: $text-sm; cursor: pointer; list-style: none; transition: color $duration-fast $ease-standard"),
+      Css.slotWhen("trace-summary", "::-webkit-details-marker", "display: none"),
+      Css.slotWhen("trace-summary", ":hover", "color: $foreground"),
+      Css.slotWhen("trace-summary", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px; border-radius: $radius-sm"),
+      Css.rule("[data-status=\"failed\"] [data-slot=\"trace-summary\"]", "color: $destructive !important"),
+      Css.slot("trace-chevron", "display: inline-flex; transition: rotate $duration-base $ease-standard"),
+      Css.rule("[data-slot=\"trace-details\"][open] > [data-slot=\"trace-summary\"] > [data-slot=\"trace-chevron\"]", "rotate: 90deg"),
+      Css.rule("[data-slot=\"trace-details\"] > :not([data-slot=\"trace-summary\"])", "margin-block: $space-2 $unit; margin-inline-start: 7px; padding-inline-start: $space-4; border-inline-start: $border-width solid $border; line-height: 1.625")
     ])
 }
