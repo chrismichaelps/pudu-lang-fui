@@ -1,0 +1,34 @@
+/** @Examples.Customizing.Program — the four levels of customizing */
+module Customizing
+
+import Std.Html.Build as H
+import Std.Io as Io
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Style
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui as Fui
+import PuduLangFui.Theme.Aspects.Spacing as Spacing
+import PuduLangFui.Theme.Build.Theme as Theme
+
+/// A component of this program's own, written the way the library writes its components.
+fn pill() -> H.Node { Style.part("pill") }
+
+/// The styles of that component.
+fn pillStyle() -> Css.Block {
+  Css.block("pill", [
+      Css.base("display: inline-flex; padding: $space-1 $space-3; background: $muted; border-radius: $radius-full"),
+      Css.hover("background: $accent")
+    ])
+}
+
+/// Prints a page tuned at every level.
+fn main() -> Int {
+  let theme = Theme.defaults().brand(264.0, 0.14).radius("1rem").density(Spacing.Compact).token("brand-glow", "gold")
+  let wide = Button.button(Button.props().variant(Button.Outline)).classes("wide").token("radius-4xl", "0").says("Square corners")
+  let body = H.main().holding([wide, pill().says("My own component")])
+
+  match Io.writeLine(Fui.document(&Fui.page("Customizing", theme, [Button.style(), pillStyle()]), body)) {
+    case Ok(_) => 0
+    case Err(_) => 1
+  }
+}

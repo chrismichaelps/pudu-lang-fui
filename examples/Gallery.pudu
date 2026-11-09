@@ -1,0 +1,357 @@
+/** @Examples.Gallery.Program — every component on one page */
+module Gallery
+
+import Std.Html.Build as H
+import Std.Io as Io
+import PuduLangFui.Blocks.Dashboard as Dashboard
+import PuduLangFui.Blocks.Login as Login
+import PuduLangFui.Blocks.Pricing as Pricing
+import PuduLangFui.Catalog.Catalog as Catalog
+import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
+import PuduLangFui.Components.Composites.Attachment as Attachment
+import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
+import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.CodeBlock as CodeBlock
+import PuduLangFui.Components.Composites.Combobox as Combobox
+import PuduLangFui.Components.Composites.ContextMenu as ContextMenu
+import PuduLangFui.Components.Composites.Dialog as Dialog
+import PuduLangFui.Components.Composites.Drawer as Drawer
+import PuduLangFui.Components.Composites.DropdownMenu as DropdownMenu
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Composites.InputGroup as InputGroup
+import PuduLangFui.Components.Composites.InputOtp as InputOtp
+import PuduLangFui.Components.Composites.Message as Message
+import PuduLangFui.Components.Composites.MessageScroller as MessageScroller
+import PuduLangFui.Components.Composites.NavigationMenu as NavigationMenu
+import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.Select as Select
+import PuduLangFui.Components.Composites.Sheet as Sheet
+import PuduLangFui.Components.Composites.Spinner as Spinner
+import PuduLangFui.Components.Composites.Toast as Toast
+import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Patterns.Chart as Chart
+import PuduLangFui.Components.Patterns.Command as Command
+import PuduLangFui.Components.Patterns.DataTable as DataTable
+import PuduLangFui.Components.Patterns.DatePicker as DatePicker
+import PuduLangFui.Components.Patterns.Menubar as Menubar
+import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
+import PuduLangFui.Components.Primitives.Accordion as Accordion
+import PuduLangFui.Components.Primitives.Alert as Alert
+import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
+import PuduLangFui.Components.Primitives.Avatar as Avatar
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Components.Primitives.Bubble as Bubble
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.ButtonGroup as ButtonGroup
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Collapsible as Collapsible
+import PuduLangFui.Components.Primitives.Effects as Effects
+import PuduLangFui.Components.Primitives.Empty as Empty
+import PuduLangFui.Components.Primitives.HoverCard as HoverCard
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Item as Item
+import PuduLangFui.Components.Primitives.Kbd as Kbd
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Components.Primitives.Marker as Marker
+import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Components.Primitives.RadioGroup as RadioGroup
+import PuduLangFui.Components.Primitives.Resizable as Resizable
+import PuduLangFui.Components.Primitives.ScrollArea as ScrollArea
+import PuduLangFui.Components.Primitives.Separator as Separator
+import PuduLangFui.Components.Primitives.Skeleton as Skeleton
+import PuduLangFui.Components.Primitives.Slider as Slider
+import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Components.Primitives.Table as Table
+import PuduLangFui.Components.Primitives.Tabs as Tabs
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Components.Primitives.Toggle as Toggle
+import PuduLangFui.Components.Primitives.Tooltip as Tooltip
+import PuduLangFui.Components.Primitives.Typeset as Typeset
+import PuduLangFui.Components.Primitives.Typography as Typography
+import PuduLangFui.Core.Styling as Style
+import PuduLangFui.Elements.ChainOfThought as ChainOfThought
+import PuduLangFui.Elements.Chat as Chat
+import PuduLangFui.Elements.Checkpoint as Checkpoint
+import PuduLangFui.Elements.Confirmation as Confirmation
+import PuduLangFui.Elements.Context as Context
+import PuduLangFui.Elements.FileTree as FileTree
+import PuduLangFui.Elements.InlineCitation as InlineCitation
+import PuduLangFui.Elements.ModelSelector as ModelSelector
+import PuduLangFui.Elements.Plan as Plan
+import PuduLangFui.Elements.PromptInput as PromptInput
+import PuduLangFui.Elements.Queue as Queue
+import PuduLangFui.Elements.Reasoning as Reasoning
+import PuduLangFui.Elements.Sources as Sources
+import PuduLangFui.Elements.StackTrace as StackTrace
+import PuduLangFui.Elements.Subagent as Subagent
+import PuduLangFui.Elements.Suggestion as Suggestion
+import PuduLangFui.Elements.Task as Task
+import PuduLangFui.Elements.Terminal as Terminal
+import PuduLangFui.Elements.TestResults as TestResults
+import PuduLangFui.Elements.Tool as Tool
+import PuduLangFui.Elements.Turn as Turn
+import PuduLangFui as Fui
+import PuduLangFui.Theme.Presets.Preset as Preset
+
+/** @Examples.Gallery.Row — one row of the example table */
+type Row = { name: Str, plan: Str }
+
+/// A titled area of the page.
+fn section(title: Str, children: Array[H.Node]) -> H.Node {
+  H.section().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-4)").css("padding-block", "var(--fui-space-6)").holding([
+      Typography.text(Typography.H2).says(title),
+      H.div().css("display", "flex").css("flex-wrap", "wrap").css("align-items", "center").css("gap", "var(--fui-space-3)").holding(children)
+    ])
+}
+
+/// A link builder for pages.
+fn pageLink(number: Int) -> Str { "?page=" + show(number) }
+
+/// A link builder for sorts.
+fn sortLink(key: Str, descending: Bool) -> Str { "?sort=" + key + "&descending=" + show(descending) }
+
+/// A link builder for days.
+fn dayLink(day: Calendar.Date) -> Str { "?date=" + DatePicker.isoOf(&day) }
+
+/// A link builder for months.
+fn monthLink(year: Int, month: Int) -> Str { "?year=" + show(year) + "&month=" + show(month) }
+
+/// The November calendar shown on the page.
+fn november() -> H.Node {
+  Calendar.calendar(2026, 11, dayLink, monthLink, Calendar.props().today(Calendar.date(2026, 11, 9)).selected(Calendar.date(2026, 11, 12)))
+}
+
+/// A button in the given treatment.
+fn treated(variant: Button.Variant, caption: Str) -> H.Node { Button.button(Button.props().variant(variant)).says(caption) }
+
+/// Actions and small display components.
+fn basics() -> Array[H.Node] {
+  [
+    section("Buttons", [
+        treated(Button.Primary, "Primary"), treated(Button.Secondary, "Secondary"), treated(Button.Outline, "Outline"),
+        treated(Button.Ghost, "Ghost"), treated(Button.Destructive, "Destructive"), treated(Button.Plain, "Plain"),
+        Button.button(Button.props().size(Button.IconMedium)).label("Add").holding([Icon.icon(Icon.Plus)]),
+        Button.button(Button.props().disabled()).says("Disabled"),
+        ButtonGroup.group(ButtonGroup.Horizontal).holding([treated(Button.Outline, "One"), treated(Button.Outline, "Two"), treated(Button.Outline, "Three")]),
+        Toggle.toggle("bold", "on", true, Toggle.Outline).holding([Icon.icon(Icon.Star), H.words("Pressed")]),
+        ToggleGroup.group("Alignment").holding([ToggleGroup.item(ToggleGroup.One, "align", "a", true).holding([H.words("A")]), ToggleGroup.item(ToggleGroup.One, "align", "b").holding([H.words("B")])]),
+        Spinner.spinner("Loading"), Kbd.group().holding([Kbd.key("Ctrl"), Kbd.key("K")])
+      ]),
+    section("Badges and avatars", [
+        Badge.badge(Badge.Primary).says("Primary"), Badge.badge(Badge.Secondary).says("Secondary"), Badge.badge(Badge.Outline).says("Outline"),
+        Badge.badge(Badge.Destructive).says("Destructive"), Badge.badge(Badge.Success).says("Success"), Badge.badge(Badge.Warning).says("Warning"), Badge.badge(Badge.Info).says("Info"),
+        Avatar.avatar("broken.png", "Ada", "AL", Avatar.Medium),
+        Avatar.group().holding([Avatar.initials("AL", "Ada", Avatar.Small), Avatar.initials("GH", "Grace", Avatar.Small)]),
+        Separator.separator(Separator.Vertical).css("block-size", "1.5rem"),
+        Skeleton.skeleton().css("inline-size", "6rem").css("block-size", "1rem"),
+        Effects.shimmer().says("Working"),
+        Progress.progress(40, 100, "Upload").css("inline-size", "10rem")
+      ])
+  ]
+}
+
+/// Form controls.
+fn forms() -> Array[H.Node] {
+  [
+    section("Forms", [
+        H.div().css("inline-size", "22rem").holding([
+            Field.group().holding([
+                Field.field().holding([Field.label("contact").says("Email"), Input.input("contact", Input.props().kind("email")).placeholder("you@example.com"), Field.description().says("We never share it.")]),
+                Field.oriented(Field.Vertical, true).holding([Field.label("code").says("Name"), Input.input("code", Input.props().invalid()).value("<script>"), Field.error(&["That name is taken.", "It is too short."])]),
+                Field.field().holding([Field.label("bio").says("About you"), Textarea.textarea("bio")]),
+                Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("terms", Checkbox.props().checked()), Label.label("terms").says("Accept terms")]),
+                Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("mixed", Checkbox.props().mixed()), Label.label("mixed").says("Some selected")]),
+                Field.oriented(Field.Horizontal, false).holding([Switch.switcher("notify", true), Label.label("notify").says("Notifications")]),
+                RadioGroup.group("Plan").holding([
+                    Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("plan", "free", true), Label.label("plan-free").says("Free")]),
+                    Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("plan", "pro"), Label.label("plan-pro").says("Pro")])
+                  ]),
+                Slider.slider("volume", 30),
+                NativeSelect.select("fruit").holding([NativeSelect.option("a", "Apple", true), NativeSelect.option("b", "Banana")]),
+                Select.select("size").holding([Select.option("s", "Small", true), Select.option("l", "Large")]),
+                Combobox.combobox("city", &["Lima", "Quito", "Santiago"]),
+                InputGroup.group().holding([InputGroup.addon(InputGroup.Start).holding([Icon.icon(Icon.Search)]), InputGroup.input("query"), InputGroup.addon(InputGroup.End).says("⌘K")]),
+                InputOtp.inputOtp("otp", 6),
+                DatePicker.datePicker("when", "2026-11-12", november())
+              ])
+          ])
+      ])
+  ]
+}
+
+/// Surfaces and data display.
+fn display() -> Array[H.Node] {
+  [
+    section("Surfaces", [
+        Card.card().css("inline-size", "20rem").holding([
+            Card.header().holding([Card.title().says("Project"), Card.description().says("Deploy in one click."), Card.action().holding([Badge.badge(Badge.Secondary).says("New")])]),
+            Card.content().says("Everything in one surface."),
+            Card.footer().holding([Button.button(Button.props().size(Button.Small)).says("Deploy")])
+          ]),
+        Alert.alert(Alert.Neutral).css("inline-size", "20rem").holding([Icon.icon(Icon.Info), Alert.title().says("Heads up"), Alert.description().says("A note.")]),
+        Alert.alert(Alert.Destructive).css("inline-size", "20rem").holding([Icon.icon(Icon.ErrorCircle), Alert.title().says("Failed"), Alert.description().says("The upload stopped.")]),
+        Empty.empty().css("inline-size", "20rem").holding([Empty.media().holding([Icon.icon(Icon.Folder)]), Empty.title().says("No projects"), Empty.description().says("Create one to begin."), Empty.content().holding([Button.button(Button.props()).says("Create")])]),
+        Item.item(Item.Outline).css("inline-size", "20rem").holding([Item.media().holding([Icon.icon(Icon.File)]), Item.content().holding([Item.title().says("Report"), Item.description().says("PDF, 2 MB")]), Item.actions().holding([treated(Button.Outline, "Open")])]),
+        AspectRatio.aspectRatio("16 / 9").css("inline-size", "12rem").css("background", "var(--fui-muted)")
+      ]),
+    section("Data", [
+        H.div().css("inline-size", "100%").holding([
+            Table.table([
+                Table.caption().says("Recent invoices"),
+                Table.header().holding([Table.row().holding([Table.head().says("Invoice"), Table.head().says("Status")])]),
+                Table.body().holding([Table.row().holding([Table.cell().says("INV-1"), Table.cell().says("Paid")])])
+              ])
+          ]),
+        H.div().css("inline-size", "100%").holding([
+            DataTable.dataTable(
+              [
+                DataTable.sortable("name", "Name", |row: &Row| H.words(row.name)),
+                DataTable.column("plan", "Plan", |row: &Row| H.words(row.plan))
+              ],
+              [Row{name: "Ada", plan: "Pro"}, Row{name: "Grace", plan: "Free"}],
+              DataTable.View{sort: "name", descending: false, page: 2, lastPage: 5},
+              DataTable.Links{sortBy: sortLink, pageAt: pageLink},
+              "No customers"
+            )
+          ]),
+        Pagination.pagination(5, 9, pageLink),
+        H.div().css("inline-size", "22rem").holding([Chart.chart(Chart.Bars, "Sales", [Chart.series("Sales", [3.0, 7.0, 4.0, 8.0])])]),
+        H.div().css("inline-size", "22rem").holding([Chart.chart(Chart.Areas, "Traffic", [Chart.series("Visits", [3.0, 7.0, 4.0, 8.0]), Chart.series("Sign-ups", [1.0, 2.0, 2.0, 5.0])])]),
+        H.div().css("inline-size", "22rem").holding([Chart.chart(Chart.Donut, "Share", [Chart.series("Share", [3.0, 2.0, 1.0])])]),
+        november(),
+        H.div().css("inline-size", "22rem").holding([CodeBlock.codeBlock("main.pudu", &[CodeBlock.line("fn main() -> Int \{"), CodeBlock.removed("  1"), CodeBlock.added("  0"), CodeBlock.line("\}")], CodeBlock.props())]),
+        Attachment.group().holding([Attachment.attachment(Attachment.Document, "notes.txt", "2 KB", Attachment.Ready), Attachment.attachment(Attachment.Picture, "a.png", "1 MB", Attachment.Failed)])
+      ])
+  ]
+}
+
+/// Overlays, each opened by a real control.
+fn overlays() -> Array[H.Node] {
+  let outline = Button.props().variant(Button.Outline)
+
+  [
+    section("Overlays", [
+        Dialog.trigger("edit", outline).says("Dialog"),
+        Dialog.dialog("edit", "Edit profile").holding([
+            Dialog.header().holding([Dialog.title().says("Edit profile"), Dialog.description().says("Changes save when you close.")]),
+            Dialog.footer().holding([Dialog.close("edit", outline).says("Cancel"), Dialog.close("edit", Button.props()).says("Save")])
+          ]),
+        AlertDialog.trigger("erase", Button.props().variant(Button.Destructive)).says("Alert dialog"),
+        AlertDialog.alertDialog("erase", "Delete account").holding([
+            AlertDialog.title().says("Delete account?"), AlertDialog.description().says("This cannot be undone."),
+            AlertDialog.footer().holding([AlertDialog.cancel("erase", outline).says("Keep it"), AlertDialog.cancel("erase", Button.props().variant(Button.Destructive)).says("Delete")])
+          ]),
+        Sheet.trigger("panel", outline).says("Sheet"),
+        Sheet.sheet("panel", "Filters", Sheet.End).holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list."), Sheet.footer().holding([Sheet.close("panel", outline).says("Close")])]),
+        Drawer.trigger("tray", outline).says("Drawer"),
+        Drawer.drawer("tray", "Details", Drawer.props().snapPoints(["40dvh"]), [Drawer.header().holding([Drawer.title().says("Details"), Drawer.description().says("Drag down to settle or dismiss.")]), Drawer.footer().holding([Drawer.close("tray", outline).says("Close")])]),
+        Popover.opens(Button.button(outline), "pop").says("Popover"),
+        Popover.content("pop", Popover.Below).says("Anchored to its trigger, flipped when out of room."),
+        DropdownMenu.trigger("menu", outline).says("Menu"),
+        DropdownMenu.menu("menu").holding([
+            DropdownMenu.label().says("Account"), DropdownMenu.item(false).holding([H.words("Profile"), DropdownMenu.shortcut().says("⌘P")]),
+            DropdownMenu.checkboxItem("show", "1", "Show status", true), DropdownMenu.separator(), DropdownMenu.item(true).says("Sign out")
+          ]),
+        Tooltip.tooltip("Saves your work", treated(Button.Outline, "Tooltip")),
+        HoverCard.hoverCard(H.a().href("#").says("Hover card"), H.p().says("A preview of the link.")),
+        ContextMenu.area("ctx").css("padding", "var(--fui-space-3)").css("border", "1px dashed var(--fui-border)").says("Right-click here"),
+        ContextMenu.menu("ctx").holding([ContextMenu.item().says("Cut"), ContextMenu.separator(), ContextMenu.item().says("Paste")]),
+        Menubar.menubar().holding([Menubar.menu("file", "File", [DropdownMenu.item(false).says("New"), DropdownMenu.item(false).says("Open")])]),
+        NavigationMenu.navigationMenu("Site").holding([NavigationMenu.list().holding([
+                NavigationMenu.item().holding([NavigationMenu.link("#", true).says("Home")]),
+                NavigationMenu.item().holding([NavigationMenu.trigger("docs", "Docs"), NavigationMenu.panel("docs").says("Guides and reference.")])
+              ])])
+      ]),
+    section("Disclosure", [
+        H.div().css("inline-size", "24rem").holding([Accordion.accordion().holding([
+                Accordion.item("faq", "Is it accessible?", true).holding([Accordion.content().says("It uses the platform's semantics.")]),
+                Accordion.item("faq", "Does it need a script?").holding([Accordion.content().says("Almost never.")])
+              ])]),
+        Collapsible.collapsible().holding([Collapsible.trigger().says("More"), Collapsible.content().says("Hidden detail.")]),
+        Tabs.tabs("plan-tabs", "month", [Tabs.tab("month", "Monthly", H.p().says("Billed each month.")), Tabs.tab("year", "Yearly", H.p().says("Billed once a year."))], Tabs.Pill),
+        Tabs.tabs("line-tabs", "one", [Tabs.tab("one", "Overview", H.p().says("First panel.")), Tabs.tab("two", "Usage", H.p().says("Second panel."))], Tabs.Line),
+        Breadcrumb.breadcrumb(&[Breadcrumb.crumb("Home", "/"), Breadcrumb.crumb("Docs", "/docs"), Breadcrumb.crumb("Tabs", "/docs/tabs")]),
+        ScrollArea.scrollArea("Tags").css("block-size", "6rem").css("inline-size", "10rem").holding([H.p().says("A long list that scrolls inside its region, past the edge of the box, line after line after line.")]),
+        Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-size", "6rem").holding([Resizable.panel("40%").says("One"), Resizable.panel("60%").says("Two")]),
+        H.div().css("inline-size", "20rem").holding([Carousel.carousel("gallery", "Featured", [Card.card().says("One"), Card.card().says("Two"), Card.card().says("Three")])]),
+        H.div().css("inline-size", "22rem").holding([Command.command().holding([Command.input("find", "Search commands"), Command.list().holding([Command.group("Actions").holding([Command.item().says("Open file"), Command.item().says("Save all")]), Command.empty("Nothing found")])])])
+      ])
+  ]
+}
+
+/// Text and the agent elements.
+fn textAndAgents() -> Array[H.Node] {
+  [
+    section("Typography", [
+        H.div().holding([Typography.text(Typography.H1).says("Heading"), Typography.text(Typography.Lead).says("A lead paragraph."), Typography.text(Typography.Muted).says("Muted text."), Typography.text(Typography.InlineCode).says("code")]),
+        Typeset.typeset(Typeset.props()).raw("<h2>Rendered document</h2><p>A paragraph with <code>code</code> and a <a href='#'>link</a>.</p><ul><li>One</li><li>Two</li></ul>")
+      ]),
+    section("Agent elements", [
+        H.div().css("inline-size", "30rem").css("block-size", "22rem").css("border", "1px solid var(--fui-border)").css("border-radius", "var(--fui-radius-lg)").holding([
+            Chat.chat("Conversation", [
+                Turn.turn("Fix the failing test", [
+                    Reasoning.reasoning(Reasoning.Finished, H.p().says("The fixture is stale."), "4s"),
+                    Trace.trace().holding([Tool.tool("edit_file", Trace.Done, "path: a.pudu", "1 line changed"), Tool.tool("run_tests", Trace.Running, "suite: all", "")]),
+                    H.p().holding([H.words("Fixed in the fixture"), InlineCitation.inlineCitation(1, "#", "Fixture", "The stale data."), H.words(".")])
+                  ]),
+                Checkpoint.checkpoint("Checkpoint 2", "/restore"),
+                Marker.marker(Marker.System).says("Session resumed"),
+                Bubble.group().holding([Bubble.bubble(Bubble.Secondary, Bubble.Start).says("Anything else?"), Bubble.bubble(Bubble.Primary, Bubble.End).says("That is all.")]),
+                Message.message(Message.Received).holding([Message.author("A", "Agent"), Message.content().says("Done.")])
+              ], PromptInput.promptInput("/send", "Ask anything", PromptInput.Idle))
+          ]),
+        H.div().css("inline-size", "22rem").css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-3)").holding([
+            ChainOfThought.chainOfThought("Thought through 2 steps", [Trace.line(Trace.Done).holding([Trace.body().holding([Trace.title().says("Read the file")])])], true),
+            Reasoning.reasoning(Reasoning.Thinking, H.p().says("Comparing the two.")),
+            Plan.plan("Plan", [Plan.step("Read", Trace.Done), Plan.step("Change", Trace.Running), Plan.step("Test", Trace.Pending)]),
+            Queue.queue([Queue.entry("Write docs"), Queue.entry("Ship", true)]),
+            Task.steps("Searching", [Trace.line(Trace.Running).holding([Trace.body().holding([Trace.title().says("Looking through files")])])]),
+            Context.context(32000, 200000),
+            ModelSelector.modelSelector(&["fast", "deep"], &["low", "high"], "deep", "high"),
+            Suggestion.suggestions("/send", &["Explain this", "Add a test"]),
+            Confirmation.confirmation("Run this command?", "rm -rf build", "/decide"),
+            Sources.sources([Sources.source("Guide", "#"), Sources.source("Spec", "#")]),
+            StackTrace.stackTrace("TypeError: nope", &["at one (a.pudu:1)", "at two (b.pudu:2)"]),
+            Terminal.terminal("pudu test", "12 passed"),
+            TestResults.testResults([TestResults.suite("Layout", TestResults.Passed), TestResults.suite("Theme", TestResults.Failed, ["contrast"])]),
+            FileTree.fileTree([FileTree.folder("src", [FileTree.file("a.pudu", FileTree.Modified), FileTree.file("b.pudu", FileTree.Added)])]),
+            Trace.trace().holding([Subagent.subagent("Explore the repo", Trace.Done, [Trace.line(Trace.Done).holding([Trace.body().holding([Trace.title().says("Listed files")])])], H.p().says("Found 3 modules."), true)])
+          ]),
+        Questionnaire.questionnaire(&[Questionnaire.question("q1", "How did it go?", Questionnaire.Single, ["Well", "Badly"])], 0, "/answer").css("inline-size", "22rem")
+      ])
+  ]
+}
+
+/// The blocks and the toast corner.
+fn blocks() -> Array[H.Node] {
+  [
+    section("Blocks", [
+        H.div().css("inline-size", "22rem").holding([Login.login("/login", &[])]),
+        H.div().css("inline-size", "100%").holding([Pricing.pricing([Pricing.plan("Free", "$0", ["One project"], "#"), Pricing.plan("Pro", "$12", ["Everything"], "#", true)])]),
+        H.div().css("inline-size", "100%").css("block-size", "24rem").css("overflow", "hidden").css("border", "1px solid var(--fui-border)").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))])
+      ]),
+    Toast.toaster(Toast.props().rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.message().says("Saved"), Toast.close("saved"), Toast.description().says("Your changes are stored.")]), Toast.toast("sync", Toast.notice().kind(Toast.Loading).duration(0)).holding([Toast.message().says("Syncing")])])
+  ]
+}
+
+/// Writes the page to standard output.
+fn main() -> Int {
+  let theme = match Preset.named("graphite") {
+    case Ok(preset) => Preset.theme(&preset)
+    case Err(_) => panic("the preset table holds harbor")
+  }
+  let body = H.main().css("max-inline-size", "72rem").css("margin-inline", "auto").css("padding", "var(--fui-space-6)").holding(
+    [Typography.text(Typography.H1).says("pudu-lang-fui")].concat(basics()).concat(forms()).concat(display()).concat(overlays()).concat(textAndAgents()).concat(blocks())
+  )
+
+  match Io.writeLine(Fui.document(&Fui.page("Gallery", theme, Catalog.all()), body)) {
+    case Ok(_) => 0
+    case Err(_) => 1
+  }
+}

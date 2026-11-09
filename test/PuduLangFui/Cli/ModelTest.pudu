@@ -1,0 +1,88 @@
+/** @Test.Cli.ModelTest.Suite — the generator's pure rules */
+module PuduLangFui.Cli.ModelTest
+
+import Std.Io as Io
+import Std.Json as Json
+import Std.Result as Result
+import Std.Test as Test
+import PuduLangFui.Cli.Model.Audit as Audit
+import PuduLangFui.Cli.Model.Closure as Closure
+import PuduLangFui.Cli.Model.Config as Config
+import PuduLangFui.Cli.Model.Icons as Icons
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Rewrite as Rewrite
+import PuduLangFui.Cli.Model.Scaffold as Scaffold
+
+/// A source file for the item checks.
+const SOURCE: Str = "/** @Fui.Dialog.Component — a modal window */\nmodule PuduLangFui.Components.Composites.Dialog\n\nimport Std.Html.Build as H\nimport PuduLangFui.Components.Primitives.Button as Button\nimport PuduLangFui.Core.Styling as Core\n// import PuduLangFui.Components.Primitives.Hidden as Hidden\n"
+
+/// An item with dependencies.
+fn item(name: Str, needs: Array[Str]) -> Item.Item {
+  Item.Item{name: name, kind: Item.Component, layer: "Components/Primitives", moduleName: "M", path: "p", description: "", dependencies: needs}
+}
+
+/// The names of a closure, or the unknown ones.
+fn namesOf(result: Result[Array[Item.Item], Array[Str]]) -> Array[Str] {
+  match result {
+    case Ok(items) => items.map(|one: Item.Item| one.name)
+    case Err(unknown) => unknown
+  }
+}
+
+/// Runs the suite.
+fn main() -> Int {
+  let parsed = Invocation.parse(&["add", "button", "--dry-run", "-c", "here", "tabs"])
+  let read = Item.read("Components/Composites", "AlertDialog", "x", "PuduLangFui", SOURCE)
+  let graph = [item("a", ["b"]), item("b", ["c"]), item("c", []), item("loop", ["loop"])]
+  let rewritten = Rewrite.rewrite(SOURCE + "const X: Str = \"PuduLangFui.Components.Primitives.Button\"\n", "PuduLangFui", "Ui")
+  let config = Config.Config{..Config.defaults(), root: "App", registries: [("@acme", "deps/acme")]}
+  let answer = Result.unwrapOr(Json.decode("\{\"width\":24,\"height\":24,\"icons\":\{\"b\":\{\"body\":\"<path/>\",\"width\":32\},\"empty\":\{\}\}\}"), Json.Null)
+  let glyphs = [Icons.Glyph{name: "a:b", body: "<path d=\"M1\"/>", width: 24, height: 24}]
+  let checks = Test.suite("Cli.Model", &[
+      Test.equals("the first bare word is the command", &parsed.command, &"add"),
+      Test.equals("other bare words remain", &parsed.words, &["button", "tabs"]),
+      Test.that("a flag is seen", Invocation.has(&parsed, "--dry-run")),
+      Test.equals("a short option is expanded and keeps its value", &Invocation.optionOr(&parsed, "--cwd", ""), &"here"),
+      Test.equals("an absent option falls back", &Invocation.optionOr(&parsed, "--from", "d"), &"d"),
+      Test.equals("a name is kebab case", &read.name, &"alert-dialog"),
+      Test.equals("a module is named from its folder", &read.moduleName, &"PuduLangFui.Components.Composites.AlertDialog"),
+      Test.equals("the description is the header's intent", &read.description, &"a modal window"),
+      Test.equals("only real imports of items are needs", &read.dependencies, &["button"]),
+      Test.equals("no header has no description", &Item.descriptionOf("module X"), &""),
+      Test.equals("needs come before what needs them", &namesOf(Closure.closure(&graph, &["a"])), &["c", "b", "a"]),
+      Test.equals("a repeated need appears once", &namesOf(Closure.closure(&graph, &["a", "b"])), &["c", "b", "a"]),
+      Test.equals("a cycle ends", &namesOf(Closure.closure(&graph, &["loop"])), &["loop"]),
+      Test.equals("an unknown name is reported", &namesOf(Closure.closure(&graph, &["nope"])), &["nope"]),
+      Test.that("the module line moves", rewritten.contains("module Ui.Composites.Dialog")),
+      Test.that("a sibling import moves", rewritten.contains("import Ui.Primitives.Button as Button")),
+      Test.that("the core stays a dependency", rewritten.contains("import PuduLangFui.Core.Styling as Core")),
+      Test.that("a string is not rewritten", rewritten.contains("\"PuduLangFui.Components.Primitives.Button\"")),
+      Test.equals("a layer's folder drops Components", &Rewrite.folderOf("Components/Primitives"), &"Primitives"),
+      Test.equals("an element keeps its folder", &Rewrite.moduleOf("Ui", "Elements", "Tool"), &"Ui.Elements.Tool"),
+      Test.equals("a configuration round trips", &Config.decode(Config.encode(&config)), &Ok(config)),
+      Test.equals("missing keys take defaults", &Config.decode(""), &Ok(Config.defaults())),
+      Test.that("invalid text is refused", Result.isErr(&Config.decode("= nope"))),
+      Test.equals("kebab becomes camel", &Scaffold.camel("price-tag"), &"priceTag"),
+      Test.that("a component is filled", Scaffold.component("Ui", "Ui.Primitives.PriceTag", "price-tag").contains("export fn priceTag(given: Props) -> H.Node")),
+      Test.that("the catalog lists modules", Scaffold.catalog("Ui", &[("Ui.Primitives.Pill", "Pill")]).contains("import Ui.Primitives.Pill as Pill")),
+      Test.that("an empty catalog is a module", Scaffold.catalog("Ui", &[]).contains("module Ui.Catalog")),
+      Test.equals("an unknown token is found", &Audit.audit("f", "x(\"a: $nope\")", &setOf(["yes"])), &["f: unknown token $nope"]),
+      Test.equals("a physical property is found", &Audit.audit("f", "x(\"; margin-left: 0\")", &setOf([])), &["f: physical property 'margin-left:'"]),
+      Test.equals("an icon name splits", &Icons.split("a:b"), &Some(("a", "b"))),
+      Test.equals("a bare name does not", &Icons.split("b"), &None),
+      Test.equals("an answer's icons are read", &Icons.glyphsOf("a", &answer).map(|one: Icons.Glyph| one.name), &["a:b"]),
+      Test.equals("an icon's own width wins", &Icons.glyphsOf("a", &answer).map(|one: Icons.Glyph| one.width), &[32]),
+      Test.equals("a module records what it holds", &Icons.recorded(Icons.moduleText("Ui", &glyphs)), &glyphs),
+      Test.that("a module escapes drawings", Icons.moduleText("Ui", &glyphs).contains("\\\"")),
+      Test.equals("a later icon replaces an earlier one", &Icons.merged(&glyphs, &[Icons.Glyph{name: "a:b", body: "new", width: 1, height: 1}]).length(), &1),
+      Test.equals("a comment is ignored", &Audit.audit("f", "/// margin-left: 0 $nope", &setOf([])), &[])
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

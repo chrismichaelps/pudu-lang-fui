@@ -1,0 +1,40 @@
+/** @Test.Core.StylingTest.Suite — additions that merge */
+module PuduLangFui.Core.StylingTest
+
+import Std.Html.Build as H
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Core.Styling as Core
+
+/** @Test.Core.StylingTest.Kind — a kind for the table check */
+type Kind = FirstKind | SecondKind
+
+/// The table the check reads.
+const TABLE: Map[Str, Str] = mapOf([("first-kind", "one")])
+
+/// Runs the suite.
+fn main() -> Int {
+  let classed = H.div().classes("a").classes("b")
+  let styled = H.div().css("color", "red").token("radius", "0")
+  let checks = Test.suite("Core.Styling", &[
+      Test.equals("classes merge into one attribute", &H.render(&classed), &"<div class=\"a b\"></div>"),
+      Test.equals("empty classes add nothing", &H.render(&H.div().classes("")), &"<div></div>"),
+      Test.equals("styles merge into one attribute", &H.render(&styled), &"<div style=\"color: red; --fui-radius: 0\"></div>"),
+      Test.equals("a slot is a data attribute", &H.render(&Core.part("x")), &"<div data-slot=\"x\"></div>"),
+      Test.equals("an inline part is a span", &H.render(&Core.inline("x")), &"<span data-slot=\"x\"></span>"),
+      Test.equals("a held condition sets the attribute", &H.render(&H.div().atIf(true, "a", "b")), &"<div a=\"b\"></div>"),
+      Test.equals("a false condition sets nothing", &H.render(&H.div().atIf(false, "a", "b")), &"<div></div>"),
+      Test.equals("a held flag is written", &H.render(&H.input().flagIf(true, "disabled")), &"<input disabled=\"disabled\" />"),
+      Test.equals("a variant is spelled", &Core.spelled(SecondKind), &"second-kind"),
+      Test.equals("a table entry is picked", &Core.picked(&TABLE, FirstKind, "x"), &"one"),
+      Test.equals("a missing entry falls back", &Core.picked(&TABLE, SecondKind, "x"), &"x"),
+      Test.that("an anchor pair shares its name", H.render(&H.div().anchors("a").anchoredTo("a")).contains("anchor-name: --a; position-anchor: --a"))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

@@ -1,0 +1,53 @@
+/** @Test.Domain.CssTest.Suite — style blocks and their rendering */
+module PuduLangFui.Domain.CssTest
+
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Domain.Css as Css
+
+/// A small block for the checks.
+fn sample() -> Css.Block {
+  Css.block("thing", [
+      Css.base("color: $primary"),
+      Css.variant("size", "small", "padding: $space-1"),
+      Css.hover("opacity: 1"),
+      Css.slot("thing-part", "margin: 0"),
+      Css.slotWhen("thing-part", ":hover", "margin: 1px"),
+      Css.inside("svg", "fill: none"),
+      Css.within("@media print", ".x", "display: none"),
+      Css.keyframes("spin", [("to", "rotate: 1turn")])
+    ])
+}
+
+/// Runs the suite.
+fn main() -> Int {
+  let rendered = Css.render(&[sample()])
+  let checks = Test.suite("Domain.Css", &[
+      Test.equals("a token expands", &Css.expand("color: $primary"), &"color: var(--fui-primary)"),
+      Test.equals("two tokens expand", &Css.expand("a: $x-1 $y"), &"a: var(--fui-x-1) var(--fui-y)"),
+      Test.equals("a lone dollar stays", &Css.expand("a: $"), &"a: $"),
+      Test.equals("a dollar before a digit stays", &Css.expand("a: $1"), &"a: $1"),
+      Test.equals("nothing to expand is unchanged", &Css.expand("display: flex"), &"display: flex"),
+      Test.equals("tokens are found", &Css.tokensIn("a: $one; b: $two-x"), &["one", "two-x"]),
+      Test.equals("a block owns its slots", &sample().slots, &["thing", "thing-part"]),
+      Test.equals("a slot is listed once", &Css.block("a", [Css.slot("a", "x: y")]).slots, &["a"]),
+      Test.that("a base rule uses the slot selector", rendered.contains("[data-slot=\"thing\"] \{ color: var(--fui-primary); \}")),
+      Test.that("a variant adds a data attribute", rendered.contains("[data-slot=\"thing\"][data-size=\"small\"]")),
+      Test.that("hover excludes the disabled", rendered.contains(":hover:not(:disabled)")),
+      Test.that("a part has its own selector", rendered.contains("[data-slot=\"thing-part\"] \{ margin: 0; \}")),
+      Test.that("a condition follows a part", rendered.contains("[data-slot=\"thing-part\"]:hover")),
+      Test.that("a descendant is spaced", rendered.contains("[data-slot=\"thing\"] svg")),
+      Test.that("an at-rule wraps its rule", rendered.contains("@media print \{ .x \{ display: none; \} \}")),
+      Test.that("animations are written", rendered.contains("@keyframes spin \{ to \{ rotate: 1turn \} \}")),
+      Test.that("rules sit in the component layer", rendered.contains("@layer fui.components \{")),
+      Test.equals("no blocks render nothing", &Css.render(&[]), &""),
+      Test.equals("unknown tokens are reported", &Css.unknownTokens(&sample(), &setOf(["primary"])), &["thing: $space-1"])
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

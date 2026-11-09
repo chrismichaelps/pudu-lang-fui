@@ -1,0 +1,43 @@
+/** @Test.Integration.PageTest.Suite — a page holds only what it uses */
+module Integration.PageTest
+
+import Std.Html.Build as H
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Catalog.Catalog as Catalog
+import PuduLangFui.Components.Composites.CodeBlock as CodeBlock
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui as Fui
+import PuduLangFui.Theme.Build.Theme as Theme
+
+/// Runs the suite.
+fn main() -> Int {
+  let page = Fui.page("Home <1>", Theme.defaults(), Catalog.all())
+  let plain = Fui.document(&page, H.main().holding([Button.button(Button.props()).says("Go")]))
+  let coded = Fui.document(&page, H.main().holding([CodeBlock.codeBlock("a", &[CodeBlock.line("x")], CodeBlock.props())]))
+  let bare = Fui.document(&page, H.main())
+  let forced = Fui.document(&page.mode("dark").rightToLeft().language("ar"), H.main())
+  let whole = Fui.stylesheet(&Theme.defaults(), &Catalog.all())
+  let checks = Test.suite("Integration.Page", &[
+      Test.that("a page is a document", plain.startsWith("<!DOCTYPE html>")),
+      Test.that("the title is escaped", plain.contains("<title>Home &lt;1&gt;</title>")),
+      Test.that("used blocks are styled", plain.contains("[data-slot=\"button\"]")),
+      Test.that("unused blocks are not", !plain.contains("[data-slot=\"dialog\"]")),
+      Test.that("no behavior means no script", !plain.contains("<script>")),
+      Test.that("a behavior ships with its component", coded.contains("<script>") && coded.contains("code-block-copy")),
+      Test.that("tokens always ship", bare.contains("--fui-primary:")),
+      Test.that("no slots means no component rules", !bare.contains("@layer fui.components \{")),
+      Test.that("the layer order is declared first", plain.contains("@layer fui.base, fui.tokens, fui.components;")),
+      Test.that("a mode can be forced", forced.contains("data-mode=\"dark\"")),
+      Test.that("the direction is written", forced.contains("dir=\"rtl\"")),
+      Test.that("the language is written", forced.contains("lang=\"ar\"")),
+      Test.that("a stylesheet holds every block", whole.contains("[data-slot=\"dialog\"]") && whole.contains("[data-slot=\"tool\"]"))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

@@ -1,0 +1,26 @@
+/** @Examples.QuickStart.Program — a page with one component */
+module QuickStart
+
+import Std.Html.Build as H
+import Std.Io as Io
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui as Fui
+import PuduLangFui.Theme.Build.Theme as Theme
+
+/// Prints a page holding a card; the page carries only the styles of what it uses.
+fn main() -> Int {
+  let blocks: Array[Css.Block] = [Button.style(), Card.style()]
+  let body = H.main().holding([
+      Card.card().holding([
+          Card.header().holding([Card.title().says("Hello from Pudu")]),
+          Card.footer().holding([Button.button(Button.props()).says("Continue")])
+        ])
+    ])
+
+  match Io.writeLine(Fui.document(&Fui.page("Quick start", Theme.defaults(), blocks), body)) {
+    case Ok(_) => 0
+    case Err(_) => 1
+  }
+}

@@ -1,0 +1,33 @@
+/** @Test.Domain.ColorTest.Suite — colors and their contrast */
+module PuduLangFui.Domain.ColorTest
+
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Domain.Color as Color
+
+/// Whether two numbers are close.
+fn near(left: Float64, right: Float64) -> Bool { left - right < 0.05 && right - left < 0.05 }
+
+/// Runs the suite.
+fn main() -> Int {
+  let black = Color.oklch(0.0, 0.0, 0.0)
+  let white = Color.oklch(1.0, 0.0, 0.0)
+  let wild = Color.oklch(0.9, 0.4, 140.0)
+  let checks = Test.suite("Domain.Color", &[
+      Test.that("white is fully luminous", near(Color.luminance(&white), 1.0)),
+      Test.that("black has no luminance", near(Color.luminance(&black), 0.0)),
+      Test.that("black on white is 21", near(Color.contrast(&black, &white), 21.0)),
+      Test.that("contrast does not depend on order", near(Color.contrast(&white, &black), 21.0)),
+      Test.equals("a color against itself is exactly one", &Color.contrast(&white, &white), &1.0),
+      Test.that("an out-of-range color is clamped", Color.luminance(&wild) <= 1.0),
+      Test.equals("a color is spelled in CSS", &Color.spell(&Color.oklch(0.5, 0.1, 20.0)), &"oklch(0.5 0.1 20.0)"),
+      Test.equals("a pair follows the scheme", &Color.spellPair(&Color.pair(white, black)), &"light-dark(oklch(1.0 0.0 0.0), oklch(0.0 0.0 0.0))")
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

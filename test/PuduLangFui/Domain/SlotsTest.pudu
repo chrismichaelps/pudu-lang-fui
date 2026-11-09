@@ -1,0 +1,36 @@
+/** @Test.Domain.SlotsTest.Suite — finds slots in a tree */
+module PuduLangFui.Domain.SlotsTest
+
+import Std.Html.Build as H
+import Std.Html as Html
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Slots as Slots
+
+/// Runs the suite.
+fn main() -> Int {
+  let nested = H.div().slot("a").holding([H.nothing().holding([H.span().slot("b")]), H.p().holding([H.em().slot("c")])])
+  let hidden = H.div().raw("<p data-slot=\"fake\"></p>").says("data-slot=\"text\"")
+  var deep = H.div().slot("bottom")
+  var level = 0
+
+  while level < 20000 {
+    deep = H.div().holding([deep])
+    level = level + 1
+  }
+
+  let checks = Test.suite("Domain.Slots", &[
+      Test.equals("nested slots are found", &Slots.used(&nested.html()), &setOf(["a", "b", "c"])),
+      Test.equals("markup and text are not slots", &Slots.used(&hidden.html()), &setOf([])),
+      Test.equals("nothing has no slots", &Slots.used(&Html.nothing()), &setOf([])),
+      Test.equals("a very deep tree does not overflow", &Slots.used(&deep.html()), &setOf(["bottom"]))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

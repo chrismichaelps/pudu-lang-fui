@@ -1,0 +1,29 @@
+/** @Test.Utils.SpellingTest.Suite — spellings between code and markup */
+module PuduLangFui.Utils.SpellingTest
+
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Utils.Numbers as Numbers
+import PuduLangFui.Utils.Spelling as Spelling
+
+/// Runs the suite.
+fn main() -> Int {
+  let checks = Test.suite("Utils.Spelling", &[
+      Test.equals("pascal case becomes kebab", &Spelling.kebab("IconSmall"), &"icon-small"),
+      Test.equals("camel case becomes kebab", &Spelling.kebab("cardForeground"), &"card-foreground"),
+      Test.equals("a digit run starts a word", &Spelling.kebab("text2xl"), &"text-2xl"),
+      Test.equals("a digit run is not split", &Spelling.kebab("space12"), &"space-12"),
+      Test.equals("a single word is lowered", &Spelling.kebab("Button"), &"button"),
+      Test.equals("empty text stays empty", &Spelling.kebab(""), &""),
+      Test.equals("kebab becomes pascal", &Spelling.pascal("alert-dialog"), &"AlertDialog"),
+      Test.equals("a whole number becomes a float", &Numbers.floatOf(3), &3.0),
+      Test.equals("a float keeps three places", &Numbers.fixed(1.23456), &"1.235")
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

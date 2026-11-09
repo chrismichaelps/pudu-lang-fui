@@ -1,0 +1,115 @@
+/** @Test.Catalog.CatalogTest.Suite — the shipped styles hold their laws */
+module PuduLangFui.Catalog.CatalogTest
+
+import Std.Io as Io
+import Std.List as List
+import Std.Path as Path
+import Std.Result as Result
+import Std.Set as Set
+import Std.Test as Test
+import PuduLangFui.Catalog.Catalog as Catalog
+import PuduLangFui.Cli.Model.Audit as Audit
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Utils.Spelling as Spelling
+
+/// The folders holding items.
+const FOLDERS: Array[Str] = ["src/PuduLangFui/Components/Primitives", "src/PuduLangFui/Components/Composites", "src/PuduLangFui/Components/Patterns", "src/PuduLangFui/Elements", "src/PuduLangFui/Blocks"]
+
+/// Every item file in the tree.
+fn itemFiles() -> Array[Str] {
+  var found: Array[Str] = []
+
+  for folder in FOLDERS {
+    found = found.concat(Result.unwrapOr(Io.listPaths(folder), []).filter(|path: Str| path.endsWith(".pudu")))
+  }
+
+  found
+}
+
+/// Every declaration the catalog's blocks write.
+fn declarations(blocks: &Array[Css.Block]) -> Array[Str] {
+  var found: Array[Str] = []
+
+  for held in blocks {
+    for rule in held.rules { found = found.push(rule.declarations) }
+  }
+
+  found
+}
+
+/// Slots claimed by more than one block.
+fn sharedSlots(blocks: &Array[Css.Block]) -> Array[Str] {
+  var seen: Set[Str] = setOf([])
+  var shared: Array[Str] = []
+
+  for held in blocks {
+    for slot in held.slots {
+      if slot in seen { shared = shared.push(slot) }
+
+      seen = seen.insert(slot)
+    }
+  }
+
+  shared
+}
+
+/// Physical-property findings across the declarations.
+fn physical(rules: &Array[Str], known: &Set[Str]) -> Array[Str] {
+  var found: Array[Str] = []
+
+  for rule in rules { found = found.concat(Audit.audit("style", " " + rule, known)) }
+
+  found
+}
+
+/// Glyph names the set draws but the file's sum type does not list.
+fn undrawnGlyphs() -> Array[Str] {
+  let source = Result.unwrapOr(Io.read("src/PuduLangFui/Components/Primitives/Icon.pudu"), "")
+  var missing: Array[Str] = []
+  var inSum = false
+
+  for line in source.split("\n") {
+    if line.startsWith("export type Glyph") { inSum = true }
+
+      else if inSum && line.startsWith("  ") {
+      for word in line.replace("=", "|").split("|") {
+        let name = word.trim()
+
+        if !name.isEmpty() && Icon.GLYPHS.get(Spelling.kebab(name)) == None { missing = missing.push(name) }
+      }
+    } else if inSum && line.isEmpty() { inSum = false }
+  }
+
+  missing
+}
+
+/// Runs the suite.
+fn main() -> Int {
+  let blocks = Catalog.all()
+  let known: Set[Str] = setOf(Theme.tokens(&Theme.defaults()).map(|entry: (Str, Str)| entry[0]))
+  var unknown: Array[Str] = []
+
+  for held in blocks { unknown = unknown.concat(Css.unknownTokens(&held, &known)) }
+
+  let files = itemFiles()
+  let listed = blocks.length()
+  let unnamed = files.filter(|path: Str| !List.any(&blocks, |held: Css.Block| held.name == Spelling.kebab(Path.stemOf(path)) || Result.unwrapOr(Io.read(path), "").contains("Css.block(\"" + held.name + "\",")))
+  let checks = Test.suite("Catalog", &[
+      Test.equals("every item file is in the catalog", &listed, &files.length()),
+      Test.equals("every block belongs to a file", &unnamed, &[]),
+      Test.equals("every style names only known tokens", &unknown, &[]),
+      Test.equals("every style uses logical properties", &physical(&declarations(&blocks), &known), &[]),
+      Test.equals("every slot belongs to one block", &sharedSlots(&blocks), &[]),
+      Test.equals("every glyph is drawn", &undrawnGlyphs(), &[]),
+      Test.that("the catalog holds the whole set", listed >= 89)
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

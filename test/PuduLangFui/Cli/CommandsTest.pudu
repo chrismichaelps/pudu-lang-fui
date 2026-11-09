@@ -1,0 +1,137 @@
+/** @Test.Cli.CommandsTest.Suite — the generator on real temporary trees */
+module PuduLangFui.Cli.CommandsTest
+
+import Std.Fs as Fs
+import Std.Io as Io
+import Std.Path as Path
+import Std.Result as Result
+import Std.Test as Test
+import PuduLangFui.Cli.Commands.Apply as Apply
+import PuduLangFui.Cli.Commands.New as New
+import PuduLangFui.Cli.Dispatch.Router as Router
+import PuduLangFui.Cli.Model.Outcome as Outcome
+
+/// A minimal manifest.
+const MANIFEST: Str = "[package]\nname = \"@a/b\"\nversion = \"0.1.0\"\nsource = \"src\"\n"
+
+/// Runs the generator in a project, reading items from this package.
+fn fui(project: Str, words: Array[Str]) -> Outcome.Outcome {
+  Router.run(&words.concat(["--cwd", project]), ".")
+}
+
+/// The generator told to read this package's registry.
+fn fuiFrom(project: Str, package: Str, words: Array[Str]) -> Outcome.Outcome {
+  fui(project, words.concat(["--from", package]))
+}
+
+/// A file's text in a project.
+fn read(project: Str, relative: Str) -> Str { Result.unwrapOr(Io.read(Path.join(project, relative)), "") }
+
+/// The checks over one temporary project.
+fn inProject(project: Str, package: Str) -> Array[Test.Check] {
+  let before = fui(project, ["info"])
+  let noManifest = fui(project, ["init"])
+  let _manifest = Io.write(Path.join(project, "pudu.toml"), MANIFEST)
+  let set = fui(project, ["init", "--preset", "harbor"])
+  let again = fui(project, ["init"])
+  let theme = read(project, "src/Ui/Theme.pudu")
+  let added = fuiFrom(project, package, ["add", "dialog"])
+  let button = read(project, "src/Ui/Primitives/Button.pudu")
+  let dialog = read(project, "src/Ui/Composites/Dialog.pudu")
+  let catalog = read(project, "src/Ui/Catalog.pudu")
+  let unknown = fuiFrom(project, package, ["add", "no-such-thing"])
+  let _edited = Io.write(Path.join(project, "src/Ui/Primitives/Button.pudu"), button + "// mine\n")
+  let kept = fuiFrom(project, package, ["add", "button"])
+  let keptText = read(project, "src/Ui/Primitives/Button.pudu")
+  let summary = fuiFrom(project, package, ["diff"])
+  let difference = fuiFrom(project, package, ["diff", "button"])
+  let replaced = fuiFrom(project, package, ["add", "button", "--overwrite"])
+  let same = fuiFrom(project, package, ["diff", "button"])
+  let dry = fuiFrom(project, package, ["add", "tabs", "--dry-run"])
+  let applied = fui(project, ["apply", "ember"])
+  let badApply = fui(project, ["apply", "nope"])
+  let created = fui(project, ["new", "price-tag"])
+  let badName = fui(project, ["new", "PriceTag"])
+  let duplicate = fui(project, ["new", "price-tag"])
+  let badLayer = fui(project, ["new", "other", "--layer", "nope"])
+  let doctored = fui(project, ["doctor"])
+  let info = fui(project, ["info", "--json"])
+  let _broken = Io.write(Path.join(project, "src/Ui/Primitives/Bad.pudu"), "export fn style() -> X \{ \"margin-left: $nope\" \}\n")
+  let sick = fui(project, ["doctor"])
+
+  [
+    Test.equals("info needs a project", &before.status, &1),
+    Test.equals("init needs a manifest", &noManifest.status, &1),
+    Test.equals("init succeeds", &set.status, &0),
+    Test.equals("init will not repeat", &again.status, &1),
+    Test.that("the theme holds the preset", theme.contains("const PRESET: Str = \"harbor\"")),
+    Test.equals("add succeeds", &added.status, &0),
+    Test.that("a dependency is added first", added.lines.length() == 2 && added.lines[0].contains("Button.pudu")),
+    Test.that("the module is rewritten", dialog.contains("module Ui.Composites.Dialog")),
+    Test.that("a sibling import is rewritten", dialog.contains("import Ui.Primitives.Button as Button")),
+    Test.that("the core stays a dependency", button.contains("import PuduLangFui.Core.Styling as Core")),
+    Test.that("the catalog lists what was added", catalog.contains("Dialog.style()") && catalog.contains("Button.style()")),
+    Test.equals("an unknown item is refused", &unknown.problems, &["unknown item: no-such-thing"]),
+    Test.that("an owned file is kept", kept.lines[0].startsWith("kept")),
+    Test.that("an owned edit survives", keptText.endsWith("// mine\n")),
+    Test.that("the summary sees the change", summary.lines.contains("changed  button") && summary.lines.contains("same     dialog")),
+    Test.that("the diff shows the edit", difference.lines[0].contains("+// mine")),
+    Test.that("overwrite replaces", replaced.lines[0].startsWith("wrote")),
+    Test.that("an overwritten file matches", same.lines[0].contains("matches upstream")),
+    Test.that("a dry run says what it would do", dry.lines[0].startsWith("would write")),
+    Test.that("a dry run writes nothing", !Io.exists(Path.join(project, "src/Ui/Primitives/Tabs.pudu"))),
+    Test.equals("apply succeeds", &applied.status, &0),
+    Test.that("apply rewrites the theme", read(project, "src/Ui/Theme.pudu").contains("\"ember\"")),
+    Test.that("apply rewrites the configuration", read(project, "fui.toml").contains("preset = \"ember\"")),
+    Test.equals("an unknown preset changes nothing", &badApply.status, &1),
+    Test.equals("new succeeds", &created.status, &0),
+    Test.that("new adds to the catalog", read(project, "src/Ui/Catalog.pudu").contains("PriceTag.style()")),
+    Test.equals("a name must be kebab case", &badName.status, &1),
+    Test.equals("new will not overwrite", &duplicate.status, &1),
+    Test.equals("an unknown layer is refused", &badLayer.status, &1),
+    Test.equals("a clean project passes", &doctored.lines, &["No problems found"]),
+    Test.that("info reports as JSON", info.lines[0].contains("\"preset\": \"ember\"")),
+    Test.equals("doctor reports everything", &sick.problems.length(), &2)
+  ]
+}
+
+/// Runs the suite.
+fn main() -> Int {
+  let package = Result.unwrapOr(Fs.canonical("."), ".")
+  let search = fui(package, ["search", "-q", "modal"])
+  let view = fui(package, ["view", "kbd"])
+  let docs = fui(package, ["docs", "kbd"])
+  let unnamed = fui(package, ["docs"])
+  let presets = fui(package, ["preset", "list"])
+  let decoded = fui(package, ["preset", "decode", "h264-c14-r10-compact"])
+  let badDecode = fui(package, ["preset", "decode", "x"])
+  let badPreset = fui(package, ["preset", "nope"])
+  let usage = fui(package, [])
+  let wrong = Router.run(&["frobnicate"], ".")
+  let shared = [
+    Test.that("search finds by description", search.lines.length() >= 2),
+    Test.that("view prints source", view.lines[0].contains("module PuduLangFui.Components.Primitives.Kbd")),
+    Test.that("docs print the surface", docs.lines.contains("export fn group() -> H.Node \{ Core.inline(\"kbd-group\") \}")),
+    Test.equals("docs need a name", &unnamed.status, &1),
+    Test.equals("presets are listed", &presets.lines.length(), &6),
+    Test.that("a code is decoded", decoded.lines[0] == "hue 264"),
+    Test.equals("a bad code is refused", &badDecode.status, &1),
+    Test.equals("an unknown subcommand is refused", &badPreset.status, &1),
+    Test.equals("no command prints usage and succeeds", &usage.status, &0),
+    Test.equals("an unknown command fails", &wrong.status, &1),
+    Test.that("a preset line is replaced alone", Apply.withPreset("a\nconst PRESET: Str = \"x\"\nb", "y") == "a\nconst PRESET: Str = \"y\"\nb"),
+    Test.that("a kebab name is accepted", New.isKebab("price-tag2")),
+    Test.that("an empty name is refused", !New.isKebab(""))
+  ]
+  let checks = match Fs.withTemporaryDirectory("fui", |project: Str| Ok(inProject(project, package))) {
+    case Ok(found) => found
+    case Err(_) => [Test.that("a temporary project was made", false)]
+  }
+  let report = Test.run(&Test.suite("Cli.Commands", &shared.concat(checks)))
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

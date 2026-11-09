@@ -1,0 +1,82 @@
+/** @Test.Components.RenderTest.Suite — components render what their props say */
+module PuduLangFui.Components.RenderTest
+
+import Std.Html.Build as H
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Composites.Dialog as Dialog
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Patterns.Chart as Chart
+import PuduLangFui.Components.Patterns.Command as Command
+import PuduLangFui.Components.Primitives.Alert as Alert
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Typography as Typography
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Elements.Reasoning as Reasoning
+import PuduLangFui.Elements.Sources as Sources
+
+/// A link builder for the pagination checks.
+fn pageLink(number: Int) -> Str { "/p/" + show(number) }
+
+/// Rendered text of a node.
+fn text(node: H.Node) -> Str { H.render(&node) }
+
+/// Runs the suite.
+fn main() -> Int {
+  let chosen = Button.button(Button.props().variant(Button.Destructive).size(Button.IconSmall)).says("x")
+  let hostile = text(Button.button(Button.props()).says("<script>alert(1)</script>"))
+  let paged = text(Pagination.pagination(5, 9, pageLink))
+  let checks = Test.suite("Components.Render", &[
+      Test.equals("defaults are written", &text(Button.button(Button.props()).says("Go")), &"<button type=\"button\" data-slot=\"button\" data-variant=\"primary\" data-size=\"medium\">Go</button>"),
+      Test.that("a variant is written", text(chosen).contains("data-variant=\"destructive\"")),
+      Test.that("a size is spelled in kebab case", text(chosen).contains("data-size=\"icon-small\"")),
+      Test.that("a disabled button is disabled", text(Button.button(Button.props().disabled())).contains(" disabled=\"disabled\"")),
+      Test.that("a submit submits", text(Button.submit(Button.props())).contains("type=\"submit\"")),
+      Test.that("a link is an anchor", text(Button.link("/x", Button.props())).startsWith("<a href=\"/x\"")),
+      Test.that("a disabled link says so", text(Button.link("/x", Button.props().disabled())).contains("aria-disabled=\"true\"")),
+      Test.that("text is escaped", hostile.contains("&lt;script&gt;") && !hostile.contains("<script>")),
+      Test.that("a caller's classes merge in", text(Button.button(Button.props()).classes("wide")).contains("class=\"wide\"")),
+      Test.that("a checked box is checked", text(Checkbox.checkbox("a", Checkbox.props().checked())).contains(" checked=\"checked\"")),
+      Test.that("a dialog trigger uses a command", text(Dialog.trigger("d", Button.props())).contains("commandfor=\"d\"") && text(Dialog.trigger("d", Button.props())).contains("command=\"show-modal\"")),
+      Test.that("a dialog is named", text(Dialog.dialog("d", "Edit")).contains("aria-label=\"Edit\"")),
+      Test.that("a destructive alert interrupts", text(Alert.alert(Alert.Destructive)).contains("role=\"alert\"")),
+      Test.that("a neutral alert does not", text(Alert.alert(Alert.Neutral)).contains("role=\"status\"")),
+      Test.that("a kind picks its input", text(ToggleGroup.item(ToggleGroup.One, "a", "b")).contains("type=\"radio\"") && text(ToggleGroup.item(ToggleGroup.Many, "a", "b")).contains("type=\"checkbox\"")),
+      Test.that("a kind picks its element", text(Typography.text(Typography.H2)).startsWith("<h2") && text(Typography.text(Typography.Lead)).startsWith("<p")),
+      Test.equals("no error renders nothing", &text(Field.error(&[])), &""),
+      Test.that("one error is a line", !text(Field.error(&["a"])).contains("<ul>")),
+      Test.that("several errors are a list", text(Field.error(&["a", "b"])).contains("<ul>")),
+      Test.equals("one page renders nothing", &text(Pagination.pagination(1, 1, pageLink)), &""),
+      Test.that("the current page is marked", paged.contains("aria-current=\"page\"")),
+      Test.that("skipped pages leave a gap", paged.contains("…")),
+      Test.that("the first and last pages show", paged.contains("/p/1\"") && paged.contains("/p/9\"")),
+      Test.equals("January 2026 starts on a Thursday", &Calendar.weekdayOf(2026, 1, 1), &4),
+      Test.equals("the epoch is a Thursday", &Calendar.weekdayOf(1970, 1, 1), &4),
+      Test.equals("a date before the epoch is right", &Calendar.weekdayOf(1969, 12, 31), &3),
+      Test.equals("a leap February has 29 days", &Calendar.daysIn(2024, 2), &29),
+      Test.equals("a century is not a leap year", &Calendar.daysIn(1900, 2), &28),
+      Test.equals("four hundred years is", &Calendar.daysIn(2000, 2), &29),
+      Test.equals("zero data draws no bars height", &text(Chart.chart(Chart.Donut, "x", [Chart.series("s", [0.0])])).contains("<circle"), &false),
+      Test.that("a chart kind picks its shape", text(Chart.chart(Chart.Bars, "x", [Chart.series("s", [1.0])])).contains("<rect")),
+      Test.that("a line chart draws a line", text(Chart.chart(Chart.Lines, "x", [Chart.series("s", [1.0, 2.0])])).contains("<polyline")),
+      Test.that("an empty chart still renders", text(Chart.chart(Chart.Bars, "x", [])).contains("<svg")),
+      Test.equals("a server filter keeps matches", &Command.matching(&["Open file", "Save"], "OPEN"), &["Open file"]),
+      Test.that("a running status spins", text(Trace.line(Trace.Running)).contains("data-status=\"running\"")),
+      Test.that("thinking opens", text(Reasoning.reasoning(Reasoning.Thinking, H.p())).contains(" open=\"open\"")),
+      Test.that("a finished thought closes", !text(Reasoning.reasoning(Reasoning.Finished, H.p())).contains(" open=\"open\"")),
+      Test.equals("no sources render nothing", &text(Sources.sources([])), &""),
+      Test.that("source links are hardened", text(Sources.sources([Sources.source("a", "https://x")])).contains("noopener"))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}
