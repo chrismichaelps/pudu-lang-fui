@@ -1,0 +1,109 @@
+/** @Tools.Layers.Catalog — the folders, their ranks, and what each may import */
+module Layers.Catalog
+
+import Std.Option as Option
+import Std.Set as Set
+
+/// The package whose modules this catalog judges.
+const ROOT: Str = "PuduLangFui"
+
+/// The folder of the package's root module.
+const ROOT_FOLDER: Str = "Root"
+
+/// Each folder's layer, lowest first.
+export const RANKS: Map[Str, Int] = mapOf([
+    ("Constants", 0),
+    ("Utils", 1),
+    ("Domain", 2),
+    ("Core", 3),
+    ("Cli/Model", 3),
+    ("Theme/Base", 3),
+    ("Theme/Aspects", 4),
+    ("Theme/Audit", 5),
+    ("Theme/Build", 5),
+    ("Theme/Presets", 6),
+    ("Root", 7),
+    ("Components/Primitives", 7),
+    ("Components/Composites", 8),
+    ("Components/Patterns", 9),
+    ("Elements", 10),
+    ("Blocks", 11),
+    ("Catalog", 12),
+    ("Cli/Workspace", 7),
+    ("Cli/Commands", 13),
+    ("Cli/Dispatch", 14)
+  ])
+
+/// The folders each folder may import, its own included.
+export const ALLOWED: Map[Str, Set[Str]] = mapOf([
+    ("Constants", #{"Constants"}),
+    ("Utils", #{"Constants", "Utils"}),
+    ("Domain", #{"Constants", "Utils", "Domain"}),
+    ("Core", #{"Constants", "Utils", "Core"}),
+    ("Cli/Model", #{"Constants", "Utils", "Domain", "Cli/Model"}),
+    ("Theme/Base", #{"Constants", "Utils", "Domain", "Theme/Base"}),
+    ("Theme/Aspects", #{"Constants", "Utils", "Domain", "Theme/Base", "Theme/Aspects"}),
+    ("Theme/Audit", #{"Constants", "Domain", "Theme/Aspects"}),
+    ("Theme/Build", #{"Constants", "Theme/Base", "Theme/Aspects"}),
+    ("Theme/Presets", #{"Constants", "Utils", "Theme/Aspects", "Theme/Build"}),
+    ("Root", #{"Constants", "Domain", "Theme/Build"}),
+    ("Components/Primitives", #{"Constants", "Utils", "Domain", "Core"}),
+    ("Components/Composites", #{"Constants", "Utils", "Domain", "Core", "Components/Primitives"}),
+    ("Components/Patterns", #{"Constants", "Utils", "Domain", "Core", "Components/Primitives", "Components/Composites"}),
+    ("Elements", #{"Constants", "Utils", "Domain", "Core", "Components/Primitives", "Components/Composites", "Components/Patterns"}),
+    ("Blocks", #{"Constants", "Utils", "Domain", "Core", "Components/Primitives", "Components/Composites", "Components/Patterns", "Elements"}),
+    ("Catalog", #{"Domain", "Components/Primitives", "Components/Composites", "Components/Patterns", "Elements", "Blocks"}),
+    ("Cli/Workspace", #{"Constants", "Utils", "Domain", "Cli/Model", "Cli/Workspace"}),
+    ("Cli/Commands", #{"Constants", "Utils", "Domain", "Theme/Aspects", "Theme/Audit", "Theme/Build", "Theme/Presets", "Catalog", "Cli/Model", "Cli/Workspace", "Cli/Commands"}),
+    ("Cli/Dispatch", #{"Constants", "Utils", "Cli/Model", "Cli/Workspace", "Cli/Commands", "Cli/Dispatch"})
+  ])
+
+/// Folders that may not import effectful standard modules.
+export const PURE: Set[Str] = #{
+  "Constants", "Utils", "Domain", "Core", "Cli/Model", "Theme/Base", "Theme/Aspects", "Theme/Audit", "Theme/Build",
+  "Theme/Presets", "Root", "Components/Primitives", "Components/Composites", "Components/Patterns", "Elements", "Blocks", "Catalog"
+}
+
+/// Standard module prefixes that reach outside the program.
+export const EFFECTFUL: Array[Str] = ["Std.Fs", "Std.Io", "Std.Net", "Std.Http", "Std.Process", "Std.Env", "Std.Db", "Std.Random"]
+
+/// The folder a module belongs to: the longest catalogued path under the package root.
+export fn folderOf(name: Str) -> Str {
+  if name == ROOT { return ROOT_FOLDER }
+  if !name.startsWith(ROOT + ".") { return name }
+
+  let pieces = name.drop(ROOT.length() + 1).split(".")
+
+  if pieces.length() > 1 {
+    let nested = pieces[0] + "/" + pieces[1]
+
+    if RANKS.get(nested) != None { return nested }
+  }
+
+  pieces[0]
+}
+
+/// Why an import is refused, or `None` when the catalog allows it.
+export fn judge(from: Str, target: Str, known: &Set[Str]) -> Option[Str] {
+  let folder = folderOf(from)
+
+  if RANKS.get(folder) == None { return Some("uncatalogued folder " + folder) }
+  if target.startsWith("Std.") { return judgeStandard(folder, target) }
+  if !(target in *known) { return Some("missing module") }
+
+  let into = folderOf(target)
+  let permitted = Option.unwrapOr(ALLOWED.get(folder), setOf([]))
+
+  if into in permitted { None } else { Some(folder + " may not import " + into) }
+}
+
+/// Why a standard import is refused, or `None`.
+fn judgeStandard(folder: Str, target: Str) -> Option[Str] {
+  if !(folder in PURE) { return None }
+
+  for prefix in EFFECTFUL {
+    if target == prefix || target.startsWith(prefix + ".") { return Some(folder + " is pure and may not import " + target) }
+  }
+
+  None
+}

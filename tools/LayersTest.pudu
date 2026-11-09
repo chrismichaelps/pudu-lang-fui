@@ -1,0 +1,50 @@
+/** @Test.Tools.Layers.Suite — the gate refuses upward edges, cycles, impurity, and strangers */
+module LayersTest
+
+import Std.Io as Io
+import Std.Test as Test
+import Layers.Catalog as Catalog
+import Layers.Graph as Graph
+
+/// A module and its imports.
+fn unit(name: Str, imports: &Array[Str]) -> Graph.Unit { Graph.Unit{name: name, imports: *imports} }
+
+/// Runs the suite.
+fn main() -> Int {
+  let clean = Graph.analyze(&[
+      unit("PuduLangFui.Constants.Css", &[]),
+      unit("PuduLangFui.Domain.Css", &["Std.Char", "PuduLangFui.Constants.Css"]),
+      unit("PuduLangFui.Components.Primitives.Button", &["PuduLangFui.Domain.Css"]),
+      unit("PuduLangFui.Components.Composites.Dialog", &["PuduLangFui.Components.Primitives.Button"])
+    ], Catalog.judge)
+  let upward = Graph.analyze(&[
+      unit("PuduLangFui.Components.Primitives.Button", &["PuduLangFui.Components.Composites.Dialog"]),
+      unit("PuduLangFui.Components.Composites.Dialog", &[])
+    ], Catalog.judge)
+  let impure = Graph.analyze(&[unit("PuduLangFui.Domain.Css", &["Std.Io"])], Catalog.judge)
+  let stranger = Graph.analyze(&[unit("PuduLangFui.Plugins.Thing", &[]), unit("PuduLangFui.Domain.Css", &["PuduLangFui.Plugins.Thing"])], Catalog.judge)
+  let missing = Graph.analyze(&[unit("PuduLangFui.Domain.Css", &["PuduLangFui.Domain.Gone"])], Catalog.judge)
+  let cyclic = Graph.analyze(&[
+      unit("PuduLangFui.Domain.A", &["PuduLangFui.Domain.B"]),
+      unit("PuduLangFui.Domain.B", &["PuduLangFui.Domain.A"])
+    ], Catalog.judge)
+  let checks = Test.suite("Layers", &[
+      Test.that("a lawful graph passes", Graph.passed(&clean)),
+      Test.equals("internal edges are counted", &clean.edges, &3),
+      Test.equals("an upward import is refused", &upward.violations.map(|v: Graph.Violation| v.reason), &["Components/Primitives may not import Components/Composites"]),
+      Test.equals("a pure layer may not reach a file", &impure.violations.map(|v: Graph.Violation| v.target), &["Std.Io"]),
+      Test.equals("an uncatalogued folder is refused", &stranger.violations.length(), &1),
+      Test.equals("a missing module is refused", &missing.violations.map(|v: Graph.Violation| v.reason), &["missing module"]),
+      Test.equals("a cycle is one component", &cyclic.cycles, &[["PuduLangFui.Domain.A", "PuduLangFui.Domain.B"]]),
+      Test.equals("the root module is its own folder", &Catalog.folderOf("PuduLangFui"), &"Root"),
+      Test.equals("a nested folder is found", &Catalog.folderOf("PuduLangFui.Theme.Aspects.Shape"), &"Theme/Aspects"),
+      Test.that("a cyclic graph fails", !Graph.passed(&cyclic))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _said = Io.writeErrorLine("  failed: " + failure)
+  }
+
+  Test.report(&report)
+}
