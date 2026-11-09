@@ -8,14 +8,16 @@ import Std.List as List
 import Std.Option as Option
 import Std.Path as Path
 import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.IconLibrary as IconLibrary
 import PuduLangFui.Cli.Model.Icons as Model
 import PuduLangFui.Cli.Model.Invocation as Invocation
 import PuduLangFui.Cli.Model.Outcome as Outcome
 import PuduLangFui.Cli.Workspace.Project as Project
 import PuduLangFui.Constants.Cli as Constant
+import PuduLangFui.Utils.Spelling as Spelling
 
 /// The action each subcommand runs.
-const ACTIONS: Map[Str, fn(&Context.Context) -> Outcome.Outcome] = mapOf([("search", search), ("add", add), ("libraries", libraries)])
+const ACTIONS: Map[Str, fn(&Context.Context) -> Outcome.Outcome] = mapOf([("search", search), ("add", add), ("libraries", libraries), ("library", library)])
 
 /// The JSON at a path of the icon service, or why it could not be read.
 fn fetched(path: Str) -> Result[Json.Json, Str] {
@@ -66,11 +68,11 @@ fn summaryOf(entry: &Json.Json) -> Str {
 }
 
 /// Fetches the named icons of one library.
-fn glyphsFrom(library: Str, names: &Array[Str]) -> Result[Array[Model.Glyph], Str] {
-  let document = fetched("/" + library + ".json?icons=" + names.join(",")) ?
-  let found = Model.glyphsOf(library, &document)
+fn glyphsFrom(prefix: Str, names: &Array[Str]) -> Result[Array[Model.Glyph], Str] {
+  let document = fetched("/" + prefix + ".json?icons=" + names.join(",")) ?
+  let found = Model.glyphsOf(prefix, &document)
 
-  if found.length() < names.length() { return Err("not every icon of " + library + " exists: " + names.join(", ")) }
+  if found.length() < names.length() { return Err("not every icon of " + prefix + " exists: " + names.join(", ")) }
 
   Ok(found)
 }
@@ -122,6 +124,70 @@ fn add(context: &Context.Context) -> Outcome.Outcome {
   }
 }
 
+/// The limits for downloading a whole library.
+fn libraryLimits() -> Client.Limits { Client.Limits{..Client.limits(), bodyBytes: Constant.LIBRARY_BYTES, deadlineMillis: Constant.LIBRARY_DEADLINE} }
+
+/// A whole library's full document, or why it could not be read.
+fn fetchedLibrary(name: Str) -> Result[Json.Json, Str] {
+  match Client.fetch(Constant.ICON_ARCHIVE + name + ".json", &libraryLimits()) {
+    case Err(problem) => Err("library " + name + " could not be fetched: " + Client.explain(&problem))
+    case Ok(response) => {
+      match Json.decode(response.body) {
+        case Ok(document) => Ok(document)
+        case Err(problem) => Err("library " + name + " is unreadable: " + Json.explain(&problem))
+      }
+    }
+  }
+}
+
+/// Writes one whole library into the project; answers a line saying what was written.
+fn installLibrary(project: &Project.Project, name: Str) -> Result[Str, Str] {
+  let document = fetchedLibrary(name) ?
+  let held = IconLibrary.read(name, &document)
+  let path = Path.join(Path.join(Project.rootDirectory(project), Constant.ICONS_MODULE), Spelling.pascal(name) + ".pudu")
+
+  Project.writing(path, IconLibrary.moduleText(project.config.root, &held)) ?
+  Ok(show(held.glyphs.length()) + " icons of " + name + " (" + held.license + ") in " + path)
+}
+
+/// The name of every library.
+fn everyLibrary() -> Result[Array[Str], Str] {
+  let document = fetched("/collections") ?
+
+  Ok(Option.unwrapOr(Json.asObject(&document), []).map(|entry: (Str, Json.Json)| entry[0]))
+}
+
+/// Adds whole libraries to the project, or every library with `--all`.
+fn library(context: &Context.Context) -> Outcome.Outcome {
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let named = List.drop(&context.invocation.words, 1)
+  let names = if Invocation.has(&context.invocation, "--all") {
+    match everyLibrary() {
+      case Ok(found) => found
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+  } else {
+
+    named
+  }
+
+  if names.isEmpty() { return Outcome.failed(["name a library, or pass --all"]) }
+
+  var told: Array[Str] = []
+
+  for name in names {
+    match installLibrary(&project, name) {
+      case Ok(line) => { told = told.push(line) }
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+  }
+
+  Outcome.done(told)
+}
+
 /// A result's value, if any.
 fn ok(result: Result[Str, Str]) -> Option[Str] {
   match result {
@@ -131,7 +197,7 @@ fn ok(result: Result[Str, Str]) -> Option[Str] {
 }
 
 /// Answered for an unknown subcommand.
-fn usage(_context: &Context.Context) -> Outcome.Outcome { Outcome.failed(["usage: fui icons <search words|add library:name...|libraries>"]) }
+fn usage(_context: &Context.Context) -> Outcome.Outcome { Outcome.failed(["usage: fui icons <search words|add library:name...|library name...|library --all|libraries>"]) }
 
 /// Runs the subcommand.
 export fn run(context: &Context.Context) -> Outcome.Outcome {

@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Components/Composites/Drawer.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.62
+depth_score: 0.64
 depth_status: MEDIUM
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, medium]
@@ -24,25 +24,69 @@ A panel from any edge, dragged on native scrolling with stops and an optional sh
 ```pudu
 export type Direction = Bottom | Top | Start | End
 
-export type Props = { direction: Direction, dismissible: Bool, scalesBackground: Bool, snapPoints: Array[Str], handle: Bool }
+export type Props = {
+  direction: Direction,
+  dismissible: Bool,
+  modal: Bool,
+  nested: Bool,
+  handleOnly: Bool,
+  handle: Bool,
+  preventCycle: Bool,
+  defaultOpen: Bool,
+  scalesBackground: Bool,
+  colorsBodyOnScale: Bool,
+  sequential: Bool,
+  repositionsInputs: Bool,
+  snapPoints: Array[Str],
+  activeSnap: Int,
+  fadeFrom: Option[Int],
+  closeThreshold: Str,
+  scrollLock: Int
+}
 
 export fn props() -> Props
 
 export trait Configuring {
   fn direction(self: &Self, value: Direction) -> Self
 
-  fn modalOnly(self: &Self) -> Self
+  fn notDismissible(self: &Self) -> Self
+
+  fn notModal(self: &Self) -> Self
+
+  fn nested(self: &Self) -> Self
+
+  fn handleOnly(self: &Self) -> Self
+
+  fn withoutHandle(self: &Self) -> Self
+
+  fn preventCycle(self: &Self) -> Self
+
+  fn defaultOpen(self: &Self) -> Self
 
   fn scalesBackground(self: &Self) -> Self
 
+  fn keepsBodyColor(self: &Self) -> Self
+
+  fn sequential(self: &Self) -> Self
+
+  fn keepsPositionOverKeyboard(self: &Self) -> Self
+
   fn snapPoints(self: &Self, value: Array[Str]) -> Self
 
-  fn withoutHandle(self: &Self) -> Self
+  fn activeSnap(self: &Self, index: Int) -> Self
+
+  fn fadeFrom(self: &Self, index: Int) -> Self
+
+  fn closeThreshold(self: &Self, value: Str) -> Self
+
+  fn scrollLock(self: &Self, value: Int) -> Self
 }
 
 impl Configuring for Props
 
 export fn trigger(id: Str, given: Button.Props) -> H.Node
+
+export fn opensBeside(id: Str, given: Button.Props) -> H.Node
 
 export fn close(id: Str, given: Button.Props) -> H.Node
 
@@ -63,7 +107,7 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Constants/DrawerScript]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
@@ -81,7 +125,7 @@ export fn style() -> Css.Block
 
 ## Depth
 
-DEPTH 0.62 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
+DEPTH 0.64 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Grill Log
 

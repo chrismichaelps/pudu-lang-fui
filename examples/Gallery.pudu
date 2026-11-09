@@ -250,7 +250,7 @@ fn overlays() -> Array[H.Node] {
         Sheet.trigger("panel", outline).says("Sheet"),
         Sheet.sheet("panel", "Filters", Sheet.End).holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list."), Sheet.footer().holding([Sheet.close("panel", outline).says("Close")])]),
         Drawer.trigger("tray", outline).says("Drawer"),
-        Drawer.drawer("tray", "Details", Drawer.props().snapPoints(["40dvh"]), [Drawer.header().holding([Drawer.title().says("Details"), Drawer.description().says("Drag down to settle or dismiss.")]), Drawer.footer().holding([Drawer.close("tray", outline).says("Close")])]),
+        Drawer.drawer("tray", "Details", Drawer.props().snapPoints(["0.4", "1"]), [Drawer.header().holding([Drawer.title().says("Details"), Drawer.description().says("Drag down to settle or dismiss.")]), Drawer.footer().holding([Drawer.close("tray", outline).says("Close")])]),
         Popover.opens(Button.button(outline), "pop").says("Popover"),
         Popover.content("pop", Popover.Below).says("Anchored to its trigger, flipped when out of room."),
         DropdownMenu.trigger("menu", outline).says("Menu"),
@@ -336,7 +336,7 @@ fn blocks() -> Array[H.Node] {
         H.div().css("inline-size", "100%").holding([Pricing.pricing([Pricing.plan("Free", "$0", ["One project"], "#"), Pricing.plan("Pro", "$12", ["Everything"], "#", true)])]),
         H.div().css("inline-size", "100%").css("block-size", "24rem").css("overflow", "hidden").css("border", "1px solid var(--fui-border)").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))])
       ]),
-    Toast.toaster(Toast.props().rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.message().says("Saved"), Toast.close("saved"), Toast.description().says("Your changes are stored.")]), Toast.toast("sync", Toast.notice().kind(Toast.Loading).duration(0)).holding([Toast.message().says("Syncing")])])
+    Toast.toaster(Toast.props().rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.content().holding([Toast.message().says("Saved"), Toast.description().says("Your changes are stored.")]), Toast.close("saved")]), Toast.toast("sync", Toast.notice().kind(Toast.Loading).duration(0)).holding([Toast.content().holding([Toast.message().says("Syncing")])])])
   ]
 }
 

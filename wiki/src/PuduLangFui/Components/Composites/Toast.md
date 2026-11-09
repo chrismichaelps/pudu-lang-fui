@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Components/Composites/Toast.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.63
+depth_score: 0.65
 depth_status: MEDIUM
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, medium]
@@ -26,9 +26,27 @@ export type Kind = Neutral | Success | Info | Warning | Failure | Loading
 
 export type Position = TopStart | TopCenter | TopEnd | BottomStart | BottomCenter | BottomEnd
 
-export type Props = { position: Position, expanded: Bool, rich: Bool, closable: Bool, visible: Int }
+export type Mode = Light | Dark | System
 
-export type Notice = { kind: Kind, duration: Int, dismissible: Bool, inverted: Bool }
+export type Props = {
+  position: Position,
+  expanded: Bool,
+  rich: Bool,
+  closable: Bool,
+  inverted: Bool,
+  mode: Mode,
+  visible: Int,
+  duration: Int,
+  gap: Int,
+  offset: Str,
+  mobileOffset: Str,
+  hotkey: Array[Str],
+  swipes: Array[Str],
+  caption: Str,
+  toaster: Str
+}
+
+export type Notice = { kind: Kind, duration: Int, dismissible: Bool, inverted: Bool, rich: Option[Bool] }
 
 export fn props() -> Props
 
@@ -43,7 +61,27 @@ export trait Configuring {
 
   fn closable(self: &Self) -> Self
 
+  fn inverted(self: &Self) -> Self
+
+  fn mode(self: &Self, value: Mode) -> Self
+
   fn visible(self: &Self, count: Int) -> Self
+
+  fn duration(self: &Self, value: Int) -> Self
+
+  fn gap(self: &Self, value: Int) -> Self
+
+  fn offset(self: &Self, value: Str) -> Self
+
+  fn mobileOffset(self: &Self, value: Str) -> Self
+
+  fn hotkey(self: &Self, value: Array[Str]) -> Self
+
+  fn swipes(self: &Self, value: Array[Str]) -> Self
+
+  fn caption(self: &Self, value: Str) -> Self
+
+  fn toaster(self: &Self, value: Str) -> Self
 }
 
 impl Configuring for Props
@@ -56,6 +94,8 @@ export trait Noticing {
   fn persistent(self: &Self) -> Self
 
   fn inverted(self: &Self) -> Self
+
+  fn rich(self: &Self, value: Bool) -> Self
 }
 
 impl Noticing for Notice
@@ -64,11 +104,13 @@ export fn toaster(given: Props) -> H.Node
 
 export fn toast(id: Str, given: Notice) -> H.Node
 
+export fn content() -> H.Node
+
 export fn message() -> H.Node
 
 export fn description() -> H.Node
 
-export fn action(given: Button.Props) -> H.Node
+export fn action() -> H.Node
 
 export fn cancel(id: Str) -> H.Node
 
@@ -79,7 +121,7 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/ToastScript]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
@@ -98,7 +140,7 @@ export fn style() -> Css.Block
 
 ## Depth
 
-DEPTH 0.63 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
+DEPTH 0.65 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Grill Log
 

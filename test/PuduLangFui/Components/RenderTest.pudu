@@ -6,8 +6,10 @@ import Std.Io as Io
 import Std.Test as Test
 import PuduLangFui.Components.Composites.Calendar as Calendar
 import PuduLangFui.Components.Composites.Dialog as Dialog
+import PuduLangFui.Components.Composites.Drawer as Drawer
 import PuduLangFui.Components.Composites.Field as Field
 import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.Toast as Toast
 import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
 import PuduLangFui.Components.Composites.Trace as Trace
 import PuduLangFui.Components.Patterns.Chart as Chart
@@ -70,6 +72,19 @@ fn main() -> Int {
       Test.that("thinking opens", text(Reasoning.reasoning(Reasoning.Thinking, H.p())).contains(" open=\"open\"")),
       Test.that("a finished thought closes", !text(Reasoning.reasoning(Reasoning.Finished, H.p())).contains(" open=\"open\"")),
       Test.equals("no sources render nothing", &text(Sources.sources([])), &""),
+      Test.that("a region is announced politely", text(Toast.toaster(Toast.props())).contains("aria-live=\"polite\"")),
+      Test.that("a region names its hotkey", text(Toast.toaster(Toast.props())).contains("Notifications alt+T")),
+      Test.that("a region defaults to the spec's limits", text(Toast.toaster(Toast.props())).contains("data-visible=\"3\"") && text(Toast.toaster(Toast.props())).contains("data-duration=\"4000\"")),
+      Test.that("a position is written", text(Toast.toaster(Toast.props().position(Toast.TopCenter))).contains("data-position=\"top-center\"")),
+      Test.that("a failure interrupts", text(Toast.toast("a", Toast.notice().kind(Toast.Failure))).contains("role=\"alert\"")),
+      Test.that("a toast without a duration uses the region's", !text(Toast.toast("a", Toast.notice())).contains("data-duration")),
+      Test.that("a persistent toast cannot be swiped", text(Toast.toast("a", Toast.notice().persistent())).contains("data-dismissible=\"false\"")),
+      Test.that("a drawer is closed by its overlay", text(Drawer.drawer("d", "n", Drawer.props(), [])).contains("drawer-overlay")),
+      Test.that("an undismissible overlay does nothing", !text(Drawer.drawer("d", "n", Drawer.props().notDismissible(), [])).contains("<button")),
+      Test.that("snap points are written", text(Drawer.drawer("d", "n", Drawer.props().snapPoints(["0.4", "1"]), [])).contains("data-snap-points=\"0.4,1\"")),
+      Test.that("a drawer has the spec's close threshold", text(Drawer.drawer("d", "n", Drawer.props(), [])).contains("data-close-threshold=\"0.25\"")),
+      Test.that("a handle can be removed", !text(Drawer.drawer("d", "n", Drawer.props().withoutHandle(), [])).contains("drawer-handle")),
+      Test.that("a non-modal drawer has its own opener", text(Drawer.opensBeside("d", Button.props())).contains("--fui-show")),
       Test.that("source links are hardened", text(Sources.sources([Sources.source("a", "https://x")])).contains("noopener"))
     ])
   let report = Test.run(&checks)

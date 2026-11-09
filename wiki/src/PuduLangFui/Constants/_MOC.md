@@ -9,10 +9,12 @@ tags: [moc]
 - [[src/PuduLangFui/Constants/Calendar]] — Month and weekday names, month lengths, and the calendar arithmetic's epoch constants.
 - [[src/PuduLangFui/Constants/Cli]] — Every fixed name and message the generator uses.
 - [[src/PuduLangFui/Constants/Css]] — The fixed names the styling layer writes: the token prefix, the cascade layers, and the base layer's rules.
+- [[src/PuduLangFui/Constants/DrawerScript]] — The behavior of a drawer, as lines of script.
 - [[src/PuduLangFui/Constants/Fonts]] — The default font stacks.
 - [[src/PuduLangFui/Constants/Hues]] — The hues of status colors, which never follow the brand.
 - [[src/PuduLangFui/Constants/Presets]] — The limits and refusal messages of preset codes.
 - [[src/PuduLangFui/Constants/Templates]] — The source text the generator writes for a new project and a new component.
+- [[src/PuduLangFui/Constants/ToastScript]] — The behavior of a toast region, as lines of script.
 
 ## Referenced by
 

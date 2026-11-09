@@ -43,9 +43,12 @@ export fn glyphsOf(library: Str, answer: &Json.Json) -> Array[Glyph] {
   found
 }
 
+/// A drawing as the body of a string literal.
+export fn escaped(body: Str) -> Str { body.replace("\\", "\\\\").replace("\"", "\\\"").replace("\{", "\\\{").replace("\}", "\\\}").replace("\n", " ") }
+
 /// A glyph as a line of the owned table.
 fn entryOf(glyph: &Glyph) -> Str {
-  "    (\"" + glyph.name + "\", (\"0 0 " + show(glyph.width) + " " + show(glyph.height) + "\", \"" + glyph.body.replace("\\", "\\\\").replace("\"", "\\\"").replace("\{", "\\\{").replace("\}", "\\\}") + "\"))"
+  "    (\"" + glyph.name + "\", (\"0 0 " + show(glyph.width) + " " + show(glyph.height) + "\", \"" + escaped(glyph.body) + "\"))"
 }
 
 /// The glyphs with names, newest winning, sorted by name.

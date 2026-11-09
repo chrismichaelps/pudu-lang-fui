@@ -56,4 +56,4 @@ DEPTH 0.63 (MEDIUM). Part of [[subsystems/Styling]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Cli/Commands/New]] · [[src/PuduLangFui/Cli/Commands/Search]] · [[src/PuduLangFui/Cli/Model/Item]] · [[src/PuduLangFui/Cli/Model/Scaffold]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Theme/Base/Tokens]] · [[src/PuduLangFui/Theme/Presets/Preset]] · [[src/PuduLangFui/Utils/_MOC]]
+[[src/PuduLangFui/Cli/Commands/Icons]] · [[src/PuduLangFui/Cli/Commands/New]] · [[src/PuduLangFui/Cli/Commands/Search]] · [[src/PuduLangFui/Cli/Model/IconLibrary]] · [[src/PuduLangFui/Cli/Model/Item]] · [[src/PuduLangFui/Cli/Model/Scaffold]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Theme/Base/Tokens]] · [[src/PuduLangFui/Theme/Presets/Preset]] · [[src/PuduLangFui/Utils/_MOC]]

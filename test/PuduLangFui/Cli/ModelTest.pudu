@@ -8,6 +8,7 @@ import Std.Test as Test
 import PuduLangFui.Cli.Model.Audit as Audit
 import PuduLangFui.Cli.Model.Closure as Closure
 import PuduLangFui.Cli.Model.Config as Config
+import PuduLangFui.Cli.Model.IconLibrary as IconLibrary
 import PuduLangFui.Cli.Model.Icons as Icons
 import PuduLangFui.Cli.Model.Invocation as Invocation
 import PuduLangFui.Cli.Model.Item as Item
@@ -38,6 +39,8 @@ fn main() -> Int {
   let rewritten = Rewrite.rewrite(SOURCE + "const X: Str = \"PuduLangFui.Components.Primitives.Button\"\n", "PuduLangFui", "Ui")
   let config = Config.Config{..Config.defaults(), root: "App", registries: [("@acme", "deps/acme")]}
   let answer = Result.unwrapOr(Json.decode("\{\"width\":24,\"height\":24,\"icons\":\{\"b\":\{\"body\":\"<path/>\",\"width\":32\},\"empty\":\{\}\}\}"), Json.Null)
+  let wholeLibrary = Result.unwrapOr(Json.decode("\{\"width\":24,\"height\":24,\"info\":\{\"name\":\"T\",\"license\":\{\"title\":\"MIT\"\}\},\"icons\":\{\"a\":\{\"body\":\"<path/>\"\}\},\"aliases\":\{\"b\":\{\"parent\":\"a\",\"rotate\":1\},\"c\":\{\"parent\":\"gone\"\}\}\}"), Json.Null)
+  let library = IconLibrary.read("t", &wholeLibrary)
   let glyphs = [Icons.Glyph{name: "a:b", body: "<path d=\"M1\"/>", width: 24, height: 24}]
   let checks = Test.suite("Cli.Model", &[
       Test.equals("the first bare word is the command", &parsed.command, &"add"),
@@ -76,6 +79,15 @@ fn main() -> Int {
       Test.equals("a module records what it holds", &Icons.recorded(Icons.moduleText("Ui", &glyphs)), &glyphs),
       Test.that("a module escapes drawings", Icons.moduleText("Ui", &glyphs).contains("\\\"")),
       Test.equals("a later icon replaces an earlier one", &Icons.merged(&glyphs, &[Icons.Glyph{name: "a:b", body: "new", width: 1, height: 1}]).length(), &1),
+      Test.equals("a library holds its icons and aliases", &library.glyphs.map(|one: Icons.Glyph| one.name), &["t:a", "t:b"]),
+      Test.equals("an alias naming nothing is counted", &library.orphans, &1),
+      Test.equals("a library records its license", &library.license, &"MIT"),
+      Test.that("an alias keeps its rotation", library.glyphs[1].body.contains("rotate(90 12 12)")),
+      Test.equals("no transform leaves a drawing alone", &IconLibrary.transformed("x", 24, 24, 0, false, false), &"x"),
+      Test.that("a flip mirrors a drawing", IconLibrary.transformed("x", 24, 24, 0, true, false).contains("scale(-1 1)")),
+      Test.equals("a library names its module", &IconLibrary.moduleName("Ui", "material-symbols"), &"Ui.Icons.MaterialSymbols"),
+      Test.that("a module strips the library from names", IconLibrary.moduleText("Ui", &library).contains("(\"a\", (\"0 0 24 24\"")),
+      Test.that("a module records its license", IconLibrary.moduleText("Ui", &library).contains("license: MIT")),
       Test.equals("a comment is ignored", &Audit.audit("f", "/// margin-left: 0 $nope", &setOf([])), &[])
     ])
   let report = Test.run(&checks)

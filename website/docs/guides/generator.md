@@ -17,7 +17,7 @@ description: Every command of fui.
 | `fui docs <item> [--json]` | Prints an item's reference. |
 | `fui diff [item]` | Compares your files with upstream. |
 | `fui info [--json]` | Reports the project's setup. |
-| `fui icons search\|add\|libraries` | Finds and adds [icons](icons.md). |
+| `fui icons search\|add\|library\|libraries` | Finds and adds [icons](icons.md), singly or by whole library. |
 | `fui doctor` | Audits tokens, contrast, and layout. |
 | `fui build [--output path]` | Writes the registry index. |
 

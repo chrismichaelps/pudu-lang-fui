@@ -27,7 +27,7 @@ export fn run(context: &Context.Context) -> Outcome.Outcome
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Cli/Commands/Context]] · [[src/PuduLangFui/Cli/Model/Icons]] · [[src/PuduLangFui/Cli/Model/Invocation]] · [[src/PuduLangFui/Cli/Model/Outcome]] · [[src/PuduLangFui/Cli/Workspace/Project]] · [[src/PuduLangFui/Constants/Cli]]
+- **Requires:** [[src/PuduLangFui/Cli/Commands/Context]] · [[src/PuduLangFui/Cli/Model/IconLibrary]] · [[src/PuduLangFui/Cli/Model/Icons]] · [[src/PuduLangFui/Cli/Model/Invocation]] · [[src/PuduLangFui/Cli/Model/Outcome]] · [[src/PuduLangFui/Cli/Workspace/Project]] · [[src/PuduLangFui/Constants/Cli]] · [[src/PuduLangFui/Utils/Spelling]]
 
 ## Algorithm
 

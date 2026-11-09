@@ -292,7 +292,7 @@ fn demoDirection() -> H.Node { Direction.direction("rtl").holding([column("20rem
 fn demoDrawer() -> H.Node {
   H.div().holding([
       Drawer.trigger("goal", Button.props().variant(Button.Outline)).says("Open drawer"),
-      Drawer.drawer("goal", "Move goal", Drawer.props().snapPoints(["40dvh"]), [
+      Drawer.drawer("goal", "Move goal", Drawer.props().snapPoints(["0.4", "1"]), [
           Drawer.header().holding([Drawer.title().says("Move goal"), Drawer.description().says("Drag down to settle, or further to dismiss.")]),
           Drawer.footer().holding([Button.button(Button.props()).says("Submit"), Drawer.close("goal", Button.props().variant(Button.Outline)).says("Cancel")])
         ])
@@ -418,7 +418,7 @@ fn demoTabs() -> H.Node { Tabs.tabs("billing", "month", [Tabs.tab("month", "Mont
 fn demoTextarea() -> H.Node { column("20rem", [Textarea.textarea("message").placeholder("Message")]) }
 
 fn demoToast() -> H.Node {
-  Toast.toaster(Toast.props().position(Toast.BottomCenter).rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.message().says("Event created"), Toast.close("saved"), Toast.description().says("Friday at 5:57 PM")])])
+  Toast.toaster(Toast.props().position(Toast.BottomCenter).rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.content().holding([Toast.message().says("Event created"), Toast.description().says("Friday at 5:57 PM")]), Toast.close("saved")])])
 }
 
 fn demoToggle() -> H.Node { Toggle.toggle("bold", "on", true, Toggle.Outline).holding([Icon.icon(Icon.Star), H.words("Bookmark")]) }

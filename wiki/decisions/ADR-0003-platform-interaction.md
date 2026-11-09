@@ -14,7 +14,8 @@ hydration cost.
 ## Decision
 
 Dialogs are `dialog` with invoker commands; menus and popovers use `popover`; accordions are `details`
-sharing a `name`; tabs are radios. Only what has no declarative form carries a [[domain/Behavior]].
+sharing a `name`; tabs are radios. Only what has no declarative form carries a [[domain/Behavior]]: the drawer drags and the toast stacks
+through scripts, while both still open, read, and close without one.
 
 ## Consequences
 

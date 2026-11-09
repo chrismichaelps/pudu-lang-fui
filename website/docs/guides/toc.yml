@@ -18,6 +18,10 @@
   href: typeset.md
 - name: Generator
   href: generator.md
+- name: Toast
+  href: toast.md
+- name: Drawer
+  href: drawer.md
 - name: Icons
   href: icons.md
 - name: Forms

@@ -28,6 +28,8 @@ export fn split(name: Str) -> Option[(Str, Str)]
 
 export fn glyphsOf(library: Str, answer: &Json.Json) -> Array[Glyph]
 
+export fn escaped(body: Str) -> Str
+
 export fn merged(existing: &Array[Glyph], added: &Array[Glyph]) -> Array[Glyph]
 
 export fn moduleText(root: Str, glyphs: &Array[Glyph]) -> Str
@@ -65,4 +67,4 @@ DEPTH 0.98 (DEEP). Part of [[subsystems/Distribution]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Cli/Commands/Icons]] · [[src/PuduLangFui/Cli/Model/_MOC]]
+[[src/PuduLangFui/Cli/Commands/Icons]] · [[src/PuduLangFui/Cli/Model/IconLibrary]] · [[src/PuduLangFui/Cli/Model/_MOC]]

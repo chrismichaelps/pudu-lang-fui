@@ -20,6 +20,9 @@ tags: [changelog]
   [pudu-lang#838](https://github.com/chrismichaelps/pudu-lang/issues/838) and
   [pudu-lang#839](https://github.com/chrismichaelps/pudu-lang/issues/839), and worked around
   ([[decisions/ADR-0009-flat-style-steps]]).
+- Toast and drawer rebuilt to full behavior: measured stacking, timers, swipe, promise toasts, and
+  pointer dragging with stops, nesting, and a shrinking page. Whole icon libraries install as modules
+  ([[decisions/ADR-0010-icons-on-demand]]).
 - Risk LOW: a new package with no callers. Depth is recorded on each module page.
 
 ## Referenced by

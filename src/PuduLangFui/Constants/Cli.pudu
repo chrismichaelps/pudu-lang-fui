@@ -63,3 +63,12 @@ export const DEFAULT_ICON_SIZE: Int = 24
 
 /// The owned icon module's name.
 export const ICONS_MODULE: Str = "Icons"
+
+/// Where whole icon libraries are published, one document each.
+export const ICON_ARCHIVE: Str = "https://raw.githubusercontent.com/iconify/icon-sets/master/json/"
+
+/// The largest library document accepted, in bytes.
+export const LIBRARY_BYTES: Int = 64000000
+
+/// How long a library download may take, in milliseconds.
+export const LIBRARY_DEADLINE: Int = 180000

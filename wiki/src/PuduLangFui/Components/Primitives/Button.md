@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Components/Primitives/Button.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.82
+depth_score: 0.81
 depth_status: DEEP
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, deep]
@@ -69,7 +69,7 @@ export fn style() -> Css.Block
 
 ## Depth
 
-DEPTH 0.82 (DEEP). Part of [[subsystems/Components]], under [[grammar/pudu]].
+DEPTH 0.81 (DEEP). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Grill Log
 
@@ -78,4 +78,4 @@ DEPTH 0.82 (DEEP). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Blocks/Login]] · [[src/PuduLangFui/Blocks/Pricing]] · [[src/PuduLangFui/Blocks/Settings]] · [[src/PuduLangFui/Blocks/Signup]] · [[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/AlertDialog]] · [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/Dialog]] · [[src/PuduLangFui/Components/Composites/Drawer]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Composites/Sheet]] · [[src/PuduLangFui/Components/Composites/Toast]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Patterns/Menubar]] · [[src/PuduLangFui/Components/Patterns/Questionnaire]] · [[src/PuduLangFui/Components/Primitives/_MOC]] · [[src/PuduLangFui/Elements/Checkpoint]] · [[src/PuduLangFui/Elements/Confirmation]] · [[src/PuduLangFui/Elements/PromptInput]] · [[src/PuduLangFui/Elements/Suggestion]]
+[[src/PuduLangFui/Blocks/Login]] · [[src/PuduLangFui/Blocks/Pricing]] · [[src/PuduLangFui/Blocks/Settings]] · [[src/PuduLangFui/Blocks/Signup]] · [[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/AlertDialog]] · [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/Dialog]] · [[src/PuduLangFui/Components/Composites/Drawer]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Composites/Sheet]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Patterns/Menubar]] · [[src/PuduLangFui/Components/Patterns/Questionnaire]] · [[src/PuduLangFui/Components/Primitives/_MOC]] · [[src/PuduLangFui/Elements/Checkpoint]] · [[src/PuduLangFui/Elements/Confirmation]] · [[src/PuduLangFui/Elements/PromptInput]] · [[src/PuduLangFui/Elements/Suggestion]]

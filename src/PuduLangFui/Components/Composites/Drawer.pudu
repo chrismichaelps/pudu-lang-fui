@@ -1,8 +1,9 @@
-/** @Fui.Drawer.Component — a panel dragged on native scrolling */
+/** @Fui.Drawer.Component — a panel dragged from any edge */
 module PuduLangFui.Components.Composites.Drawer
 
 import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Constants.DrawerScript as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -10,13 +11,48 @@ import PuduLangFui.Domain.Css as Css
 export type Direction = Bottom | Top | Start | End
 
 /** @Fui.Drawer.Props — how a drawer behaves */
-export type Props = { direction: Direction, dismissible: Bool, scalesBackground: Bool, snapPoints: Array[Str], handle: Bool }
+export type Props = {
+  direction: Direction,
+  dismissible: Bool,
+  modal: Bool,
+  nested: Bool,
+  handleOnly: Bool,
+  handle: Bool,
+  preventCycle: Bool,
+  defaultOpen: Bool,
+  scalesBackground: Bool,
+  colorsBodyOnScale: Bool,
+  sequential: Bool,
+  repositionsInputs: Bool,
+  snapPoints: Array[Str],
+  activeSnap: Int,
+  fadeFrom: Option[Int],
+  closeThreshold: Str,
+  scrollLock: Int
+}
 
-/// Closes a drawer dragged past its last stop and resets one that was closed.
-const BEHAVIOR: Str = "document.addEventListener('scrollend',function(e)\{var t=e.target;if(!t.matches||!t.matches('[data-slot=drawer-track]'))return;var v=t.scrollHeight>t.clientHeight;var at=Math.abs(v?t.scrollTop:t.scrollLeft);var max=v?t.scrollHeight-t.clientHeight:t.scrollWidth-t.clientWidth;if(at>=max-2)t.closest('dialog').close()\},true);document.addEventListener('close',function(e)\{if(!e.target.matches('[data-slot=drawer]'))return;var t=e.target.querySelector('[data-slot=drawer-track]');t.scrollTop=0;t.scrollLeft=0\},true);"
-
-/// A bottom drawer that can be dismissed, with a handle and one stop.
-export fn props() -> Props { Props{direction: Bottom, dismissible: true, scalesBackground: false, snapPoints: [], handle: true} }
+/// A bottom modal drawer that can be dismissed, with a handle and no stops.
+export fn props() -> Props {
+  Props {
+    direction: Bottom,
+    dismissible: true,
+    modal: true,
+    nested: false,
+    handleOnly: false,
+    handle: true,
+    preventCycle: false,
+    defaultOpen: false,
+    scalesBackground: false,
+    colorsBodyOnScale: true,
+    sequential: false,
+    repositionsInputs: true,
+    snapPoints: [],
+    activeSnap: 0,
+    fadeFrom: None,
+    closeThreshold: "0.25",
+    scrollLock: 100
+  }
+}
 
 /** @Fui.Drawer.Configuring — one method per prop */
 export trait Configuring {
@@ -24,33 +60,127 @@ export trait Configuring {
   fn direction(self: &Self, value: Direction) -> Self
 
   /// Closes only through its controls.
-  fn modalOnly(self: &Self) -> Self
+  fn notDismissible(self: &Self) -> Self
+
+  /// Leaves the page behind it usable.
+  fn notModal(self: &Self) -> Self
+
+  /// Marks it as opened from another drawer, which shrinks back.
+  fn nested(self: &Self) -> Self
+
+  /// Drags only from the handle.
+  fn handleOnly(self: &Self) -> Self
+
+  /// Removes the drag handle.
+  fn withoutHandle(self: &Self) -> Self
+
+  /// Stops a tap on the handle from moving between stops.
+  fn preventCycle(self: &Self) -> Self
+
+  /// Opens as soon as the page loads.
+  fn defaultOpen(self: &Self) -> Self
 
   /// Shrinks the page wrapper behind it while open.
   fn scalesBackground(self: &Self) -> Self
 
-  /// Adds stops where dragging settles, as lengths left visible, largest last.
+  /// Leaves the page's own background while scaled.
+  fn keepsBodyColor(self: &Self) -> Self
+
+  /// Moves one stop at a time however fast it is dragged.
+  fn sequential(self: &Self) -> Self
+
+  /// Leaves the drawer where it is when the keyboard opens.
+  fn keepsPositionOverKeyboard(self: &Self) -> Self
+
+  /// Sets stops as fractions of the window, or lengths in `px`, smallest first.
   fn snapPoints(self: &Self, value: Array[Str]) -> Self
 
-  /// Removes the drag handle.
-  fn withoutHandle(self: &Self) -> Self
+  /// Sets which stop it opens at.
+  fn activeSnap(self: &Self, index: Int) -> Self
+
+  /// Sets the stop from which the overlay fades in.
+  fn fadeFrom(self: &Self, index: Int) -> Self
+
+  /// Sets the fraction of its size that must be dragged to close it.
+  fn closeThreshold(self: &Self, value: Str) -> Self
+
+  /// Sets the milliseconds after an inner scroll during which dragging is refused.
+  fn scrollLock(self: &Self, value: Int) -> Self
 }
 
 impl Configuring for Props {
   fn direction(self: &Self, value: Direction) -> Self { Props{..*self, direction: value} }
 
-  fn modalOnly(self: &Self) -> Self { Props{..*self, dismissible: false} }
+  fn notDismissible(self: &Self) -> Self { Props{..*self, dismissible: false} }
+
+  fn notModal(self: &Self) -> Self { Props{..*self, modal: false} }
+
+  fn nested(self: &Self) -> Self { Props{..*self, nested: true} }
+
+  fn handleOnly(self: &Self) -> Self { Props{..*self, handleOnly: true} }
+
+  fn withoutHandle(self: &Self) -> Self { Props{..*self, handle: false} }
+
+  fn preventCycle(self: &Self) -> Self { Props{..*self, preventCycle: true} }
+
+  fn defaultOpen(self: &Self) -> Self { Props{..*self, defaultOpen: true} }
 
   fn scalesBackground(self: &Self) -> Self { Props{..*self, scalesBackground: true} }
 
+  fn keepsBodyColor(self: &Self) -> Self { Props{..*self, colorsBodyOnScale: false} }
+
+  fn sequential(self: &Self) -> Self { Props{..*self, sequential: true} }
+
+  fn keepsPositionOverKeyboard(self: &Self) -> Self { Props{..*self, repositionsInputs: false} }
+
   fn snapPoints(self: &Self, value: Array[Str]) -> Self { Props{..*self, snapPoints: value} }
 
-  fn withoutHandle(self: &Self) -> Self { Props{..*self, handle: false} }
+  fn activeSnap(self: &Self, index: Int) -> Self { Props{..*self, activeSnap: index} }
+
+  fn fadeFrom(self: &Self, index: Int) -> Self { Props{..*self, fadeFrom: Some(index)} }
+
+  fn closeThreshold(self: &Self, value: Str) -> Self { Props{..*self, closeThreshold: value} }
+
+  fn scrollLock(self: &Self, value: Int) -> Self { Props{..*self, scrollLock: value} }
 }
 
-/// A button that opens the drawer `id`.
+/// The attributes the drawer's script and rules read.
+fn shellAttributes(id: Str, name: Str, given: &Props) -> Array[(Str, Str)] {
+  let fade = match given.fadeFrom {
+    case Some(index) => [("data-fade-from", show(index))]
+    case None => []
+  }
+
+  [
+    ("data-slot", "drawer"),
+    ("id", id),
+    ("aria-label", name),
+    ("closedby", "none"),
+    ("data-direction", Core.spelled(given.direction)),
+    ("data-dismissible", show(given.dismissible)),
+    ("data-modal", show(given.modal)),
+    ("data-nested", show(given.nested)),
+    ("data-handle-only", show(given.handleOnly)),
+    ("data-default-open", show(given.defaultOpen)),
+    ("data-scales", show(given.scalesBackground)),
+    ("data-scale-body", show(given.colorsBodyOnScale)),
+    ("data-sequential", show(given.sequential)),
+    ("data-reposition", show(given.repositionsInputs)),
+    ("data-snap-points", given.snapPoints.join(",")),
+    ("data-active-snap", show(given.activeSnap)),
+    ("data-close-threshold", given.closeThreshold),
+    ("data-scroll-lock", show(given.scrollLock))
+  ].concat(fade)
+}
+
+/// A button that opens the drawer `id`; a non-modal drawer takes `opensBeside`.
 export fn trigger(id: Str, given: Button.Props) -> H.Node {
   Button.button(given).at("commandfor", id).at("command", "show-modal")
+}
+
+/// A button that opens the non-modal drawer `id`.
+export fn opensBeside(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "--fui-show")
 }
 
 /// A button that closes the drawer `id`.
@@ -58,24 +188,26 @@ export fn close(id: Str, given: Button.Props) -> H.Node {
   Button.button(given).at("commandfor", id).at("command", "close")
 }
 
-/// The stops between fully open and dismissed.
-fn stops(points: &Array[Str]) -> Array[H.Node] {
-  var built: Array[H.Node] = []
+/// The bar a person drags by.
+fn handleOf(given: &Props) -> H.Node {
+  if !given.handle { return H.nothing() }
 
-  for point in points { built = built.push(Core.part("drawer-stop").css("--drawer-stop", point)) }
-
-  built
+  Core.part("drawer-handle").at("aria-hidden", "true").atIf(given.preventCycle, "data-prevent-cycle", "true").holding([Core.part("drawer-handle-area")])
 }
 
-/// A drawer named for assistive software, holding the given panel content.
-export fn drawer(id: Str, name: Str, given: Props, content: Array[H.Node]) -> H.Node {
-  let dismiss = H.button().kind("button").slot("drawer-dismiss").at("commandfor", id).at("command", "close").at("tabindex", "-1").at("aria-hidden", "true")
-  let handle = if given.handle { Core.part("drawer-handle").at("aria-hidden", "true") } else { H.nothing() }
-  let panel = Core.part("drawer-panel").holding([handle].concat(content))
-  let track = Core.part("drawer-track").holding([panel].concat(stops(&given.snapPoints)).concat([dismiss]))
-  let shell = H.dialog().slot("drawer").id(id).label(name).at("closedby", if given.dismissible { "any" } else { "none" })
+/// What sits behind the panel; pressing it closes a dismissible drawer.
+fn overlayOf(id: Str, given: &Props) -> H.Node {
+  if !given.dismissible { return Core.part("drawer-overlay") }
 
-  shell.data("direction", Core.spelled(given.direction)).atIf(given.scalesBackground, "data-scales", "true").holding([track])
+  H.button().kind("button").slot("drawer-overlay").at("commandfor", id).at("command", "close").at("tabindex", "-1").at("aria-hidden", "true")
+}
+
+/// A drawer named for assistive software, holding the given content.
+export fn drawer(id: Str, name: Str, given: Props, content: Array[H.Node]) -> H.Node {
+  H.Node{name: "dialog", attributes: shellAttributes(id, name, &given), children: []}.holding([
+      overlayOf(id, &given),
+      Core.part("drawer-panel").holding([handleOf(&given)].concat(content))
+    ])
 }
 
 /// What the page sits in, when a drawer shrinks it.
@@ -96,28 +228,33 @@ export fn footer() -> H.Node { Core.part("drawer-footer") }
 /// The styles of a drawer.
 export fn style() -> Css.Block {
   Css.block("drawer", [
-      Css.behavior(BEHAVIOR),
-      Css.keyframes("fui-drawer-in", [("from", "opacity: 0")]),
-      Css.base("position: fixed; inset: 0; margin: 0; inline-size: 100vw; max-inline-size: none; block-size: 100dvh; max-block-size: none; padding: 0; background: transparent; border: 0; overflow: hidden"),
-      Css.when("[open]", "display: block; animation: fui-drawer-in $duration-slow $ease-enter"),
-      Css.when("::backdrop", "background: $backdrop"),
-      Css.slot("drawer-track", "display: flex; inline-size: 100%; block-size: 100%; overflow: auto; overscroll-behavior: contain; scrollbar-width: none"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"bottom\"] > [data-slot=\"drawer-track\"]", "flex-direction: column-reverse; scroll-snap-type: block mandatory"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"top\"] > [data-slot=\"drawer-track\"]", "flex-direction: column; scroll-snap-type: block mandatory"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"end\"] > [data-slot=\"drawer-track\"]", "flex-direction: row-reverse; scroll-snap-type: inline mandatory"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"start\"] > [data-slot=\"drawer-track\"]", "flex-direction: row; scroll-snap-type: inline mandatory"),
-      Css.slot("drawer-panel", "display: flex; flex-direction: column; gap: $space-3; flex-shrink: 0; margin: $space-2; padding: $space-4; background: $popover; color: $popover-foreground; border-radius: $radius-4xl; box-shadow: $shadow-xl; font-size: $text-sm; scroll-snap-align: end; overflow: auto; overscroll-behavior: contain"),
-      Css.rule("[data-slot=\"drawer\"]:is([data-direction=\"bottom\"], [data-direction=\"top\"]) [data-slot=\"drawer-panel\"]", "inline-size: calc(100% - $space-4); max-block-size: 85dvh"),
-      Css.rule("[data-slot=\"drawer\"]:is([data-direction=\"start\"], [data-direction=\"end\"]) [data-slot=\"drawer-panel\"]", "inline-size: min(24rem, 85vw); block-size: 100%"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"bottom\"] [data-slot=\"drawer-panel\"]", "border-start-start-radius: $radius-xl; border-start-end-radius: $radius-xl"),
-      Css.rule("[data-slot=\"drawer\"][data-direction=\"top\"] [data-slot=\"drawer-panel\"]", "border-end-start-radius: $radius-xl; border-end-end-radius: $radius-xl"),
-      Css.slot("drawer-stop", "flex-shrink: 0; block-size: var(--drawer-stop); scroll-snap-align: start"),
-      Css.slot("drawer-dismiss", "flex-shrink: 0; flex-grow: 1; min-block-size: 100dvh; min-inline-size: 100vw; padding: 0; background: transparent; border: 0; scroll-snap-align: start"),
-      Css.slot("drawer-handle", "align-self: center; flex-shrink: 0; inline-size: 100px; block-size: calc($unit * 1.5); background: $muted; border-radius: $radius-full"),
-      Css.slot("drawer-wrapper", "transition: scale $duration-slow $ease-standard, border-radius $duration-slow $ease-standard; transform-origin: 50% 0"),
-      Css.rule("body:has([data-slot=\"drawer\"][data-scales=\"true\"][open]) [data-slot=\"drawer-wrapper\"]", "scale: 0.95; border-radius: $radius-xl; overflow: hidden"),
-      Css.rule("body:has([data-slot=\"drawer\"][data-scales=\"true\"][open])", "background: $foreground"),
-      Css.slot("drawer-header", "display: flex; flex-direction: column; gap: $space-1"),
+      Css.behavior(Script.LINES.join("\n")),
+      Css.keyframes("fui-drawer-enter", [("from", "translate: var(--drawer-from)")]),
+      Css.base("--drawer-from: 0 100%; position: fixed; inset: 0; z-index: 50; margin: 0; inline-size: 100vw; max-inline-size: none; block-size: 100dvh; max-block-size: none; padding: 0; background: transparent; border: 0; overflow: hidden"),
+      Css.when("[open]", "display: block"),
+      Css.when("[data-modal=\"false\"]", "pointer-events: none"),
+      Css.when("::backdrop", "background: transparent"),
+      Css.when("[data-dragging=\"true\"]", "user-select: none; cursor: grabbing"),
+      Css.variant("direction", "top", "--drawer-from: 0 -100%"),
+      Css.variant("direction", "end", "--drawer-from: 100% 0"),
+      Css.variant("direction", "start", "--drawer-from: -100% 0"),
+      Css.rule(":dir(rtl)[data-slot=\"drawer\"][data-direction=\"end\"]", "--drawer-from: -100% 0"),
+      Css.rule(":dir(rtl)[data-slot=\"drawer\"][data-direction=\"start\"]", "--drawer-from: 100% 0"),
+      Css.slot("drawer-overlay", "position: absolute; inset: 0; inline-size: 100%; block-size: 100%; padding: 0; background: oklch(0 0 0 / 0.3); border: 0; outline: none; cursor: default"),
+      Css.rule("[data-slot=\"drawer\"][data-modal=\"false\"] > [data-slot=\"drawer-overlay\"]", "display: none"),
+      Css.slot("drawer-panel", "position: absolute; display: flex; flex-direction: column; gap: $space-3; box-sizing: border-box; padding: $space-4; background: $popover; color: $popover-foreground; border-radius: $radius-4xl; box-shadow: $shadow-xl; font-size: $text-sm; pointer-events: auto; touch-action: none; overflow: auto; animation: fui-drawer-enter 500ms cubic-bezier(0.32, 0.72, 0, 1)"),
+      Css.rule("[data-slot=\"drawer\"][data-direction=\"bottom\"] > [data-slot=\"drawer-panel\"]", "inset-block-end: $space-2; inset-inline: $space-2; max-block-size: calc(100dvh - $space-12)"),
+      Css.rule("[data-slot=\"drawer\"][data-direction=\"top\"] > [data-slot=\"drawer-panel\"]", "inset-block-start: $space-2; inset-inline: $space-2; max-block-size: calc(100dvh - $space-12)"),
+      Css.rule("[data-slot=\"drawer\"][data-direction=\"end\"] > [data-slot=\"drawer-panel\"]", "inset-block: $space-2; inset-inline-end: $space-2; inline-size: min(24rem, 85vw)"),
+      Css.rule("[data-slot=\"drawer\"][data-direction=\"start\"] > [data-slot=\"drawer-panel\"]", "inset-block: $space-2; inset-inline-start: $space-2; inline-size: min(24rem, 85vw)"),
+      Css.rule("[data-slot=\"drawer\"]:not([data-snap-points=\"\"]) > [data-slot=\"drawer-panel\"]", "animation: none"),
+      Css.rule("[data-slot=\"drawer\"]:is([data-direction=\"bottom\"], [data-direction=\"top\"]):not([data-snap-points=\"\"]) > [data-slot=\"drawer-panel\"]", "block-size: calc(100dvh - $space-12)"),
+      Css.slot("drawer-handle", "position: relative; align-self: center; flex-shrink: 0; inline-size: 100px; block-size: calc($unit * 1.5); background: $muted; border-radius: $radius-full; opacity: 0.7; cursor: grab; touch-action: pan-y"),
+      Css.slotWhen("drawer-handle", ":is(:hover, :active)", "opacity: 1"),
+      Css.slot("drawer-handle-area", "position: absolute; inset-block-start: 50%; inset-inline-start: 50%; translate: -50% -50%; inline-size: max(100%, 2.75rem); block-size: max(100%, 2.75rem)"),
+      Css.rule("[data-slot=\"drawer\"]:is([data-direction=\"start\"], [data-direction=\"end\"]) [data-slot=\"drawer-handle\"]", "display: none"),
+      Css.slot("drawer-wrapper", "transform-origin: 50% 0"),
+      Css.slot("drawer-header", "display: flex; flex-direction: column; gap: calc($unit * 0.5)"),
       Css.slot("drawer-title", "margin: 0; font-size: $text-md; font-weight: $weight-medium"),
       Css.slot("drawer-description", "margin: 0; font-size: $text-sm; color: $muted-foreground"),
       Css.slot("drawer-footer", "display: flex; flex-direction: column; gap: $space-2")
