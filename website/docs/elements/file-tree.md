@@ -26,8 +26,8 @@ column("20rem", [FileTree.fileTree([FileTree.folder("app", [FileTree.file("layou
 ```pudu
 export type Change = Unchanged | Added | Modified | Deleted
 export type Entry = FileEntry(Str, Change) | FolderEntry(Str, Array[Entry])
-export fn file(name: Str, change: Change) -> Entry FileEntry(name, change) }
-export fn folder(name: Str, entries: Array[Entry]) -> Entry FolderEntry(name, entries) }
+export fn file(name: Str, change: Change) -> Entry
+export fn folder(name: Str, entries: Array[Entry]) -> Entry
 export fn fileTree(entries: Array[Entry]) -> H.Node
 export fn style() -> Css.Block
 ```

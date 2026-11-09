@@ -26,7 +26,7 @@
   --code-bg: oklch(0.97 0 0);
   --header-bg: oklch(1 0 0 / 0.8);
   --hero-bg: none;
-  --hl-k: oklch(0.205 0 0); --hl-s: oklch(0.45 0 0); --hl-c: oklch(0.6 0 0); --hl-n: oklch(0.3 0 0); --hl-l: oklch(0.205 0 0); --hl-t: oklch(0.3 0 0);
+  --tok-keyword: #7c3aed; --tok-literal: #b45309; --tok-number: #b45309; --tok-string: #0f766e; --tok-escape: #0e7490; --tok-interpolation: #3155d5; --tok-comment: #7a8299; --tok-doc: #5e6f9e; --tok-type: #0369a1; --tok-constant: #9d174d; --tok-function: #1d4ed8; --tok-label: #9d174d; --tok-operator: #56607a; --hl-k: var(--tok-keyword); --hl-s: var(--tok-string); --hl-c: var(--tok-comment); --hl-n: var(--tok-number); --hl-l: var(--tok-literal); --hl-t: var(--tok-type);
 }
 
 :root[data-theme="dark"] {
@@ -47,7 +47,7 @@
   --focus: oklch(0.708 0 0);
   --code-bg: oklch(0.269 0 0);
   --header-bg: oklch(0.145 0 0 / 0.8);
-  --hl-k: oklch(0.922 0 0); --hl-s: oklch(0.75 0 0); --hl-c: oklch(0.6 0 0); --hl-n: oklch(0.85 0 0); --hl-l: oklch(0.922 0 0); --hl-t: oklch(0.85 0 0);
+  --tok-keyword: #c4b5fd; --tok-literal: #fbbf24; --tok-number: #fbbf24; --tok-string: #5eead4; --tok-escape: #67e8f9; --tok-interpolation: #93c5fd; --tok-comment: #8b93a7; --tok-doc: #9aa7c7; --tok-type: #7dd3fc; --tok-constant: #f9a8d4; --tok-function: #93c5fd; --tok-label: #f9a8d4; --tok-operator: #a3acc0; --hl-k: var(--tok-keyword); --hl-s: var(--tok-string); --hl-c: var(--tok-comment); --hl-n: var(--tok-number); --hl-l: var(--tok-literal); --hl-t: var(--tok-type);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -69,7 +69,7 @@
     --focus: oklch(0.708 0 0);
     --code-bg: oklch(0.269 0 0);
     --header-bg: oklch(0.145 0 0 / 0.8);
-    --hl-k: oklch(0.922 0 0); --hl-s: oklch(0.75 0 0); --hl-c: oklch(0.6 0 0); --hl-n: oklch(0.85 0 0); --hl-l: oklch(0.922 0 0); --hl-t: oklch(0.85 0 0);
+    --tok-keyword: #c4b5fd; --tok-literal: #fbbf24; --tok-number: #fbbf24; --tok-string: #5eead4; --tok-escape: #67e8f9; --tok-interpolation: #93c5fd; --tok-comment: #8b93a7; --tok-doc: #9aa7c7; --tok-type: #7dd3fc; --tok-constant: #f9a8d4; --tok-function: #93c5fd; --tok-label: #f9a8d4; --tok-operator: #a3acc0; --hl-k: var(--tok-keyword); --hl-s: var(--tok-string); --hl-c: var(--tok-comment); --hl-n: var(--tok-number); --hl-l: var(--tok-literal); --hl-t: var(--tok-type);
   }
 }
 
@@ -111,7 +111,20 @@ a:hover { text-decoration: none; }
 
 .code-block { border: 0; border-radius: 18px; background: var(--code-bg); overflow: hidden; box-shadow: 0 0 0 1px color-mix(in oklab, var(--text) 5%, transparent); }
 .code-block pre { background: none; border: 0; padding: 20px; font-size: 13px; line-height: 1.7; }
-.code-block pre code { background: none; padding: 0; }
+.code-block pre code { background: none; padding: 0; font-variant-ligatures: none; }
+.tok-keyword { color: var(--tok-keyword); font-weight: 600; }
+.tok-literal { color: var(--tok-literal); }
+.tok-number { color: var(--tok-number); }
+.tok-string { color: var(--tok-string); }
+.tok-escape { color: var(--tok-escape); font-weight: 600; }
+.tok-interpolation { color: var(--tok-interpolation); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-doc { color: var(--tok-doc); font-style: italic; }
+.tok-type { color: var(--tok-type); }
+.tok-constant { color: var(--tok-constant); }
+.tok-function { color: var(--tok-function); }
+.tok-label { color: var(--tok-label); }
+.tok-operator { color: var(--tok-operator); }
 .code-header { background: none; border: 0; }
 .copy { border-radius: 999px; }
 

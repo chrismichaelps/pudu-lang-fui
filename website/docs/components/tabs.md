@@ -32,8 +32,8 @@ column("24rem", [Tabs.tabs("report", "overview", [
 
 ```pudu
 export type Variant = Pill | Line
-export type Tab = value: Str, caption: Str, panel: H.Node }
-export fn tab(value: Str, caption: Str, panel: H.Node) -> Tab Tab{value: value, caption: caption, panel: panel} }
+export type Tab = { value: Str, caption: Str, panel: H.Node }
+export fn tab(value: Str, caption: Str, panel: H.Node) -> Tab
 export fn tabs(name: Str, selected: Str, items: Array[Tab], variant: Variant) -> H.Node
 export fn style() -> Css.Block
 ```

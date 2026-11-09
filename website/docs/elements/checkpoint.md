@@ -25,5 +25,5 @@ Turn.turn("Add a settings page.", [H.p().css("margin", "0").says("Added the page
 
 ```pudu
 export fn checkpoint(caption: Str, action: Str) -> H.Node
-export fn style() -> Css.Block Css.block("checkpoint", [Css.base("display: block; margin: 0")]) }
+export fn style() -> Css.Block
 ```

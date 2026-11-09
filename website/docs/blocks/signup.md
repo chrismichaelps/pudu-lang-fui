@@ -25,5 +25,5 @@ column("24rem", [Signup.signup("#", &[])])
 
 ```pudu
 export fn signup(action: Str, errors: &Array[Str]) -> H.Node
-export fn style() -> Css.Block Css.block("signup", [Css.base("inline-size: 100%; max-inline-size: 24rem; margin-inline: auto")]) }
+export fn style() -> Css.Block
 ```

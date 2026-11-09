@@ -43,9 +43,9 @@ column("36rem", [
 ## API
 
 ```pudu
-export type Column[T] = key: Str, header: Str, sortable: Bool, cell: fn(&T) -> H.Node }
-export type View = sort: Str, descending: Bool, page: Int, lastPage: Int }
-export type Links = sortBy: fn(Str, Bool) -> Str, pageAt: fn(Int) -> Str }
+export type Column[T] = { key: Str, header: Str, sortable: Bool, cell: fn(&T) -> H.Node }
+export type View = { sort: Str, descending: Bool, page: Int, lastPage: Int }
+export type Links = { sortBy: fn(Str, Bool) -> Str, pageAt: fn(Int) -> Str }
 export fn column[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T]
 export fn sortable[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T]
 export fn dataTable[T](columns: Array[Column[T]], rows: Array[T], view: View, links: Links, emptyMessage: Str) -> H.Node

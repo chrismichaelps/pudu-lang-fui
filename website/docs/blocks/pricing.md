@@ -24,7 +24,7 @@ H.div().css("inline-size", "100%").holding([Pricing.pricing([Pricing.plan("Free"
 ## API
 
 ```pudu
-export type Plan = name: Str, price: Str, features: Array[Str], target: Str, featured: Bool }
+export type Plan = { name: Str, price: Str, features: Array[Str], target: Str, featured: Bool }
 export fn plan(name: Str, price: Str, features: Array[Str], target: Str, featured: Bool = false) -> Plan
 export fn pricing(plans: Array[Plan]) -> H.Node
 export fn style() -> Css.Block

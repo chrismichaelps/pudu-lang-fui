@@ -29,7 +29,7 @@ column("24rem", [Field.group().holding([
 ## API
 
 ```pudu
-export type Props = checked: Bool, mixed: Bool, disabled: Bool, invalid: Bool }
+export type Props = { checked: Bool, mixed: Bool, disabled: Bool, invalid: Bool }
 export fn props() -> Props
 export trait Configuring
 export fn checkbox(name: Str, given: Props) -> H.Node

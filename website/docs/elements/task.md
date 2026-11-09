@@ -25,5 +25,5 @@ Turn.turn("Add metadata to the home page.", [Task.steps("Updated the page metada
 
 ```pudu
 export fn steps(heading: Str, lines: Array[H.Node]) -> H.Node
-export fn style() -> Css.Block Css.block("task", [Css.base("display: block")]) }
+export fn style() -> Css.Block
 ```

@@ -25,7 +25,7 @@ column("24rem", [Questionnaire.questionnaire(&[Questionnaire.question("feeling",
 
 ```pudu
 export type Kind = Single | Multiple | Freeform
-export type Question = name: Str, prompt: Str, kind: Kind, choices: Array[Str], skippable: Bool }
+export type Question = { name: Str, prompt: Str, kind: Kind, choices: Array[Str], skippable: Bool }
 export fn question(name: Str, prompt: Str, kind: Kind, choices: Array[Str]) -> Question
 export fn questionnaire(questions: &Array[Question], step: Int, action: Str) -> H.Node
 export fn style() -> Css.Block

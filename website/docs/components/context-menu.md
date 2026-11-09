@@ -36,6 +36,6 @@ export fn shortcut() -> H.Node
 export fn checkboxItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node
 export fn radioItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node
 export fn subTrigger(id: Str, caption: Str) -> H.Node
-export fn subMenu(id: Str) -> H.Node menu(id).anchoredTo(id).css("position-area", "inline-end span-block-end") }
+export fn subMenu(id: Str) -> H.Node
 export fn style() -> Css.Block
 ```

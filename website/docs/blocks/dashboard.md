@@ -24,10 +24,10 @@ H.div().css("inline-size", "100%").css("block-size", "36rem").css("overflow", "h
 ## API
 
 ```pudu
-export type Stat = caption: Str, figure: Str }
-export type Link = caption: Str, target: Str, active: Bool }
-export fn stat(caption: Str, figure: Str) -> Stat Stat{caption: caption, figure: figure} }
-export fn link(caption: Str, target: Str, active: Bool = false) -> Link Link{caption: caption, target: target, active: active} }
+export type Stat = { caption: Str, figure: Str }
+export type Link = { caption: Str, target: Str, active: Bool }
+export fn stat(caption: Str, figure: Str) -> Stat
+export fn link(caption: Str, target: Str, active: Bool = false) -> Link
 export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: Array[Chart.Series], content: H.Node) -> H.Node
 export fn style() -> Css.Block
 ```

@@ -26,7 +26,7 @@ column("20rem", [InputGroup.group().holding([InputGroup.addon(InputGroup.Start).
 ```pudu
 export type Align = Start | End | BlockStart | BlockEnd
 export fn group() -> H.Node
-export fn stacked() -> H.Node group().data("multiline", "true") }
+export fn stacked() -> H.Node
 export fn input(name: Str, kind: Str = "text") -> H.Node
 export fn addon(align: Align) -> H.Node
 export fn textarea(name: Str) -> H.Node

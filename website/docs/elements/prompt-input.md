@@ -25,6 +25,6 @@ column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code
 
 ```pudu
 export type State = Idle | Running
-export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = []) -> H.Node
+export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = [], value: Str = "") -> H.Node
 export fn style() -> Css.Block
 ```

@@ -25,5 +25,5 @@ column("30rem", [Suggestion.suggestions("#", &["Add a dark mode toggle", "Fix th
 
 ```pudu
 export fn suggestions(action: Str, prompts: &Array[Str]) -> H.Node
-export fn style() -> Css.Block Css.block("suggestions", [Css.base("display: flex; flex-wrap: wrap; gap: $space-2; margin: 0")]) }
+export fn style() -> Css.Block
 ```

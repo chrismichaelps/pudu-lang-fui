@@ -24,7 +24,7 @@ Typeset.typeset(Typeset.props()).raw("<h2>Rendered document</h2><p>A paragraph w
 ## API
 
 ```pudu
-export type Props = size: Str, leading: Str, flow: Str }
+export type Props = { size: Str, leading: Str, flow: Str }
 export fn props() -> Props
 export trait Configuring
 export fn typeset(given: Props) -> H.Node

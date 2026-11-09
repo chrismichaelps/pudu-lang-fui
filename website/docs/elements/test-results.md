@@ -25,7 +25,7 @@ Turn.turn("Run the checkout tests.", [TestResults.testResults([TestResults.suite
 
 ```pudu
 export type Outcome = Passed | Failed | Skipped
-export type Suite = name: Str, outcome: Outcome, failures: Array[Str] }
+export type Suite = { name: Str, outcome: Outcome, failures: Array[Str] }
 export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite
 export fn testResults(suites: Array[Suite]) -> H.Node
 export fn style() -> Css.Block

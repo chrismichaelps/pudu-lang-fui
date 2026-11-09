@@ -24,7 +24,7 @@ column("20rem", [Field.field().holding([Field.label("api-key").says("API Key"), 
 ## API
 
 ```pudu
-export type Props = kind: Str, invalid: Bool, disabled: Bool, required: Bool }
+export type Props = { kind: Str, invalid: Bool, disabled: Bool, required: Bool }
 export fn props() -> Props
 export trait Configuring
 export fn input(name: Str, given: Props) -> H.Node

@@ -25,5 +25,5 @@ column("30rem", [Turn.turn("How do I add a settings dialog?", [H.p().css("margin
 
 ```pudu
 export fn turn(asked: Str, reply: Array[H.Node]) -> H.Node
-export fn style() -> Css.Block Css.block("turn", [Css.base("display: flex; flex-direction: column; gap: $space-4")]) }
+export fn style() -> Css.Block
 ```

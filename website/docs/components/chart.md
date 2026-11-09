@@ -28,9 +28,9 @@ Card.card().css("inline-size", "36rem").css("--fui-chart-2", "oklch(0.623 0.214 
 
 ```pudu
 export type Kind = Bars | Lines | Areas | Donut | Pie
-export type Series = name: Str, values: Array[Float64] }
-export fn series(name: Str, values: Array[Float64]) -> Series Series{name: name, values: values} }
+export type Series = { name: Str, values: Array[Float64] }
+export fn series(name: Str, values: Array[Float64]) -> Series
 export fn labelled(kind: Kind, caption: Str, labels: Array[Str], all: Array[Series]) -> H.Node
-export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node labelled(kind, caption, [], all) }
+export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node
 export fn style() -> Css.Block
 ```

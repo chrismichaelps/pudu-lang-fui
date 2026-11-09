@@ -28,7 +28,7 @@ export fn datePicker(name: Str, value: Str, calendar: H.Node, hint: Str = "Pick 
 export fn range(startName: Str, endName: Str, startValue: Str, endValue: Str) -> H.Node
 export fn presets() -> H.Node
 export fn isoOf(day: &Calendar.Date) -> Str
-export fn time(name: Str, value: Str) -> H.Node Input.input(name, Input.props().kind("time")).value(value) }
+export fn time(name: Str, value: Str) -> H.Node
 export fn dropdowns(name: Str, years: &Array[Int], names: &Array[Str]) -> H.Node
 export fn style() -> Css.Block
 ```

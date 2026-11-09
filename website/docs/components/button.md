@@ -29,7 +29,7 @@ H.div().css("display", "flex").css("flex-wrap", "wrap").css("justify-content", "
 ```pudu
 export type Variant = Primary | Secondary | Outline | Ghost | Hover | Destructive | Plain
 export type Size = Tiny | Small | Medium | Large | IconTiny | IconSmall | IconMedium | IconLarge
-export type Props = variant: Variant, size: Size, disabled: Bool }
+export type Props = { variant: Variant, size: Size, disabled: Bool }
 export fn props() -> Props
 export trait Configuring
 export fn button(given: Props) -> H.Node

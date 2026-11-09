@@ -582,7 +582,7 @@ fn demoChat() -> H.Node {
       H.div().css("block-size", "calc(100% - 3.75rem)").holding([Chat.chat("Conversation", [H.div().at("data-demo-thread", "").css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-3)").css("padding", "var(--fui-space-4)").holding([
                   Bubble.bubble(Bubble.Secondary, Bubble.End).css("display", "none").at("data-demo-template", ""),
                   Empty.empty().holding([Empty.header().holding([Empty.media().holding([Icon.icon(Icon.Spark)]), Empty.title().says("What should we build?"), Empty.description().says("The agent can read your code, run commands, and make changes. Press send to start.")])])
-                ])], PromptInput.promptInput("#", "Add a dark mode toggle to the settings page.", PromptInput.Idle))])
+                ])], PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle, [], [], "Add a dark mode toggle to the settings page."))])
     ])
 }
 
@@ -601,7 +601,7 @@ fn demoInlineCitation() -> H.Node {
     ])
 }
 
-fn demoModelSelector() -> H.Node { column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle, [], [ModelSelector.modelSelector(&["Fast", "Deep"], &["Low", "Medium", "High"], "Deep", "Medium")])]) }
+fn demoModelSelector() -> H.Node { column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code...", PromptInput.Idle, [], [ModelSelector.modelSelector(&["Pudu Fast", "Pudu Deep"], &["Low", "Medium", "High"], "Pudu Deep", "Medium")])]) }
 
 fn demoPlan() -> H.Node { Turn.turn("Migrate the dialog components.", [Plan.plan("Plan: migrate the dialogs", [Plan.step("Install the new package", Trace.Done), Plan.step("Replace the imports", Trace.Done), Plan.step("Rename the render props", Trace.Running), Plan.step("Run the type checker", Trace.Pending)]), H.p().css("margin", "0").says("Migrated Dialog and AlertDialog. The type checker passes.")]).css("inline-size", "30rem") }
 
@@ -816,9 +816,16 @@ fn pageOf(item: &Item.Item, source: Str, surface: &Array[Str]) -> Str {
     "## API", "", "```pudu", surface.join("\n"), "```", ""].join("\n")
 }
 
+/// A declaration's head: a function without its body, anything else without an opening brace at the end.
+fn signatureOf(text: Str) -> Str {
+  if text.startsWith("export fn") { return text.split(" \{ ")[0].replace(" \{", "") }
+
+  if text.endsWith(" \{") { text.take(text.length() - 2) } else { text }
+}
+
 /// Exported signatures of a source, one declaration per line.
 fn surfaceOf(source: Str) -> Array[Str] {
-  source.split("\n").filter(|text: Str| text.startsWith("export ")).map(|text: Str| text.split(" \{ Core")[0].split(" \{ Button")[0].split(" \{ H.")[0].split(" \{ Props")[0].replace(" \{", ""))
+  source.split("\n").filter(|text: Str| text.startsWith("export ")).map(|text: Str| signatureOf(text))
 }
 
 /// A table of contents for one kind of item.
@@ -833,7 +840,7 @@ fn tocOf(items: &Array[Item.Item]) -> Str {
 }
 
 /// Gives the demonstrations something to do where a real page would call its server.
-const DEMO_SCRIPT: Str = "document.addEventListener('submit', function (event) \{\n  event.preventDefault();\n  var form = event.target, pressed = event.submitter;\n  if (form.matches('[data-slot=confirmation]')) \{ form.querySelector('[data-slot=card-footer]').textContent = pressed.value === 'approve' ? 'Approved' : 'Denied'; return; \}\n  if (form.matches('[data-slot=suggestions]')) \{ var field = document.querySelector('[data-slot=prompt-input] textarea'); field.value = pressed.value; field.focus(); return; \}\n  if (form.matches('[data-slot=prompt-input]')) \{\n    var text = form.querySelector('textarea'), thread = document.querySelector('[data-demo-thread]');\n    if (!text.value.trim()) \{ text.value = text.placeholder; \}\n    if (thread) \{ var bubble = thread.querySelector('[data-demo-template]').cloneNode(false); bubble.style.display = ''; bubble.removeAttribute('data-demo-template'); bubble.textContent = text.value; var empty = thread.querySelector('[data-slot=empty]'); if (empty) empty.remove(); thread.appendChild(bubble); \}\n    text.value = '';\n    return;\n  \}\n  if (form.matches('[data-slot=checkpoint]')) \{ pressed.textContent = 'Restored'; pressed.disabled = true; return; \}\n  if (form.matches('[data-slot=questionnaire]')) \{ form.textContent = 'Thanks, your answers were saved.'; return; \}\n  if (form.closest('[data-slot=data-table-visibility]')) \{ form.closest('[popover]').hidePopover(); return; \}\n  if (pressed && pressed.type === 'submit') \{ var before = pressed.textContent; pressed.textContent = 'Saved'; pressed.disabled = true; setTimeout(function () \{ pressed.textContent = before; pressed.disabled = false; \}, 1200); \}\n\});\ndocument.addEventListener('input', function (event) \{\n  if (!event.target.closest('[data-slot=data-table-filter]')) return;\n  var query = event.target.value.toLowerCase();\n  document.querySelectorAll('[data-slot=data-table] tbody tr').forEach(function (row) \{ row.hidden = row.textContent.toLowerCase().indexOf(query) < 0; \});\n\});\ndocument.addEventListener('change', function (event) \{\n  var choice = event.target.closest('[data-slot=data-table-column] input');\n  if (!choice) return;\n  var position = Array.prototype.indexOf.call(event.target.closest('form').querySelectorAll('input'), choice);\n  document.querySelectorAll('[data-slot=data-table] tr').forEach(function (row) \{ if (row.children[position]) row.children[position].style.display = choice.checked ? '' : 'none'; \});\n\});"
+const DEMO_SCRIPT: Str = "document.addEventListener('submit', function (event) \{\n  event.preventDefault();\n  var form = event.target, pressed = event.submitter;\n  if (form.matches('[data-slot=confirmation]')) \{ form.querySelector('[data-slot=card-footer]').textContent = pressed.value === 'approve' ? 'Approved' : 'Denied'; return; \}\n  if (form.matches('[data-slot=suggestions]')) \{ var field = document.querySelector('[data-slot=prompt-input] textarea'); field.value = pressed.value; field.focus(); field.dispatchEvent(new Event('input', \{ bubbles: true \})); return; \}\n  if (form.matches('[data-slot=prompt-input]')) \{\n    var text = form.querySelector('textarea'), thread = document.querySelector('[data-demo-thread]');\n    if (thread) \{ var bubble = thread.querySelector('[data-demo-template]').cloneNode(false); bubble.style.display = ''; bubble.removeAttribute('data-demo-template'); bubble.textContent = text.value; var empty = thread.querySelector('[data-slot=empty]'); if (empty) empty.remove(); thread.appendChild(bubble); \}\n    text.value = '';\n    text.dispatchEvent(new Event('input', \{ bubbles: true \}));\n    return;\n  \}\n  if (form.matches('[data-slot=checkpoint]')) \{ pressed.textContent = 'Restored'; pressed.disabled = true; return; \}\n  if (form.matches('[data-slot=questionnaire]')) \{ form.textContent = 'Thanks, your answers were saved.'; return; \}\n  if (form.closest('[data-slot=data-table-visibility]')) \{ form.closest('[popover]').hidePopover(); return; \}\n  if (pressed && pressed.type === 'submit') \{ var before = pressed.textContent; pressed.textContent = 'Saved'; pressed.disabled = true; setTimeout(function () \{ pressed.textContent = before; pressed.disabled = false; \}, 1200); \}\n\});\ndocument.addEventListener('input', function (event) \{\n  if (!event.target.closest('[data-slot=data-table-filter]')) return;\n  var query = event.target.value.toLowerCase();\n  document.querySelectorAll('[data-slot=data-table] tbody tr').forEach(function (row) \{ row.hidden = row.textContent.toLowerCase().indexOf(query) < 0; \});\n\});\ndocument.addEventListener('change', function (event) \{\n  var choice = event.target.closest('[data-slot=data-table-column] input');\n  if (!choice) return;\n  var position = Array.prototype.indexOf.call(event.target.closest('form').querySelectorAll('input'), choice);\n  document.querySelectorAll('[data-slot=data-table] tr').forEach(function (row) \{ if (row.children[position]) row.children[position].style.display = choice.checked ? '' : 'none'; \});\n\});"
 
 /// The look the reference pages show; the home page shows the default look.
 const DOCS_LOOK: Str = "classic"
@@ -920,7 +927,7 @@ fn main() -> Int {
         failures = failures + 1
       }
       case Some(build) => {
-        if !saved(DOCS + "/previews/" + item.name + ".html", previewPage(item.name, DOCS_LOOK, build(), &blocks)) { failures = failures + 1 }
+        if !saved(DOCS + "/previews/" + item.name + ".html", previewPage(item.name, if folder == "elements" { Looks.DEFAULT } else { DOCS_LOOK }, build(), &blocks)) { failures = failures + 1 }
         if !saved(DOCS + "/" + folder + "/" + item.name + ".md", pageOf(&item, sourceOf(&program, item.name), &surface)) { failures = failures + 1 }
       }
     }

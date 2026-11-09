@@ -24,8 +24,8 @@ Turn.turn("How do I start a project with pudu?", [H.p().css("margin", "0").says(
 ## API
 
 ```pudu
-export type Source = title: Str, target: Str }
-export fn source(title: Str, target: Str) -> Source Source{title: title, target: target} }
+export type Source = { title: Str, target: Str }
+export fn source(title: Str, target: Str) -> Source
 export fn sources(all: Array[Source], open: Bool = false) -> H.Node
 export fn style() -> Css.Block
 ```

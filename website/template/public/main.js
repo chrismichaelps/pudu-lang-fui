@@ -85,6 +85,10 @@ document.addEventListener("click", function (event) {
   });
 });
 
+if (document.querySelector('pre code[class*="lang-"]')) {
+  import(new URL("highlight/main.js", document.currentScript.src).href);
+}
+
 if (document.querySelector(".fui-create")) {
   import(new URL("create/main.js", document.currentScript.src).href);
 }

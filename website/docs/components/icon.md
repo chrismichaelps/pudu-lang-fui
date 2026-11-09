@@ -27,7 +27,7 @@ H.div().css("display", "flex").css("gap", "var(--fui-space-3)").holding([Icon.ic
 export type Glyph
 export type Size = Small | Medium | Large
 export const GLYPHS: Map[Str, Str] = mapOf([
-export fn icon(glyph: Glyph) -> H.Node sized(glyph, Medium) }
+export fn icon(glyph: Glyph) -> H.Node
 export fn sized(glyph: Glyph, size: Size) -> H.Node
 export fn style() -> Css.Block
 ```

@@ -24,8 +24,8 @@ Turn.turn("Add dark mode to the settings page.", [Queue.queue([Queue.entry("Add 
 ## API
 
 ```pudu
-export type Entry = title: Str, done: Bool }
-export fn entry(title: Str, done: Bool = false) -> Entry Entry{title: title, done: done} }
+export type Entry = { title: Str, done: Bool }
+export fn entry(title: Str, done: Bool = false) -> Entry
 export fn queue(entries: Array[Entry]) -> H.Node
-export fn style() -> Css.Block Css.block("queue", [Css.base("display: flex; flex-direction: column; gap: $space-2")]) }
+export fn style() -> Css.Block
 ```

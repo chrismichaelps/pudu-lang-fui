@@ -26,7 +26,7 @@ ToggleGroup.styled("Text formatting", ToggleGroup.Outline).css("gap", "var(--fui
 ```pudu
 export type Kind = One | Many
 export type Variant = Plain | Outline
-export fn group(caption: Str) -> H.Node styled(caption, Plain) }
+export fn group(caption: Str) -> H.Node
 export fn styled(caption: Str, variant: Variant) -> H.Node
 export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node
 export fn style() -> Css.Block

@@ -41,6 +41,10 @@ export const MENU_KEYS: Str
 export const DATA_TABLE: Str
 
 export const COMMAND_KEYS: Str
+
+export const PROMPT: Str
+
+export const MODEL_MENU: Str
 ```
 
 ### Linkage

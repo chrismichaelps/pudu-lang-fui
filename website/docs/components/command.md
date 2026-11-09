@@ -37,8 +37,8 @@ export fn command() -> H.Node
 export fn input(name: Str, hint: Str) -> H.Node
 export fn list() -> H.Node
 export fn group(heading: Str) -> H.Node
-export fn item() -> H.Node of(H.button().kind("button")) }
-export fn of(element: H.Node) -> H.Node element.slot("command-item") }
+export fn item() -> H.Node
+export fn of(element: H.Node) -> H.Node
 export fn empty(message: Str) -> H.Node
 export fn shortcut() -> H.Node
 export fn separator() -> H.Node

@@ -28,9 +28,9 @@ export type Kind = Neutral | Success | Info | Warning | Failure | Loading
 export type Position = TopStart | TopCenter | TopEnd | BottomStart | BottomCenter | BottomEnd
 export type Mode = Light | Dark | System
 export type Props =
-export type Notice = kind: Kind, duration: Int, dismissible: Bool, inverted: Bool, rich: Option[Bool] }
+export type Notice = { kind: Kind, duration: Int, dismissible: Bool, inverted: Bool, rich: Option[Bool] }
 export fn props() -> Props
-export fn notice() -> Notice Notice{kind: Neutral, duration: -1, dismissible: true, inverted: false, rich: None} }
+export fn notice() -> Notice
 export trait Configuring
 export trait Noticing
 export fn toaster(given: Props) -> H.Node

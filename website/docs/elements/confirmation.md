@@ -25,5 +25,5 @@ Turn.turn("Clean the build folder.", [Confirmation.confirmation("Run this comman
 
 ```pudu
 export fn confirmation(title: Str, detail: Str, action: Str) -> H.Node
-export fn style() -> Css.Block Css.block("confirmation", [Css.base("display: block; margin: 0")]) }
+export fn style() -> Css.Block
 ```

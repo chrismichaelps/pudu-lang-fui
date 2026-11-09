@@ -28,9 +28,9 @@ column("28rem", [
 
 ```pudu
 export type Variant = Plain | Outline | Muted
-export fn item(variant: Variant) -> H.Node of(H.div(), variant) }
-export fn small(variant: Variant) -> H.Node of(H.div(), variant).data("size", "small") }
-export fn of(element: H.Node, variant: Variant) -> H.Node element.slot("item").data("variant", Core.spelled(variant)) }
+export fn item(variant: Variant) -> H.Node
+export fn small(variant: Variant) -> H.Node
+export fn of(element: H.Node, variant: Variant) -> H.Node
 export fn media() -> H.Node
 export fn content() -> H.Node
 export fn title() -> H.Node

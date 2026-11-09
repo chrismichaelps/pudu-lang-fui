@@ -26,7 +26,7 @@ column("24rem", [Message.message(Message.Received).holding([Message.author("A", 
 ```pudu
 export type Side = Received | Sent
 export fn message(side: Side) -> H.Node
-export fn author(initials: Str, description: Str) -> H.Node Avatar.initials(initials, description, Avatar.Small) }
+export fn author(initials: Str, description: Str) -> H.Node
 export fn content() -> H.Node
 export fn actions() -> H.Node
 export fn group() -> H.Node

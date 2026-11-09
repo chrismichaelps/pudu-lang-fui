@@ -33,7 +33,7 @@ H.div().holding([
 ```pudu
 export fn trigger(id: Str, given: Button.Props) -> H.Node
 export fn close(id: Str, given: Button.Props) -> H.Node
-export fn dialog(id: Str, name: Str) -> H.Node plain(id, name).holding([closeIcon(id)]) }
+export fn dialog(id: Str, name: Str) -> H.Node
 export fn plain(id: Str, name: Str) -> H.Node
 export fn header() -> H.Node
 export fn title() -> H.Node

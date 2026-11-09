@@ -25,11 +25,11 @@ loginCard(["Login to your account", "Enter your email below to login to your acc
 
 ```pudu
 export type Size = Regular | Compact
-export fn card() -> H.Node sized(Regular) }
+export fn card() -> H.Node
 export fn sized(size: Size) -> H.Node
 export fn header() -> H.Node
 export fn title() -> H.Node
-export fn titled(heading: H.Node) -> H.Node heading.slot("card-title") }
+export fn titled(heading: H.Node) -> H.Node
 export fn description() -> H.Node
 export fn action() -> H.Node
 export fn content() -> H.Node

@@ -24,12 +24,12 @@ Calendar.calendar(2026, 11, dayLink, monthLink, Calendar.props().today(Calendar.
 ## API
 
 ```pudu
-export type Date = year: Int, month: Int, day: Int }
-export type Props = today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str], dropdowns: Bool }
+export type Date = { year: Int, month: Int, day: Int }
+export type Props = { today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str], dropdowns: Bool }
 export fn props() -> Props
 export trait Configuring
-export fn date(year: Int, month: Int, day: Int) -> Date Date{year: year, month: month, day: day} }
-export fn isLeap(year: Int) -> Bool year % 4 == 0 && (year % 100 != 0 || year % 400 == 0) }
+export fn date(year: Int, month: Int, day: Int) -> Date
+export fn isLeap(year: Int) -> Bool
 export fn daysIn(year: Int, month: Int) -> Int
 export fn weekdayOf(year: Int, month: Int, day: Int) -> Int
 export fn calendar(year: Int, number: Int, linkTo: fn(Date) -> Str, monthLink: fn(Int, Int) -> Str, given: Props) -> H.Node

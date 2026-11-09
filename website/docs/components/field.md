@@ -39,9 +39,9 @@ column("28rem", [Field.group().holding([
 
 ```pudu
 export type Orientation = Vertical | Horizontal | Responsive
-export fn field() -> H.Node oriented(Vertical, false) }
+export fn field() -> H.Node
 export fn oriented(orientation: Orientation, invalid: Bool) -> H.Node
-export fn label(control: Str) -> H.Node Label.label(control) }
+export fn label(control: Str) -> H.Node
 export fn content() -> H.Node
 export fn description() -> H.Node
 export fn error(messages: &Array[Str]) -> H.Node

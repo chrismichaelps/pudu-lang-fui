@@ -37,7 +37,7 @@ export fn label() -> H.Node
 export fn separator() -> H.Node
 export fn shortcut() -> H.Node
 export fn subTrigger(id: Str, caption: Str) -> H.Node
-export fn subMenu(id: Str) -> H.Node menu(id).data("side", "end") }
+export fn subMenu(id: Str) -> H.Node
 export fn group() -> H.Node
 export fn style() -> Css.Block
 ```

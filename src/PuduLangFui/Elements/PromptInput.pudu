@@ -5,6 +5,7 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 /** @Fui.Elements.PromptInput.State — whether a reply is under way */
@@ -14,15 +15,16 @@ export type State = Idle | Running
 const SEND: Map[Str, (Icon.Glyph, Str)] = mapOf([("idle", (Icon.ArrowUp, "Send")), ("running", (Icon.Stop, "Stop"))])
 
 /// A form posting `prompt` to `action`, holding any attachments above the field and any controls beside send.
-export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = []) -> H.Node {
+export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = [], controls: Array[H.Node] = [], value: Str = "") -> H.Node {
   let (glyph, caption) = Core.picked(&SEND, state, (Icon.ArrowUp, "Send"))
+  let field = Textarea.textarea("prompt").placeholder(hint).label(hint).css("background", "transparent").css("border", "0").css("box-shadow", "none").css("padding", "0").css("min-block-size", "2.75rem").css("resize", "none").css("outline", "none")
 
   H.form().slot("prompt-input").method("post").action(action).data("state", Core.spelled(state)).holding(attachments.concat([
-        Textarea.textarea("prompt").placeholder(hint).label(hint).css("background", "transparent").css("border", "0").css("box-shadow", "none").css("padding", "0").css("min-block-size", "2.75rem").css("resize", "none"),
+        if value.isEmpty() { field } else { field.says(value) },
         Core.part("prompt-input-toolbar").holding([
-            Button.button(Button.props().variant(Button.Outline).size(Button.IconSmall)).css("border-radius", "9999px").label("Add an attachment").holding([Icon.icon(Icon.Plus)]),
+            Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).css("inline-size", "2rem").css("block-size", "2rem").css("border-radius", "9999px").label("Add an attachment").holding([Icon.icon(Icon.Plus)]),
             Core.part("prompt-input-controls").holding(controls),
-            Button.submit(Button.props().size(Button.IconSmall)).css("border-radius", "9999px").label(caption).holding([Icon.icon(glyph)])
+            Button.submit(Button.props().size(Button.IconMedium)).css("inline-size", "2rem").css("block-size", "2rem").css("border-radius", "9999px").flagIf(state == Idle && value.isEmpty(), "disabled").data("part", "prompt-input-send").label(caption).holding([Icon.icon(glyph)])
           ])
       ]))
 }
@@ -30,9 +32,10 @@ export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H
 /// The styles of a prompt.
 export fn style() -> Css.Block {
   Css.block("prompt-input", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: $space-3; background: color-mix(in oklab, $muted 70%, transparent); border-radius: calc($radius * 2)"),
-      Css.when(":focus-within", "box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: $space-3; background: color-mix(in oklab, $input 50%, transparent); border: $border-width solid transparent; border-radius: calc($radius * 1.8); outline: none; transition: color 200ms, border-color 200ms, box-shadow 200ms"),
+      Css.when(":has(textarea:focus-visible)", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
       Css.slot("prompt-input-toolbar", "display: flex; align-items: center; gap: $space-2"),
-      Css.slot("prompt-input-controls", "display: flex; flex: 1; align-items: center; justify-content: flex-end; gap: $unit")
+      Css.slot("prompt-input-controls", "display: flex; flex: 1; align-items: center; justify-content: flex-end; gap: $space-2"),
+      Css.behavior(Script.PROMPT)
     ])
 }

@@ -26,7 +26,7 @@ Toggle.toggle("bookmark", "on", false, Toggle.Outline).holding([Icon.sized(Icon.
 ```pudu
 export type Variant = Plain | Outline
 export type Size = Small | Medium | Large
-export fn sized(toggled: H.Node, size: Size) -> H.Node toggled.data("size", Core.spelled(size)) }
+export fn sized(toggled: H.Node, size: Size) -> H.Node
 export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node
 export fn style() -> Css.Block
 ```

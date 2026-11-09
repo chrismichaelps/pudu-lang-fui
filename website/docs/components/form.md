@@ -25,8 +25,8 @@ column("22rem", [Form.form("#").holding([Form.item(&mapOf([("user", ["Username i
 
 ```pudu
 export type Problems = Map[Str, Array[Str]]
-export fn clean() -> Problems mapOf([]) }
+export fn clean() -> Problems
 export fn form(action: Str) -> H.Node
 export fn item(problems: &Problems, name: Str, caption: Str, control: H.Node, hint: Str) -> H.Node
-export fn style() -> Css.Block Css.block("form", [Css.base("display: flex; flex-direction: column; gap: $space-6; margin: 0")]) }
+export fn style() -> Css.Block
 ```

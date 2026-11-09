@@ -24,8 +24,8 @@ Turn.turn("Migrate the dialog components.", [Plan.plan("Plan: migrate the dialog
 ## API
 
 ```pudu
-export type Step = title: Str, status: Trace.Status }
-export fn step(title: Str, status: Trace.Status) -> Step Step{title: title, status: status} }
+export type Step = { title: Str, status: Trace.Status }
+export fn step(title: Str, status: Trace.Status) -> Step
 export fn plan(title: Str, steps: Array[Step]) -> H.Node
 export fn style() -> Css.Block
 ```

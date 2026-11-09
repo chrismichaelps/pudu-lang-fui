@@ -2,18 +2,49 @@
 module PuduLangFui.Elements.ModelSelector
 
 import Std.Html.Build as H
-import PuduLangFui.Components.Composites.Select as Select
+import PuduLangFui.Components.Composites.DropdownMenu as DropdownMenu
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
-/// One borderless menu of the values with the current one selected.
-fn menu(name: Str, caption: Str, values: &Array[Str], current: Str) -> H.Node {
-  Select.select(name).label(caption).css("inline-size", "fit-content").css("background", "transparent").css("border-color", "transparent").css("box-shadow", "none").holding(values.map(|value: Str| Select.option(value, value, value == current)))
+
+/// One choice of a menu, marked when it is the current one.
+fn choice(value: Str, current: Str) -> H.Node {
+  H.button().kind("button").slot("dropdown-menu-item").role("menuitemradio").at("aria-checked", if value == current { "true" } else { "false" }).holding([
+      H.span().says(value),
+      Core.inline("model-selector-check").holding([Icon.sized(Icon.Check, Icon.Small)])
+    ])
+}
+
+/// A pill naming the current value, opening a menu of the others.
+fn menu(name: Str, caption: Str, prefix: Str, values: &Array[Str], current: Str) -> H.Node {
+  let id = name + "-menu"
+
+  Core.inline("model-selector-menu").holding([
+      H.input().kind("hidden").name(name).value(current),
+      DropdownMenu.trigger(id, Button.props().variant(Button.Outline).size(Button.Small)).css("block-size", "2rem").css("padding-inline", "0.75rem").label(caption).holding([
+          if prefix.isEmpty() { H.nothing() } else { Core.inline("model-selector-prefix").says(prefix) },
+          Core.inline("model-selector-value").says(current),
+          Icon.sized(Icon.ChevronDown, Icon.Small)
+        ]),
+      DropdownMenu.menu(id).holding(values.map(|value: Str| choice(value, current)))
+    ])
 }
 
 /// Two menus for the model and how hard it works.
 export fn modelSelector(models: &Array[Str], efforts: &Array[Str], model: Str, effort: Str) -> H.Node {
-  Core.part("model-selector").holding([menu("model", "Model", models, model), menu("effort", "Effort", efforts, effort)])
+  Core.part("model-selector").holding([menu("model", "Model", "", models, model), menu("effort", "Effort", "Effort", efforts, effort)])
 }
 
 /// The styles of a selector.
-export fn style() -> Css.Block { Css.block("model-selector", [Css.base("display: inline-flex; align-items: center; gap: $unit")]) }
+export fn style() -> Css.Block {
+  Css.block("model-selector", [
+      Css.base("display: inline-flex; align-items: center; gap: $space-2"),
+      Css.slot("model-selector-menu", "display: inline-flex"),
+      Css.slot("model-selector-prefix", "color: $muted-foreground"),
+      Css.slot("model-selector-check", "display: inline-flex; margin-inline-start: auto"),
+      Css.rule("[aria-checked=\"false\"] > [data-slot=\"model-selector-check\"]", "visibility: hidden"),
+      Css.behavior(Script.MODEL_MENU)
+    ])
+}

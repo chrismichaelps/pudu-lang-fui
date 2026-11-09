@@ -25,5 +25,5 @@ Direction.direction("rtl").holding([loginCard(["تسجيل الدخول إلى �
 
 ```pudu
 export fn direction(value: Str) -> H.Node
-export fn style() -> Css.Block Css.block("direction", [Css.base("display: contents")]) }
+export fn style() -> Css.Block
 ```

@@ -28,7 +28,7 @@ H.div().holding([
 
 ```pudu
 export type Side = Above | Below | Start | End
-export fn opens(control: H.Node, id: Str) -> H.Node control.at("popovertarget", id).anchors(id) }
+export fn opens(control: H.Node, id: Str) -> H.Node
 export fn content(id: Str, side: Side) -> H.Node
 export fn header() -> H.Node
 export fn title() -> H.Node
