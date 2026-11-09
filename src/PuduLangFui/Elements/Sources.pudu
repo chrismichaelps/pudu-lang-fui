@@ -1,0 +1,39 @@
+/** @Fui.Elements.Sources.Element — links a reply used */
+module PuduLangFui.Elements.Sources
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Elements.Sources.Source — one link used */
+export type Source = { title: Str, target: Str }
+
+/// A link used.
+export fn source(title: Str, target: Str) -> Source { Source{title: title, target: target} }
+
+/// One link written out.
+fn written(one: &Source) -> H.Node {
+  H.li().holding([H.a().slot("sources-link").href(one.target).at("rel", "noopener noreferrer").holding([Icon.sized(Icon.Globe, Icon.Small), H.words(one.title)])])
+}
+
+/// The links under a count, or nothing when there are none.
+export fn sources(all: Array[Source]) -> H.Node {
+  if all.isEmpty() { return H.nothing() }
+
+  H.details().slot("sources").holding([
+      H.summary().slot("sources-summary").says("Used " + show(all.length()) + " sources"),
+      H.ul().slot("sources-list").holding(all.map(|one: Source| written(&one)))
+    ])
+}
+
+/// The styles of sources.
+export fn style() -> Css.Block {
+  Css.block("sources", [
+      Css.base("display: block; font-size: $text-sm"),
+      Css.slot("sources-summary", "cursor: pointer; color: $muted-foreground"),
+      Css.slot("sources-list", "display: flex; flex-direction: column; gap: $space-1; margin: $space-2 0 0; padding: 0; list-style: none"),
+      Css.slot("sources-link", "display: inline-flex; align-items: center; gap: $space-2; color: inherit; text-decoration: none"),
+      Css.slotWhen("sources-link", ":hover", "color: $primary")
+    ])
+}

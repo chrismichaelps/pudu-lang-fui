@@ -1,0 +1,44 @@
+/** @Fui.Bubble.Component — conversational content in a bubble */
+module PuduLangFui.Components.Primitives.Bubble
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Bubble.Variant — how strongly a bubble is drawn */
+export type Variant = Primary | Secondary | Muted | Outline | Destructive | Tinted | Ghost
+
+/** @Fui.Bubble.Align — which side of the thread it sits on */
+export type Align = Start | End
+
+/// A bubble.
+export fn bubble(variant: Variant, align: Align) -> H.Node {
+  Core.part("bubble").data("variant", Core.spelled(variant)).data("align", Core.spelled(align))
+}
+
+/// Bubbles from one speaker, set close together.
+export fn group() -> H.Node { Core.part("bubble-group") }
+
+/// A reaction attached to a bubble.
+export fn reaction() -> H.Node { Core.inline("bubble-reaction") }
+
+/// Reactions under a bubble.
+export fn reactions() -> H.Node { Core.part("bubble-reactions") }
+
+/// The styles of a bubble.
+export fn style() -> Css.Block {
+  Css.block("bubble", [
+      Css.base("inline-size: fit-content; max-inline-size: 80%; padding: calc($unit * 2.5) calc($unit * 3.5); border: $border-width solid transparent; border-radius: $radius-3xl; font-size: $text-sm; line-height: 1.625; overflow-wrap: anywhere"),
+      Css.variant("align", "end", "margin-inline-start: auto"),
+      Css.variant("variant", "primary", "background: $primary; color: $primary-foreground"),
+      Css.variant("variant", "secondary", "background: $secondary; color: $secondary-foreground"),
+      Css.variant("variant", "muted", "background: $muted; color: $muted-foreground"),
+      Css.variant("variant", "outline", "border-color: $border"),
+      Css.variant("variant", "destructive", "background: $destructive; color: $destructive-foreground"),
+      Css.variant("variant", "tinted", "background: color-mix(in oklab, $primary 12%, $background); color: $foreground"),
+      Css.variant("variant", "ghost", "padding-inline: 0; background: transparent"),
+      Css.slot("bubble-group", "display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("bubble-reaction", "display: inline-flex; padding: 0 $space-1; background: $card; border: $border-width solid $border; border-radius: $radius-full; font-size: $text-xs"),
+      Css.slot("bubble-reactions", "display: inline-flex; gap: $space-1; padding: calc($unit * 0.5) calc($unit * 1.5); background: $muted; border-radius: $radius-full; box-shadow: 0 0 0 3px $card; font-size: $text-sm")
+    ])
+}

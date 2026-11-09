@@ -1,0 +1,202 @@
+/** @Fui.Catalog.Module — every style block the package ships */
+module PuduLangFui.Catalog.Catalog
+
+import PuduLangFui.Blocks.Dashboard as Dashboard
+import PuduLangFui.Blocks.Login as Login
+import PuduLangFui.Blocks.Pricing as Pricing
+import PuduLangFui.Blocks.Settings as Settings
+import PuduLangFui.Blocks.Signup as Signup
+import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
+import PuduLangFui.Components.Composites.Attachment as Attachment
+import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
+import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.CodeBlock as CodeBlock
+import PuduLangFui.Components.Composites.Combobox as Combobox
+import PuduLangFui.Components.Composites.ContextMenu as ContextMenu
+import PuduLangFui.Components.Composites.Dialog as Dialog
+import PuduLangFui.Components.Composites.Drawer as Drawer
+import PuduLangFui.Components.Composites.DropdownMenu as DropdownMenu
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Composites.InputGroup as InputGroup
+import PuduLangFui.Components.Composites.InputOtp as InputOtp
+import PuduLangFui.Components.Composites.Message as Message
+import PuduLangFui.Components.Composites.MessageScroller as MessageScroller
+import PuduLangFui.Components.Composites.NavigationMenu as NavigationMenu
+import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.Select as Select
+import PuduLangFui.Components.Composites.Sheet as Sheet
+import PuduLangFui.Components.Composites.Spinner as Spinner
+import PuduLangFui.Components.Composites.Toast as Toast
+import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Patterns.Chart as Chart
+import PuduLangFui.Components.Patterns.Command as Command
+import PuduLangFui.Components.Patterns.DataTable as DataTable
+import PuduLangFui.Components.Patterns.DatePicker as DatePicker
+import PuduLangFui.Components.Patterns.Form as Form
+import PuduLangFui.Components.Patterns.Menubar as Menubar
+import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
+import PuduLangFui.Components.Patterns.Sidebar as Sidebar
+import PuduLangFui.Components.Primitives.Accordion as Accordion
+import PuduLangFui.Components.Primitives.Alert as Alert
+import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
+import PuduLangFui.Components.Primitives.Avatar as Avatar
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Components.Primitives.Bubble as Bubble
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.ButtonGroup as ButtonGroup
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Collapsible as Collapsible
+import PuduLangFui.Components.Primitives.Direction as Direction
+import PuduLangFui.Components.Primitives.Effects as Effects
+import PuduLangFui.Components.Primitives.Empty as Empty
+import PuduLangFui.Components.Primitives.HoverCard as HoverCard
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Item as Item
+import PuduLangFui.Components.Primitives.Kbd as Kbd
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Components.Primitives.Marker as Marker
+import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Components.Primitives.RadioGroup as RadioGroup
+import PuduLangFui.Components.Primitives.Resizable as Resizable
+import PuduLangFui.Components.Primitives.ScrollArea as ScrollArea
+import PuduLangFui.Components.Primitives.Separator as Separator
+import PuduLangFui.Components.Primitives.Skeleton as Skeleton
+import PuduLangFui.Components.Primitives.Slider as Slider
+import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Components.Primitives.Table as Table
+import PuduLangFui.Components.Primitives.Tabs as Tabs
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Components.Primitives.Toggle as Toggle
+import PuduLangFui.Components.Primitives.Tooltip as Tooltip
+import PuduLangFui.Components.Primitives.Typeset as Typeset
+import PuduLangFui.Components.Primitives.Typography as Typography
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Elements.ChainOfThought as ChainOfThought
+import PuduLangFui.Elements.Chat as Chat
+import PuduLangFui.Elements.Checkpoint as Checkpoint
+import PuduLangFui.Elements.Confirmation as Confirmation
+import PuduLangFui.Elements.Context as Context
+import PuduLangFui.Elements.FileTree as FileTree
+import PuduLangFui.Elements.InlineCitation as InlineCitation
+import PuduLangFui.Elements.ModelSelector as ModelSelector
+import PuduLangFui.Elements.Plan as Plan
+import PuduLangFui.Elements.PromptInput as PromptInput
+import PuduLangFui.Elements.Queue as Queue
+import PuduLangFui.Elements.Reasoning as Reasoning
+import PuduLangFui.Elements.Sources as Sources
+import PuduLangFui.Elements.StackTrace as StackTrace
+import PuduLangFui.Elements.Subagent as Subagent
+import PuduLangFui.Elements.Suggestion as Suggestion
+import PuduLangFui.Elements.Task as Task
+import PuduLangFui.Elements.Terminal as Terminal
+import PuduLangFui.Elements.TestResults as TestResults
+import PuduLangFui.Elements.Tool as Tool
+import PuduLangFui.Elements.Turn as Turn
+
+/// Every style block, for a program using the package as a whole.
+export fn all() -> Array[Css.Block] {
+  [
+    Accordion.style(),
+    Alert.style(),
+    AspectRatio.style(),
+    Avatar.style(),
+    Badge.style(),
+    Bubble.style(),
+    Button.style(),
+    ButtonGroup.style(),
+    Card.style(),
+    Checkbox.style(),
+    Collapsible.style(),
+    Direction.style(),
+    Effects.style(),
+    Empty.style(),
+    HoverCard.style(),
+    Icon.style(),
+    Input.style(),
+    Item.style(),
+    Kbd.style(),
+    Label.style(),
+    Marker.style(),
+    NativeSelect.style(),
+    Popover.style(),
+    Progress.style(),
+    RadioGroup.style(),
+    Resizable.style(),
+    ScrollArea.style(),
+    Separator.style(),
+    Skeleton.style(),
+    Slider.style(),
+    Switch.style(),
+    Table.style(),
+    Tabs.style(),
+    Textarea.style(),
+    Toggle.style(),
+    Tooltip.style(),
+    Typeset.style(),
+    Typography.style(),
+    AlertDialog.style(),
+    Attachment.style(),
+    Breadcrumb.style(),
+    Calendar.style(),
+    Carousel.style(),
+    CodeBlock.style(),
+    Combobox.style(),
+    ContextMenu.style(),
+    Dialog.style(),
+    Drawer.style(),
+    DropdownMenu.style(),
+    Field.style(),
+    InputGroup.style(),
+    InputOtp.style(),
+    Message.style(),
+    MessageScroller.style(),
+    NavigationMenu.style(),
+    Pagination.style(),
+    Select.style(),
+    Sheet.style(),
+    Spinner.style(),
+    Toast.style(),
+    ToggleGroup.style(),
+    Trace.style(),
+    Chart.style(),
+    Command.style(),
+    DataTable.style(),
+    DatePicker.style(),
+    Form.style(),
+    Menubar.style(),
+    Questionnaire.style(),
+    Sidebar.style(),
+    ChainOfThought.style(),
+    Chat.style(),
+    Checkpoint.style(),
+    Confirmation.style(),
+    Context.style(),
+    FileTree.style(),
+    InlineCitation.style(),
+    ModelSelector.style(),
+    Plan.style(),
+    PromptInput.style(),
+    Queue.style(),
+    Reasoning.style(),
+    Sources.style(),
+    StackTrace.style(),
+    Subagent.style(),
+    Suggestion.style(),
+    Task.style(),
+    Terminal.style(),
+    TestResults.style(),
+    Tool.style(),
+    Turn.style(),
+    Dashboard.style(),
+    Login.style(),
+    Pricing.style(),
+    Settings.style(),
+    Signup.style()
+  ]
+}

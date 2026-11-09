@@ -1,0 +1,63 @@
+/** @Fui.Cli.Commands.Diff.Command — owned against upstream */
+module PuduLangFui.Cli.Commands.Diff
+
+import Std.Diff as Differ
+import Std.Io as Io
+import Std.Result as Result
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Closure as Closure
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Model.Rewrite as Rewrite
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Cli.Workspace.Registry as Registry
+
+/// Lines of context around each change.
+const CONTEXT_LINES: Int = 3
+
+/// The diff of one item, empty when it matches upstream.
+fn differenceOf(project: &Project.Project, registry: &Registry.Registry, item: &Item.Item) -> Str {
+  let target = Project.targetOf(project, item)
+  let upstream = Rewrite.rewrite(Result.unwrapOr(Io.read(item.path), ""), registry.moduleRoot, project.config.root)
+  let current = Result.unwrapOr(Io.read(target), "")
+
+  if current == upstream { "" } else { Differ.unifiedDiff(item.name + " (upstream)", target, upstream, current, CONTEXT_LINES) }
+}
+
+/// Every owned item and whether it differs.
+fn summary(project: &Project.Project, registry: &Registry.Registry) -> Outcome.Outcome {
+  var lines: Array[Str] = []
+
+  for item in registry.items {
+    if Io.exists(Project.targetOf(project, &item)) {
+      lines = lines.push((if differenceOf(project, registry, &item).isEmpty() { "same     " } else { "changed  " }) + item.name)
+    }
+  }
+
+  Outcome.done(lines)
+}
+
+/// Shows one item's diff, or a summary with no name.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let registry = match Context.defaultLoaded(context) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+
+  if context.invocation.words.isEmpty() { return summary(&project, &registry) }
+
+  let name = context.invocation.words[0]
+
+  match Closure.find(&registry.items, name) {
+    case None => Outcome.failed(["unknown item: " + name])
+    case Some(item) => {
+      let difference = differenceOf(&project, &registry, &item)
+
+      Outcome.done([if difference.isEmpty() { item.name + " matches upstream" } else { difference }])
+    }
+  }
+}

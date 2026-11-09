@@ -1,0 +1,11 @@
+/** @Fui.Cli.Outcome.Module — what a command answers */
+module PuduLangFui.Cli.Model.Outcome
+
+/** @Fui.Cli.Outcome.Outcome — exit status and text */
+export type Outcome = { status: Int, lines: Array[Str], problems: Array[Str] }
+
+/// A success printing the lines.
+export fn done(lines: Array[Str]) -> Outcome { Outcome{status: 0, lines: lines, problems: []} }
+
+/// A failure explaining why.
+export fn failed(problems: Array[Str]) -> Outcome { Outcome{status: 1, lines: [], problems: problems} }

@@ -1,0 +1,23 @@
+/** @Fui.Elements.Terminal.Element — a command and its output */
+module PuduLangFui.Elements.Terminal
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A command and what it printed.
+export fn terminal(command: Str, output: Str) -> H.Node {
+  Core.part("terminal").holding([
+      H.code().slot("terminal-command").says("$ " + command),
+      H.pre().slot("terminal-output").says(output)
+    ])
+}
+
+/// The styles of a terminal.
+export fn style() -> Css.Block {
+  Css.block("terminal", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2; padding: $space-3; background: oklch(0.16 0 0); color: oklch(0.95 0 0); border-radius: $radius-md; font-family: $font-mono; font-size: $text-xs; overflow-x: auto"),
+      Css.slot("terminal-command", "font-weight: $weight-semibold"),
+      Css.slot("terminal-output", "margin: 0; white-space: pre; opacity: 0.85")
+    ])
+}

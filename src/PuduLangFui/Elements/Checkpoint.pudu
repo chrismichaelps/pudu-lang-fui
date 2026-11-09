@@ -1,0 +1,23 @@
+/** @Fui.Elements.Checkpoint.Element — a point to return to */
+module PuduLangFui.Elements.Checkpoint
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Marker as Marker
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A marked point with a form that restores it.
+export fn checkpoint(caption: Str, action: Str) -> H.Node {
+  H.form().slot("checkpoint").method("post").action(action).holding([
+      Marker.marker(Marker.Divider).holding([
+          Icon.sized(Icon.Flag, Icon.Small),
+          H.words(caption),
+          Button.submit(Button.props().variant(Button.Ghost).size(Button.Tiny)).says("Restore")
+        ])
+    ])
+}
+
+/// The styles of a checkpoint.
+export fn style() -> Css.Block { Css.block("checkpoint", [Css.base("display: block; margin: 0")]) }

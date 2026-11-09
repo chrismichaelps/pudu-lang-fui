@@ -1,0 +1,30 @@
+/** @Fui.Badge.Component — a small label in seven treatments */
+module PuduLangFui.Components.Primitives.Badge
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Badge.Variant — what a badge says about itself */
+export type Variant = Primary | Secondary | Outline | Ghost | Link | Destructive | Success | Warning | Info
+
+/// A small label.
+export fn badge(variant: Variant) -> H.Node {
+  Core.inline("badge").data("variant", Core.spelled(variant))
+}
+
+/// The styles of a badge.
+export fn style() -> Css.Block {
+  Css.block("badge", [
+      Css.base("display: inline-flex; align-items: center; justify-content: center; gap: $space-1; inline-size: fit-content; block-size: calc($unit * 5); padding: calc($unit * 0.5) $space-2; border: $border-width solid transparent; border-radius: $radius-3xl; font-size: $text-xs; font-weight: $weight-medium; white-space: nowrap; transition: background-color $duration-fast $ease-standard"),
+      Css.variant("variant", "primary", "background: $primary; color: $primary-foreground"),
+      Css.variant("variant", "secondary", "background: $secondary; color: $secondary-foreground"),
+      Css.variant("variant", "outline", "border-color: $border; color: $foreground"),
+      Css.variant("variant", "destructive", "background: color-mix(in oklab, $destructive 10%, transparent); color: $destructive"),
+      Css.variant("variant", "success", "background: color-mix(in oklab, $success 12%, transparent); color: $success"),
+      Css.variant("variant", "warning", "background: color-mix(in oklab, $warning 14%, transparent); color: $warning"),
+      Css.variant("variant", "info", "background: color-mix(in oklab, $info 12%, transparent); color: $info"),
+      Css.variant("variant", "ghost", "color: $foreground"),
+      Css.variant("variant", "link", "color: $primary; text-decoration: underline; text-underline-offset: 3px")
+    ])
+}

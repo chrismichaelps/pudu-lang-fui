@@ -1,0 +1,96 @@
+/** @Fui.Root.Module — renders pages and stylesheets */
+module PuduLangFui
+
+import Std.Html.Build as H
+import Std.Html as Html
+import Std.List as List
+import PuduLangFui.Constants.Css as Constant
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Domain.Slots as Slots
+import PuduLangFui.Theme.Build.Theme as Theme
+
+/** @Fui.Root.Page — what surrounds a page's body */
+export type Page = {
+  title: Str,
+  language: Str,
+  direction: Str,
+  mode: Option[Str],
+  theme: Theme.Theme,
+  blocks: Array[Css.Block],
+  head: Array[H.Node]
+}
+
+/// A left-to-right English page in the given theme, styled from the given blocks.
+export fn page(title: Str, theme: Theme.Theme, blocks: Array[Css.Block]) -> Page {
+  Page{title: title, language: "en", direction: "ltr", mode: None, theme: theme, blocks: blocks, head: []}
+}
+
+/** @Fui.Root.Paging — the chain that adjusts a page */
+export trait Paging {
+  /// Sets the document's language.
+  fn language(self: &Self, value: Str) -> Self
+
+  /// Lays the page out right to left.
+  fn rightToLeft(self: &Self) -> Self
+
+  /// Forces `light` or `dark` instead of following the visitor.
+  fn mode(self: &Self, value: Str) -> Self
+
+  /// Adds nodes to the document's head.
+  fn inHead(self: &Self, nodes: Array[H.Node]) -> Self
+}
+
+impl Paging for Page {
+  fn language(self: &Self, value: Str) -> Self { Page{..*self, language: value} }
+
+  fn rightToLeft(self: &Self) -> Self { Page{..*self, direction: "rtl"} }
+
+  fn mode(self: &Self, value: Str) -> Self { Page{..*self, mode: Some(value)} }
+
+  fn inHead(self: &Self, nodes: Array[H.Node]) -> Self { Page{..*self, head: self.head.concat(nodes)} }
+}
+
+/// The blocks that own at least one slot the view renders.
+export fn neededBy(view: &Html.Html, blocks: &Array[Css.Block]) -> Array[Css.Block] {
+  let used = Slots.used(view)
+
+  blocks.filter(|held: Css.Block| List.any(&held.slots, |slot: Str| used.contains(slot)))
+}
+
+/// The whole stylesheet for a theme and these blocks.
+export fn stylesheet(theme: &Theme.Theme, blocks: &Array[Css.Block]) -> Str {
+  [Constant.LAYER_ORDER, Constant.BASE_LAYER, Theme.render(theme), Css.render(blocks)].join("\n")
+}
+
+/// The behaviors of the blocks as one script's text, empty when there are none.
+fn scriptOf(blocks: &Array[Css.Block]) -> Str {
+  var scripts: Array[Str] = []
+
+  for held in blocks { scripts = scripts.concat(held.behaviors) }
+
+  scripts.join("\n")
+}
+
+/// A complete document holding only the styles and behaviors the body uses.
+export fn document(given: &Page, body: H.Node) -> Str {
+  let view = body.html()
+  let needed = neededBy(&view, &given.blocks)
+  let script = scriptOf(&needed)
+  let root = H.html().at("lang", given.language).at("dir", given.direction)
+  let moded = match given.mode {
+    case Some(value) => root.data("mode", value)
+    case None => root
+  }
+  let tail = if script.isEmpty() { H.nothing() } else { H.script().raw(script) }
+  let shell = moded.holding([
+      H.head().holding([
+          H.meta().at("charset", "utf-8"),
+          H.meta().name("viewport").at("content", "width=device-width, initial-scale=1"),
+          H.tag("title").says(given.title),
+          H.style().raw(stylesheet(&given.theme, &needed))
+        ].concat(given.head)),
+      H.body().holds(view).holding([tail])
+    ])
+
+  H.document(&shell)
+}

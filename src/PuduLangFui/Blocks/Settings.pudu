@@ -1,0 +1,34 @@
+/** @Fui.Blocks.Settings.Block — a settings form in sections */
+module PuduLangFui.Blocks.Settings
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A settings form posting to `action`.
+export fn settings(action: Str, displayName: Str, email: Str, notifications: Bool) -> H.Node {
+  H.form().slot("settings").method("post").action(action).holding([
+      Field.set().holding([
+          Field.legend().says("Profile"),
+          Field.field().holding([Field.label("display-name").says("Display name"), Input.input("display-name", Input.props()).value(displayName)]),
+          Field.field().holding([Field.label("email").says("Email"), Input.input("email", Input.props().kind("email")).value(email)])
+        ]),
+      Field.set().holding([
+          Field.legend().says("Notifications"),
+          Field.oriented(Field.Horizontal, false).holding([Field.label("notify").says("Email me about activity"), Switch.switcher("notify", notifications)])
+        ]),
+      Core.part("settings-actions").holding([Button.submit(Button.props()).says("Save changes")])
+    ])
+}
+
+/// The styles of a settings form.
+export fn style() -> Css.Block {
+  Css.block("settings", [
+      Css.base("display: flex; flex-direction: column; gap: $space-8; max-inline-size: 36rem"),
+      Css.slot("settings-actions", "display: flex; justify-content: flex-end")
+    ])
+}

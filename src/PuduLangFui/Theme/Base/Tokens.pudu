@@ -1,0 +1,37 @@
+/** @Fui.Theme.Tokens.Module — aspect records become declarations */
+module PuduLangFui.Theme.Base.Tokens
+
+import Std.Meta as Meta
+import PuduLangFui.Domain.Color as Color
+import PuduLangFui.Utils.Spelling as Spelling
+
+/** @Fui.Theme.Tokens.Spelled — a value a token can hold */
+export trait Spelled {
+  /// The value's CSS spelling.
+  fn spelled(self: &Self) -> Str
+}
+
+impl Spelled for Str {
+  /// The text itself.
+  fn spelled(self: &Self) -> Str { *self }
+}
+
+impl Spelled for Color.Pair {
+  /// A color that follows the color scheme.
+  fn spelled(self: &Self) -> Str { Color.spellPair(self) }
+}
+
+/** @Fui.Theme.Tokens.Tokens — a record of named design values */
+export trait Tokens {
+  /// Each field as a token name and a value.
+  fn tokens(self: &Self) -> Array[(Str, Str)]
+}
+
+/// Each field becomes a token named in kebab case, or as its `@token` attribute says.
+export derive Tokens for T: Record {
+  fn tokens(self: &T) -> Array[(Str, Str)] {
+    Meta.collect[T](fn(field: Meta.Field[T, F]) -> Option[(Str, Str)] where F: Spelled {
+        Some((field.attributeOr("token", Spelling.kebab(field.name)), field.get(self).spelled()))
+      })
+  }
+}

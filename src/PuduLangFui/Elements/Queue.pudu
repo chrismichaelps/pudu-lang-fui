@@ -1,0 +1,39 @@
+/** @Fui.Elements.Queue.Element — a todo list, left and done */
+module PuduLangFui.Elements.Queue
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Elements.Queue.Entry — one thing to do */
+export type Entry = { title: Str, done: Bool }
+
+/// One thing to do.
+export fn entry(title: Str, done: Bool = false) -> Entry { Entry{title: title, done: done} }
+
+/// A headed section of entries, or nothing when there are none.
+fn section(heading: Str, status: Trace.Status, entries: &Array[Entry]) -> H.Node {
+  if entries.isEmpty() { return H.nothing() }
+
+  H.nothing().holding([
+      Core.part("queue-heading").says(heading + " (" + show(entries.length()) + ")"),
+      Trace.trace().holding(entries.map(|one: Entry| Trace.line(status).holding([Trace.body().holding([Trace.title().says(one.title)])])))
+    ])
+}
+
+/// The entries split into what is left and what is done.
+export fn queue(entries: Array[Entry]) -> H.Node {
+  let left = entries.filter(|one: Entry| !one.done)
+  let finished = entries.filter(|one: Entry| one.done)
+
+  Core.part("queue").holding([section("Left", Trace.Pending, &left), section("Done", Trace.Done, &finished)])
+}
+
+/// The styles of a queue.
+export fn style() -> Css.Block {
+  Css.block("queue", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("queue-heading", "font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground")
+    ])
+}

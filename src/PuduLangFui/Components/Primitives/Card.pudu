@@ -1,0 +1,50 @@
+/** @Fui.Card.Component — a surface with named parts */
+module PuduLangFui.Components.Primitives.Card
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Card.Size — how much padding a card keeps */
+export type Size = Regular | Compact
+
+/// A card with regular padding.
+export fn card() -> H.Node { sized(Regular) }
+
+/// A card with the given padding.
+export fn sized(size: Size) -> H.Node { Core.part("card").data("size", Core.spelled(size)) }
+
+/// The card's opening: title, description, and any action.
+export fn header() -> H.Node { Core.part("card-header") }
+
+/// The card's title, as a `div`.
+export fn title() -> H.Node { Core.part("card-title") }
+
+/// The card's title as a heading of the given node, such as `H.h2()`.
+export fn titled(heading: H.Node) -> H.Node { heading.slot("card-title") }
+
+/// Supporting text under the title.
+export fn description() -> H.Node { Core.part("card-description") }
+
+/// A control placed at the end of the header.
+export fn action() -> H.Node { Core.part("card-action") }
+
+/// The card's body.
+export fn content() -> H.Node { Core.part("card-content") }
+
+/// The card's closing row.
+export fn footer() -> H.Node { Core.part("card-footer") }
+
+/// The styles of a card.
+export fn style() -> Css.Block {
+  Css.block("card", [
+      Css.base("--card-gutter: $space-6; display: flex; flex-direction: column; gap: var(--card-gutter); padding-block: var(--card-gutter); background: $card; color: $card-foreground; border-radius: $radius-4xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-md; font-size: $text-sm; overflow: hidden"),
+      Css.variant("size", "compact", "--card-gutter: $space-4"),
+      Css.slot("card-header", "display: grid; grid-template-columns: 1fr auto; grid-auto-rows: min-content; align-items: start; gap: calc($unit * 1.5) $space-4; padding-inline: var(--card-gutter)"),
+      Css.slot("card-title", "margin: 0; font-family: $font-heading; font-size: $text-md; font-weight: $weight-medium; line-height: $leading-tight"),
+      Css.slot("card-description", "grid-column: 1; margin: 0; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("card-action", "grid-column: 2; grid-row: 1 / span 2; align-self: start"),
+      Css.slot("card-content", "padding-inline: var(--card-gutter)"),
+      Css.slot("card-footer", "display: flex; align-items: center; gap: $space-2; padding-inline: var(--card-gutter)")
+    ])
+}

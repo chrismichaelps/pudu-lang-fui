@@ -1,0 +1,86 @@
+/** @Fui.Questionnaire.Component — multi-step questions in one form */
+module PuduLangFui.Components.Patterns.Questionnaire
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Components.Primitives.RadioGroup as RadioGroup
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Questionnaire.Kind — how a question is answered */
+export type Kind = Single | Multiple | Freeform
+
+/** @Fui.Questionnaire.Question — one question and its choices */
+export type Question = { name: Str, prompt: Str, kind: Kind, choices: Array[Str], skippable: Bool }
+
+/// The control each kind answers with.
+const CONTROLS: Map[Str, fn(&Question) -> H.Node] = mapOf([
+    ("single", singleControl),
+    ("multiple", multipleControl),
+    ("freeform", freeformControl)
+  ])
+
+/// A question.
+export fn question(name: Str, prompt: Str, kind: Kind, choices: Array[Str]) -> Question {
+  Question{name: name, prompt: prompt, kind: kind, choices: choices, skippable: false}
+}
+
+/// One choice as a radio with a caption.
+fn singleChoice(name: Str, choice: Str) -> H.Node {
+  Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio(name, choice), Label.label(name + "-" + choice).says(choice)])
+}
+
+/// Radios for one answer.
+fn singleControl(item: &Question) -> H.Node {
+  RadioGroup.group(item.prompt).holding(item.choices.map(|choice: Str| singleChoice(item.name, choice)))
+}
+
+/// One choice as a checkbox with a caption.
+fn multipleChoice(name: Str, choice: Str) -> H.Node {
+  let id = name + "-" + choice
+
+  Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox(id, Checkbox.props()).at("value", choice), Label.label(id).says(choice)])
+}
+
+/// Checkboxes for several answers.
+fn multipleControl(item: &Question) -> H.Node {
+  Field.group().holding(item.choices.map(|choice: Str| multipleChoice(item.name, choice)))
+}
+
+/// A text area for an open answer.
+fn freeformControl(item: &Question) -> H.Node { Textarea.textarea(item.name).label(item.prompt) }
+
+/// The form at the question `step`, zero first, posting to `action`.
+export fn questionnaire(questions: &Array[Question], step: Int, action: Str) -> H.Node {
+  if step < 0 || step >= questions.length() { return H.nothing() }
+
+  let current = questions[step]
+  let build = Core.picked(&CONTROLS, current.kind, freeformControl)
+  let total = questions.length()
+
+  H.form().slot("questionnaire").method("post").action(action).holding([
+      Progress.progress(step + 1, total, "Question " + show(step + 1) + " of " + show(total)),
+      H.input().kind("hidden").name("step").value(show(step)),
+      H.h2().slot("questionnaire-prompt").says(current.prompt),
+      build(&current),
+      Core.part("questionnaire-actions").holding([
+          H.button().kind("submit").name("move").value("back").slot("button").data("variant", "ghost").data("size", "medium").flagIf(step == 0, "disabled").says("Back"),
+          if current.skippable { H.button().kind("submit").name("move").value("skip").slot("button").data("variant", "ghost").data("size", "medium").says("Skip") } else { H.nothing() },
+          Button.submit(Button.props()).name("move").value("next").says(if step == total - 1 { "Finish" } else { "Next" })
+        ])
+    ])
+}
+
+/// The styles of a questionnaire.
+export fn style() -> Css.Block {
+  Css.block("questionnaire", [
+      Css.base("display: flex; flex-direction: column; gap: $space-6"),
+      Css.slot("questionnaire-prompt", "margin: 0; font-size: $text-xl; font-weight: $weight-semibold"),
+      Css.slot("questionnaire-actions", "display: flex; justify-content: flex-end; gap: $space-2")
+    ])
+}

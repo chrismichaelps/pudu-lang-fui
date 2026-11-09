@@ -1,0 +1,43 @@
+/** @Fui.NavigationMenu.Component — site navigation with panels */
+module PuduLangFui.Components.Composites.NavigationMenu
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Site navigation named for assistive software.
+export fn navigationMenu(caption: Str) -> H.Node { H.nav().slot("navigation-menu").label(caption) }
+
+/// The row of entries.
+export fn list() -> H.Node { H.ul().slot("navigation-menu-list") }
+
+/// An entry.
+export fn item() -> H.Node { H.li().slot("navigation-menu-item") }
+
+/// A link; `current` marks the page being viewed.
+export fn link(target: Str, current: Bool = false) -> H.Node {
+  H.a().slot("navigation-menu-link").href(target).atIf(current, "aria-current", "page")
+}
+
+/// A control opening the panel `id`.
+export fn trigger(id: Str, caption: Str) -> H.Node {
+  H.button().kind("button").slot("navigation-menu-link").at("popovertarget", id).anchors(id).holding([H.words(caption), Icon.sized(Icon.ChevronDown, Icon.Small)])
+}
+
+/// The panel for the id its control names.
+export fn panel(id: Str) -> H.Node { Core.part("navigation-menu-panel").id(id).at("popover", "auto").anchoredTo(id) }
+
+/// The styles of navigation.
+export fn style() -> Css.Block {
+  Css.block("navigation-menu", [
+      Css.base("display: flex"),
+      Css.slot("navigation-menu-list", "display: flex; align-items: center; gap: 0; margin: 0; padding: 0; list-style: none"),
+      Css.slot("navigation-menu-item", "display: block"),
+      Css.slot("navigation-menu-link", "display: inline-flex; align-items: center; gap: $space-1; padding: calc($unit * 2.5) calc($unit * 4.5); background: transparent; color: inherit; border: 0; border-radius: $radius-3xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-decoration: none; cursor: pointer; transition: background-color $duration-fast $ease-standard"),
+      Css.slotWhen("navigation-menu-link", ":hover", "background: $muted"),
+      Css.slotWhen("navigation-menu-link", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.slotWhen("navigation-menu-link", "[aria-current=\"page\"]", "color: $primary"),
+      Css.slot("navigation-menu-panel", "margin: 0; margin-block-start: $space-1; padding: $space-4; background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; position-area: block-end span-inline-end; position-try-fallbacks: flip-inline")
+    ])
+}

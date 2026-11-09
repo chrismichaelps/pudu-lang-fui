@@ -1,0 +1,44 @@
+/** @Fui.Cli.Commands.Apply.Command — applies a preset */
+module PuduLangFui.Cli.Commands.Apply
+
+import Std.Io as Io
+import Std.Path as Path
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Config as Config
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Constants.Cli as Constant
+import PuduLangFui.Theme.Presets.Preset as Preset
+
+/// The theme's text with its preset line replaced.
+export fn withPreset(text: Str, preset: Str) -> Str {
+  text.split("\n").map(|line: Str| if line.startsWith(Constant.PRESET_LINE) { Constant.PRESET_LINE + "\"" + preset + "\"" } else { line }).join("\n")
+}
+
+/// Rewrites the theme and the configuration.
+fn applied(project: &Project.Project, preset: Str) -> Result[(), Str] {
+  let path = Path.join(Project.rootDirectory(project), Constant.THEME_MODULE + ".pudu")
+  let text = Io.read(path) ?
+
+  Io.write(path, withPreset(text, preset)) ?
+  Project.saveConfig(&Project.Project{..*project, config: Config.Config{..project.config, preset: preset}})
+}
+
+/// Applies the named preset or code.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.isEmpty() { return Outcome.failed(["name a preset or a code"]) }
+
+  let picked = context.invocation.words[0]
+
+  if let Err(problem) = Preset.named(picked) { return Outcome.failed([problem]) }
+
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+
+  match applied(&project, picked) {
+    case Ok(_) => Outcome.done(["Applied " + picked])
+    case Err(problem) => Outcome.failed([problem])
+  }
+}

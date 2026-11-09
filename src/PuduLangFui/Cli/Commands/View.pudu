@@ -1,0 +1,34 @@
+/** @Fui.Cli.Commands.View.Command — prints an item's source */
+module PuduLangFui.Cli.Commands.View
+
+import Std.Io as Io
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Closure as Closure
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Constants.Cli as Constant
+
+/// Prints each named item's source.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.isEmpty() { return Outcome.failed([Constant.NOTHING_NAMED]) }
+
+  var lines: Array[Str] = []
+
+  for name in context.invocation.words {
+    let (registry, bare) = match Context.locate(context, name, None) {
+      case Ok(found) => found
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+
+    match Closure.find(&registry.items, bare) {
+      case None => { return Outcome.failed(["unknown item: " + name]) }
+      case Some(item) => {
+        match Io.read(item.path) {
+          case Ok(text) => { lines = lines.push(text) }
+          case Err(problem) => { return Outcome.failed([problem]) }
+        }
+      }
+    }
+  }
+
+  Outcome.done(lines)
+}

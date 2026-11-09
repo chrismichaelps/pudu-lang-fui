@@ -1,0 +1,21 @@
+/** @Fui.Tooltip.Component — a short hint on hover or focus */
+module PuduLangFui.Components.Primitives.Tooltip
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The control with a hint revealed on hover or keyboard focus.
+export fn tooltip(hint: Str, control: H.Node) -> H.Node {
+  Core.inline("tooltip").holding([control, Core.inline("tooltip-content").role("tooltip").says(hint)])
+}
+
+/// The styles of a tooltip.
+export fn style() -> Css.Block {
+  Css.block("tooltip", [
+      Css.base("position: relative; display: inline-flex"),
+      Css.slot("tooltip-content", "position: absolute; inset-block-end: calc(100% + $space-1); inset-inline-start: 50%; translate: -50% 0; z-index: 50; display: inline-flex; align-items: center; gap: calc($unit * 1.5); padding: calc($unit * 1.5) $space-3; background: $foreground; color: $background; border-radius: $radius-xl; font-size: $text-xs; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity $duration-fast $ease-standard"),
+      Css.rule("[data-slot=\"tooltip\"]:is(:hover, :focus-within) > [data-slot=\"tooltip-content\"]", "opacity: 1; visibility: visible"),
+      Css.rule("[dir=\"rtl\"] [data-slot=\"tooltip-content\"]", "translate: 50% 0")
+    ])
+}

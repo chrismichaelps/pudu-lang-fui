@@ -1,0 +1,12 @@
+/** @Fui.Theme.Iconography.Module — the iconography aspect */
+module PuduLangFui.Theme.Aspects.Iconography
+
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Iconography.Iconography — icon sizes and stroke */
+export type Iconography = { iconSm: Str, iconMd: Str, iconLg: Str, iconStroke: Str } derives Tokens.Tokens
+
+/// Icons sized to sit in running text and controls.
+export fn defaults() -> Iconography {
+  Iconography{iconSm: "0.875rem", iconMd: "1rem", iconLg: "1.25rem", iconStroke: "2"}
+}

@@ -1,0 +1,44 @@
+/** @Fui.Cli.Closure.Module — an item and all it needs */
+module PuduLangFui.Cli.Model.Closure
+
+import Std.List as List
+import Std.Set as Set
+import PuduLangFui.Cli.Model.Item as Item
+
+/// The item with a name.
+export fn find(items: &Array[Item.Item], name: Str) -> Option[Item.Item] {
+  List.find(items, |one: Item.Item| one.name == name)
+}
+
+/// The named items and everything they need, dependencies first, or the unknown names.
+export fn closure(items: &Array[Item.Item], names: &Array[Str]) -> Result[Array[Item.Item], Array[Str]] {
+  var ordered: Array[Item.Item] = []
+  var seen: Set[Str] = setOf([])
+  var unknown: Array[Str] = []
+
+  for name in names {
+    var pending: Array[(Str, Bool)] = [(name, false)]
+
+    while pending.length() > 0 {
+      let (current, expanded) = pending[pending.length() - 1]
+
+      pending = pending.pop()
+
+      match find(items, current) {
+        case None => { if !unknown.contains(current) { unknown = unknown.push(current) } }
+        case Some(item) => {
+          if expanded {
+            ordered = ordered.push(item)
+          } else if !(current in seen) {
+            seen = seen.insert(current)
+            pending = pending.push((current, true))
+
+            for dependency in item.dependencies { pending = pending.push((dependency, false)) }
+          }
+        }
+      }
+    }
+  }
+
+  if unknown.isEmpty() { Ok(ordered) } else { Err(unknown) }
+}

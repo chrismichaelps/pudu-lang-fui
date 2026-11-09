@@ -1,0 +1,31 @@
+/** @Fui.Elements.StackTrace.Element — a failure and its frames */
+module PuduLangFui.Elements.StackTrace
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The failure's message over its frames.
+export fn stackTrace(message: Str, frames: &Array[Str]) -> H.Node {
+  Core.part("stack-trace").holding([
+      Core.part("stack-trace-message").says(message),
+      if frames.isEmpty() {
+        H.nothing()
+      } else {
+        H.details().holding([
+            H.summary().slot("stack-trace-summary").says(show(frames.length()) + " frames"),
+            H.ol().slot("stack-trace-frames").holding(frames.map(|frame: Str| H.li().says(frame)))
+          ])
+      }
+    ])
+}
+
+/// The styles of a stack trace.
+export fn style() -> Css.Block {
+  Css.block("stack-trace", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2; padding: $space-3; border: $border-width solid $destructive; border-radius: $radius-md; font-family: $font-mono; font-size: $text-xs"),
+      Css.slot("stack-trace-message", "color: $destructive; font-weight: $weight-medium"),
+      Css.slot("stack-trace-summary", "cursor: pointer; color: $muted-foreground"),
+      Css.slot("stack-trace-frames", "margin: $space-2 0 0; padding-inline-start: $space-4")
+    ])
+}

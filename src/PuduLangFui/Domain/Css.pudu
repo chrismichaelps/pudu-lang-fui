@@ -1,0 +1,186 @@
+/** @Fui.Domain.Css.Module — typed style blocks and their rendering */
+module PuduLangFui.Domain.Css
+
+import Std.Char as Char
+import Std.Set as Set
+import Std.Text as Text
+import PuduLangFui.Constants.Css as Constant
+
+/** @Fui.Domain.Css.Rule — one selector and its declarations */
+export type Rule = { selector: Str, declarations: Str, within: Str }
+
+/** @Fui.Domain.Css.Frames — one named animation */
+export type Frames = { name: Str, steps: Array[(Str, Str)] }
+
+/** @Fui.Domain.Css.Block — every style a component declares */
+export type Block = { name: Str, slots: Array[Str], rules: Array[Rule], frames: Array[Frames], behaviors: Array[Str] }
+
+/// The attribute selector of a slot.
+export fn selectorOf(name: Str) -> Str { "[" + Constant.SLOT_ATTRIBUTE + "=\"" + name + "\"]" }
+
+/// The block with one more rule.
+fn added(held: &Block, selector: Str, declarations: Str) -> Block {
+  Block{..*held, rules: held.rules.push(Rule{selector: selector, declarations: declarations, within: ""})}
+}
+
+/** @Fui.Domain.Css.Step — one addition to a block */
+export type Step = fn(Block) -> Block
+
+/// A block built from its steps, in order; a flat array keeps every style one read deep.
+export fn block(name: Str, steps: Array[Step]) -> Block {
+  var built = Block{name: name, slots: [name], rules: [], frames: [], behaviors: []}
+
+  for step in steps { built = step(built) }
+
+  built
+}
+
+/// The block's name as an owned slot, added once.
+fn owning(held: &Block, name: Str) -> Block {
+  if held.slots.contains(name) { *held } else { Block{..*held, slots: held.slots.push(name)} }
+}
+
+/// Declarations for the block's own slot.
+export fn base(declarations: Str) -> Step { |held: Block| added(&held, selectorOf(held.name), declarations) }
+
+/// Declarations for the block's slot under a selector suffix, such as `:hover`.
+export fn when(condition: Str, declarations: Str) -> Step { |held: Block| added(&held, selectorOf(held.name) + condition, declarations) }
+
+/// Declarations for one value of a `data-` attribute on the block's slot.
+export fn variant(attribute: Str, value: Str, declarations: Str) -> Step {
+  |held: Block| added(&held, selectorOf(held.name) + "[data-" + attribute + "=\"" + value + "\"]", declarations)
+}
+
+/// Declarations under hover.
+export fn hover(declarations: Str) -> Step { when(":hover:not(:disabled)", declarations) }
+
+/// The shared ring under keyboard focus.
+export fn focusRing() -> Step { when(":focus-visible", Constant.FOCUS_RING) }
+
+/// Declarations when disabled.
+export fn disabled(declarations: Str) -> Step { when(":is(:disabled, [aria-disabled=\"true\"])", declarations) }
+
+/// Declarations for descendants of the block's slot.
+export fn inside(selector: Str, declarations: Str) -> Step { |held: Block| added(&held, selectorOf(held.name) + " " + selector, declarations) }
+
+/// Declarations for a part's slot, which the block now owns.
+export fn slot(name: Str, declarations: Str) -> Step { |held: Block| added(&owning(&held, name), selectorOf(name), declarations) }
+
+/// Declarations for a part's slot under a selector suffix.
+export fn slotWhen(name: Str, condition: Str, declarations: Str) -> Step { |held: Block| added(&owning(&held, name), selectorOf(name) + condition, declarations) }
+
+/// Declarations for any selector, for what a slot cannot address.
+export fn rule(selector: Str, declarations: Str) -> Step { |held: Block| added(&held, selector, declarations) }
+
+/// Declarations for any selector inside an at-rule, such as a media query.
+export fn within(condition: Str, selector: Str, declarations: Str) -> Step {
+  |held: Block| Block{..held, rules: held.rules.push(Rule{selector: selector, declarations: declarations, within: condition})}
+}
+
+/// A named animation.
+export fn keyframes(name: Str, steps: Array[(Str, Str)]) -> Step {
+  |held: Block| Block{..held, frames: held.frames.push(Frames{name: name, steps: steps})}
+}
+
+/// An optional script for what the platform cannot do declaratively.
+export fn behavior(script: Str) -> Step { |held: Block| Block{..held, behaviors: held.behaviors.push(script)} }
+
+/// Whether a character can continue a token's name.
+fn isTokenCharacter(character: Char) -> Bool { Char.isLower(character) || Char.isDigit(character) || character == '-' }
+
+/// The declarations with each `$name` written as its custom property.
+export fn expand(declarations: Str) -> Str {
+  let characters = declarations.chars()
+  var out = ""
+  var index = 0
+
+  while index < characters.length() {
+    let current = characters[index]
+    let next = index + 1
+
+    if current == '$' && next < characters.length() && Char.isLower(characters[next]) {
+      var end = next
+
+      while end < characters.length() && isTokenCharacter(characters[end]) { end = end + 1 }
+
+      out = out + "var(" + Constant.TOKEN_PREFIX + Text.fromChars(&characters[next..end]) + ")"
+      index = end
+    } else {
+      out = out + Text.singleton(current)
+      index = next
+    }
+  }
+
+  out
+}
+
+/// Every token a declaration names.
+export fn tokensIn(declarations: Str) -> Array[Str] {
+  let characters = declarations.chars()
+  var found: Array[Str] = []
+  var index = 0
+
+  while index < characters.length() {
+    let next = index + 1
+
+    if characters[index] == '$' && next < characters.length() && Char.isLower(characters[next]) {
+      var end = next
+
+      while end < characters.length() && isTokenCharacter(characters[end]) { end = end + 1 }
+
+      found = found.push(Text.fromChars(&characters[next..end]))
+      index = end
+    } else {
+      index = next
+    }
+  }
+
+  found
+}
+
+/// Every token a block names that is not among the known ones.
+export fn unknownTokens(held: &Block, known: &Set[Str]) -> Array[Str] {
+  var unknown: Array[Str] = []
+
+  for entry in held.rules {
+    for token in tokensIn(entry.declarations) {
+      if !known.contains(token) { unknown = unknown.push(held.name + ": $" + token) }
+    }
+  }
+
+  unknown
+}
+
+/// One animation written out.
+fn renderFrames(frames: &Frames) -> Str {
+  var steps: Array[Str] = []
+
+  for step in frames.steps { steps = steps.push(step[0] + " \{ " + expand(step[1]) + " \}") }
+
+  "@keyframes " + frames.name + " \{ " + steps.join(" ") + " \}"
+}
+
+/// One rule written out.
+fn renderRule(entry: &Rule) -> Str {
+  let written = entry.selector + " \{ " + expand(entry.declarations) + "; \}"
+
+  if entry.within.isEmpty() { written } else { entry.within + " \{ " + written + " \}" }
+}
+
+/// The animations and rules of the blocks, inside the component layer.
+export fn render(blocks: &Array[Block]) -> Str {
+  var animations: Array[Str] = []
+  var rules: Array[Str] = []
+
+  for held in blocks {
+    for frames in held.frames { animations = animations.push(renderFrames(&frames)) }
+
+    for entry in held.rules { rules = rules.push(renderRule(&entry)) }
+  }
+
+  if rules.isEmpty() { return animations.join("\n") }
+
+  let layer = "@layer " + Constant.COMPONENT_LAYER + " \{\n" + rules.join("\n") + "\n\}"
+
+  if animations.isEmpty() { layer } else { animations.join("\n") + "\n" + layer }
+}

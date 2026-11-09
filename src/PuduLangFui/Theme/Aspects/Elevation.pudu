@@ -1,0 +1,34 @@
+/** @Fui.Theme.Elevation.Module — the elevation aspect */
+module PuduLangFui.Theme.Aspects.Elevation
+
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Elevation.Elevation — shadows and the modal backdrop */
+export type Elevation = {
+  shadowColor: Str,
+  shadowXs: Str,
+  shadowSm: Str,
+  shadowMd: Str,
+  shadowLg: Str,
+  shadowXl: Str,
+  backdrop: Str
+} derives Tokens.Tokens
+
+/// A shadow of the given geometry in the shadow color.
+fn cast(geometry: Str) -> Str { geometry + " var(--fui-shadow-color)" }
+
+/// Two shadows cast together.
+fn layered(first: Str, second: Str) -> Str { cast(first) + ", " + cast(second) }
+
+/// Soft shadows that hold in both modes.
+export fn defaults() -> Elevation {
+  Elevation {
+    shadowColor: "light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.5))",
+    shadowXs: cast("0 1px 2px 0"),
+    shadowSm: layered("0 1px 3px 0", "0 1px 2px -1px"),
+    shadowMd: layered("0 4px 6px -1px", "0 2px 4px -2px"),
+    shadowLg: layered("0 10px 15px -3px", "0 4px 6px -4px"),
+    shadowXl: layered("0 20px 25px -5px", "0 8px 10px -6px"),
+    backdrop: "oklch(0 0 0 / 0.3)"
+  }
+}

@@ -1,0 +1,125 @@
+/** @Fui.DataTable.Component — a table from typed columns */
+module PuduLangFui.Components.Patterns.DataTable
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Components.Primitives.Table as Table
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.DataTable.Column — one column of a row type */
+export type Column[T] = { key: Str, header: Str, sortable: Bool, cell: fn(&T) -> H.Node }
+
+/** @Fui.DataTable.View — the sort and page a table shows */
+export type View = { sort: Str, descending: Bool, page: Int, lastPage: Int }
+
+/** @Fui.DataTable.Links — how a table links to another view */
+export type Links = { sortBy: fn(Str, Bool) -> Str, pageAt: fn(Int) -> Str }
+
+/// A column that does not sort.
+export fn column[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T] {
+  Column{key: key, header: header, sortable: false, cell: cell}
+}
+
+/// A column whose header links to a sort.
+export fn sortable[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T] {
+  Column{key: key, header: header, sortable: true, cell: cell}
+}
+
+/// One column's heading.
+fn headingOf[T](item: &Column[T], view: &View, links: &Links) -> H.Node {
+  if !item.sortable { return Table.head().says(item.header) }
+
+  let active = view.sort == item.key
+  let descending = active && !view.descending
+  let glyph = if active && view.descending { Icon.ArrowDown } else { Icon.ArrowUp }
+
+  Table.head().atIf(active, "aria-sort", if view.descending { "descending" } else { "ascending" }).holding([
+      H.a().slot("data-table-sort").href((links.sortBy)(item.key, descending)).holding([H.words(item.header), Icon.sized(glyph, Icon.Small)])
+    ])
+}
+
+/// One row of the table.
+fn rowOf[T](columns: &Array[Column[T]], row: &T) -> H.Node {
+  var cells: Array[H.Node] = []
+
+  for item in columns { cells = cells.push(Table.cell().holding([(item.cell)(row)])) }
+
+  Table.row().holding(cells)
+}
+
+/// A table of the rows, or the empty message when there are none.
+export fn dataTable[T](columns: Array[Column[T]], rows: Array[T], view: View, links: Links, emptyMessage: Str) -> H.Node {
+  var headings: Array[H.Node] = []
+
+  for item in columns { headings = headings.push(headingOf(&item, &view, &links)) }
+
+  var body: Array[H.Node] = []
+
+  for row in rows { body = body.push(rowOf(&columns, &row)) }
+
+  let shown = if body.isEmpty() {
+    [Table.row().holding([Table.cell().at("colspan", show(columns.length())).slot("data-table-empty").says(emptyMessage)])]
+  } else {
+    body
+  }
+
+  Core.part("data-table").holding([
+      Table.table([Table.header().holding([Table.row().holding(headings)]), Table.body().holding(shown)]),
+      Pagination.pagination(view.page, view.lastPage, links.pageAt)
+    ])
+}
+
+/// A column of checkboxes selecting rows by the key a row answers.
+export fn selection[T](name: Str, keyOf: fn(&T) -> Str) -> Column[T] {
+  column("select", "", |row: &T| H.input().slot("checkbox").kind("checkbox").name(name).value(keyOf(row)).label("Select row"))
+}
+
+/// A form filtering the table by the text in `name`, posting to the current page.
+export fn filter(name: Str, value: Str, hint: Str) -> H.Node {
+  H.form().slot("data-table-filter").method("get").holding([
+      H.input().slot("input").kind("search").name(name).value(value).placeholder(hint).label(hint)
+    ])
+}
+
+/// A menu of checkboxes choosing visible columns, submitted as `hide` values.
+export fn visibility[T](id: Str, columns: &Array[Column[T]], hidden: &Array[Str]) -> H.Node {
+  Core.part("data-table-visibility").holding([
+      Popover.opens(Button.button(Button.props().variant(Button.Outline)).says("Columns"), id),
+      Popover.content(id, Popover.Below).holding([H.form().method("get").holding(columnChoices(columns, hidden).concat([Button.submit(Button.props().size(Button.Small)).says("Apply")]))])
+    ])
+}
+
+/// One checkbox per column.
+fn columnChoices[T](columns: &Array[Column[T]], hidden: &Array[Str]) -> Array[H.Node] {
+  var choices: Array[H.Node] = []
+
+  for item in columns {
+    choices = choices.push(H.labelFor().slot("data-table-column").holding([
+          H.input().kind("checkbox").name("show").value(item.key).flagIf(!hidden.contains(item.key), "checked"),
+          H.words(item.header)
+        ]))
+  }
+
+  choices
+}
+
+/// The bar above a table.
+export fn toolbar() -> H.Node { Core.part("data-table-toolbar") }
+
+/// The styles of a data table.
+export fn style() -> Css.Block {
+  Css.block("data-table", [
+      Css.base("display: flex; flex-direction: column; gap: $space-4"),
+      Css.slot("data-table-sort", "display: inline-flex; align-items: center; gap: $space-1; color: inherit; text-decoration: none"),
+      Css.slotWhen("data-table-sort", ":hover", "color: $primary"),
+      Css.slot("data-table-empty", "padding: $space-8; text-align: center; color: $muted-foreground"),
+      Css.slot("data-table-toolbar", "display: flex; align-items: center; justify-content: space-between; gap: $space-2"),
+      Css.slot("data-table-filter", "flex: 1; max-inline-size: 20rem; margin: 0"),
+      Css.slot("data-table-visibility", "display: inline-flex"),
+      Css.slot("data-table-column", "display: flex; align-items: center; gap: $space-2; padding-block: $space-1; font-size: $text-sm")
+    ])
+}

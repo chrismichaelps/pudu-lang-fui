@@ -1,0 +1,20 @@
+/** @Fui.Constants.Names.Module — names the styling layer writes */
+module PuduLangFui.Constants.Css
+
+/// The prefix of every token's custom property.
+export const TOKEN_PREFIX: Str = "--fui-"
+
+/// The attribute every component and part carries.
+export const SLOT_ATTRIBUTE: Str = "data-slot"
+
+/// The order of the cascade layers.
+export const LAYER_ORDER: Str = "@layer fui.base, fui.tokens, fui.components;"
+
+/// The layer component rules are written into.
+export const COMPONENT_LAYER: Str = "fui.components"
+
+/// The rules every page gets: box sizing, page color, and reduced motion.
+export const BASE_LAYER: Str = "@layer fui.base \{\n[data-slot], [data-slot]::before, [data-slot]::after \{ box-sizing: border-box; \}\nbody \{ margin: 0; background: var(--fui-background); color: var(--fui-foreground); font-family: var(--fui-font-sans); font-size: var(--fui-text-base); line-height: var(--fui-leading); \}\n@media (prefers-reduced-motion: reduce) \{ :root \{ --fui-duration-fast: 0ms; --fui-duration-base: 0ms; --fui-duration-slow: 0ms; \} \}\n\}"
+
+/// The shared focus ring, for a condition's declarations.
+export const FOCUS_RING: Str = "outline: 2px solid transparent; border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"

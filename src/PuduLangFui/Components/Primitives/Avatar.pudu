@@ -1,0 +1,47 @@
+/** @Fui.Avatar.Component — an image with initials behind */
+module PuduLangFui.Components.Primitives.Avatar
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Avatar.Size — how large an avatar sits */
+export type Size = Small | Medium | Large
+
+/// An avatar showing the image over the initials; a broken image reveals them.
+export fn avatar(source: Str, description: Str, letters: Str, size: Size) -> H.Node {
+  Core.inline("avatar").data("size", Core.spelled(size)).holding([
+      Core.inline("avatar-fallback").at("aria-hidden", "true").says(letters),
+      H.img().slot("avatar-image").src(source).alt(description).data("initials", letters)
+    ])
+}
+
+/// An avatar with initials alone, named for assistive software.
+export fn initials(text: Str, description: Str, size: Size) -> H.Node {
+  Core.inline("avatar").data("size", Core.spelled(size)).role("img").label(description).holding([Core.inline("avatar-fallback").says(text)])
+}
+
+/// Avatars overlapping in a row.
+export fn group() -> H.Node { Core.part("avatar-group") }
+
+/// A small status mark at the avatar's corner.
+export fn badge() -> H.Node { Core.inline("avatar-badge") }
+
+/// A count of avatars not shown.
+export fn count(text: Str) -> H.Node { Core.inline("avatar-count").says(text) }
+
+/// The styles of an avatar.
+export fn style() -> Css.Block {
+  Css.block("avatar", [
+      Css.base("--avatar-size: $control-sm; position: relative; display: inline-flex; flex-shrink: 0; inline-size: var(--avatar-size); block-size: var(--avatar-size); border-radius: $radius-full; overflow: hidden"),
+      Css.variant("size", "small", "--avatar-size: calc($unit * 6)"),
+      Css.variant("size", "large", "--avatar-size: $control-lg"),
+      Css.slot("avatar-fallback", "position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: $muted; color: $muted-foreground; font-size: $text-sm; font-weight: $weight-medium"),
+      Css.slot("avatar-image", "position: relative; inline-size: 100%; block-size: 100%; object-fit: cover; color: transparent"),
+      Css.slot("avatar-group", "display: flex"),
+      Css.rule("[data-slot=\"avatar-group\"] > * + *", "margin-inline-start: calc($space-2 * -1); box-shadow: 0 0 0 2px $background"),
+      Css.slot("avatar-badge", "position: absolute; inset-block-end: 0; inset-inline-end: 0; inline-size: 25%; block-size: 25%; background: $success; border-radius: $radius-full; box-shadow: 0 0 0 2px $background"),
+      Css.slot("avatar-count", "display: inline-flex; align-items: center; justify-content: center; inline-size: $control-md; block-size: $control-md; margin-inline-start: calc($space-2 * -1); background: $muted; color: $muted-foreground; border-radius: $radius-full; font-size: $text-xs; box-shadow: 0 0 0 2px $background"),
+      Css.slotWhen("avatar-image", "::after", "content: attr(data-initials); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: $muted; color: $muted-foreground; font-size: $text-sm; font-weight: $weight-medium")
+    ])
+}

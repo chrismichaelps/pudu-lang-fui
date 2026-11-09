@@ -1,0 +1,66 @@
+/** @Fui.Item.Component — a row of media, text, actions */
+module PuduLangFui.Components.Primitives.Item
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Item.Variant — how a row is drawn */
+export type Variant = Plain | Outline | Muted
+
+/// A row as a `div`.
+export fn item(variant: Variant) -> H.Node { of(H.div(), variant) }
+
+/// A row with tighter padding.
+export fn small(variant: Variant) -> H.Node { of(H.div(), variant).data("size", "small") }
+
+/// A row built on the given element, such as a link.
+export fn of(element: H.Node, variant: Variant) -> H.Node { element.slot("item").data("variant", Core.spelled(variant)) }
+
+/// The row's leading icon or image.
+export fn media() -> H.Node { Core.part("item-media") }
+
+/// The row's text.
+export fn content() -> H.Node { Core.part("item-content") }
+
+/// The row's headline.
+export fn title() -> H.Node { Core.part("item-title") }
+
+/// The row's supporting text.
+export fn description() -> H.Node { Core.part("item-description") }
+
+/// The row's trailing controls.
+export fn actions() -> H.Node { Core.part("item-actions") }
+
+/// Rows stacked together.
+export fn group() -> H.Node { Core.part("item-group").role("list") }
+
+/// The row's top line, across its full width.
+export fn header() -> H.Node { Core.part("item-header") }
+
+/// The row's bottom line, across its full width.
+export fn footer() -> H.Node { Core.part("item-footer") }
+
+/// A line between rows.
+export fn separator() -> H.Node { Core.part("item-separator").role("separator") }
+
+/// The styles of a row.
+export fn style() -> Css.Block {
+  Css.block("item", [
+      Css.base("display: flex; flex-wrap: wrap; align-items: center; gap: calc($unit * 3.5); padding: calc($unit * 3.5) $space-4; color: inherit; text-decoration: none; border: $border-width solid transparent; border-radius: $radius-2xl; font-size: $text-sm"),
+      Css.variant("variant", "outline", "border-color: $border"),
+      Css.variant("variant", "muted", "background: color-mix(in oklab, $muted 50%, transparent)"),
+      Css.when(":is(a):hover", "background: $muted"),
+      Css.when(":is(a):focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.slot("item-media", "display: flex; align-items: center; justify-content: center; flex-shrink: 0"),
+      Css.slot("item-content", "display: flex; flex: 1; flex-direction: column; gap: $space-1"),
+      Css.slot("item-title", "display: flex; align-items: center; gap: $space-2; font-size: $text-sm; font-weight: $weight-medium; line-height: 1.375"),
+      Css.slot("item-description", "color: $muted-foreground"),
+      Css.slot("item-actions", "display: flex; align-items: center; gap: $space-2"),
+      Css.slot("item-group", "display: flex; flex-direction: column"),
+      Css.slot("item-header", "flex-basis: 100%; display: flex; align-items: center; justify-content: space-between; gap: $space-2"),
+      Css.slot("item-footer", "flex-basis: 100%; display: flex; align-items: center; justify-content: space-between; gap: $space-2"),
+      Css.slot("item-separator", "block-size: $border-width; background: $border"),
+      Css.variant("size", "small", "padding: $space-2 $space-3; gap: $space-2")
+    ])
+}

@@ -1,0 +1,37 @@
+/** @Fui.Form.Component — fields bound to a validator's messages */
+module PuduLangFui.Components.Patterns.Form
+
+import Std.Html.Build as H
+import Std.Option as Option
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Form.Problems — refusal messages by field name */
+export type Problems = Map[Str, Array[Str]]
+
+/// A form with no problems yet.
+export fn clean() -> Problems { mapOf([]) }
+
+/// A form posting to `action`.
+export fn form(action: Str) -> H.Node { H.form().slot("form").method("post").action(action) }
+
+/// The messages for a field, none when it passed.
+fn messagesOf(problems: &Problems, name: Str) -> Array[Str] { Option.unwrapOr(problems.get(name), []) }
+
+/// One field: its label, the control, a description, and whatever was refused.
+export fn item(problems: &Problems, name: Str, caption: Str, control: H.Node, hint: Str) -> H.Node {
+  let messages = messagesOf(problems, name)
+  let invalid = !messages.isEmpty()
+  let described = if hint.isEmpty() { H.nothing() } else { Field.description().says(hint) }
+
+  Field.oriented(Field.Vertical, invalid).holding([
+      Field.label(name).says(caption),
+      control.atIf(invalid, "aria-invalid", "true"),
+      described,
+      Field.error(&messages)
+    ])
+}
+
+/// The styles of a form.
+export fn style() -> Css.Block { Css.block("form", [Css.base("display: flex; flex-direction: column; gap: $space-6; margin: 0")]) }

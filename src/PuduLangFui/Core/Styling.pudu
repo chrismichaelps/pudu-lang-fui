@@ -1,0 +1,87 @@
+/** @Fui.Core.Module — the chain every node shares */
+module PuduLangFui.Core.Styling
+
+import Std.Html.Build as H
+import Std.Option as Option
+import PuduLangFui.Constants.Css as Constant
+import PuduLangFui.Utils.Spelling as Spelling
+
+/// The attributes with a value joined onto the named one, or appended when absent.
+fn merged(attributes: &Array[(Str, Str)], name: Str, value: Str, separator: Str) -> Array[(Str, Str)] {
+  var out: Array[(Str, Str)] = []
+  var found = false
+
+  for attribute in attributes {
+    if attribute[0] == name {
+      out = out.push((name, attribute[1] + separator + value))
+      found = true
+    } else {
+      out = out.push(attribute)
+    }
+  }
+
+  if found { out } else { out.push((name, value)) }
+}
+
+/** @Fui.Core.Styling — additions that merge rather than append */
+export trait Styling {
+  /// Adds classes after any the node has; rules outside a cascade layer win.
+  fn classes(self: &Self, value: Str) -> Self
+
+  /// Sets a token for this node and everything inside it.
+  fn token(self: &Self, name: Str, value: Str) -> Self
+
+  /// Sets an inline style declaration.
+  fn css(self: &Self, property: Str, value: Str) -> Self
+
+  /// Sets the node's slot.
+  fn slot(self: &Self, name: Str) -> Self
+
+  /// Sets an attribute when the condition holds.
+  fn atIf(self: &Self, condition: Bool, name: Str, value: Str) -> Self
+
+  /// Sets a flag attribute when the condition holds.
+  fn flagIf(self: &Self, condition: Bool, name: Str) -> Self
+
+  /// Names this node as the anchor `id` positions against.
+  fn anchors(self: &Self, id: Str) -> Self
+
+  /// Positions this node against the anchor `id`.
+  fn anchoredTo(self: &Self, id: Str) -> Self
+}
+
+impl Styling for H.Node {
+  fn classes(self: &Self, value: Str) -> Self {
+    if value.isEmpty() { *self } else { H.Node{..*self, attributes: merged(&self.attributes, "class", value, " ")} }
+  }
+
+  fn token(self: &Self, name: Str, value: Str) -> Self { self.css(Constant.TOKEN_PREFIX + name, value) }
+
+  fn css(self: &Self, property: Str, value: Str) -> Self {
+    H.Node{..*self, attributes: merged(&self.attributes, "style", property + ": " + value, "; ")}
+  }
+
+  fn slot(self: &Self, name: Str) -> Self { self.at(Constant.SLOT_ATTRIBUTE, name) }
+
+  fn atIf(self: &Self, condition: Bool, name: Str, value: Str) -> Self { if condition { self.at(name, value) } else { *self } }
+
+  fn flagIf(self: &Self, condition: Bool, name: Str) -> Self { if condition { self.flag(name) } else { *self } }
+
+  fn anchors(self: &Self, id: Str) -> Self { self.css("anchor-name", "--" + id) }
+
+  fn anchoredTo(self: &Self, id: Str) -> Self { self.css("position-anchor", "--" + id) }
+}
+
+/// A `div` carrying a slot, the shape most parts take.
+export fn part(name: Str) -> H.Node { H.div().slot(name) }
+
+/// A `span` carrying a slot.
+export fn inline(name: Str) -> H.Node { H.span().slot(name) }
+
+/// The markup spelling of a variant.
+export fn spelled[T](choice: T) -> Str { Spelling.kebab(show(choice)) }
+
+/// The table's entry for a kind, or the fallback when the table has none.
+export fn picked[T, K](table: &Map[Str, T], kind: K, fallback: T) -> T {
+  Option.unwrapOr(table.get(spelled(kind)), fallback)
+}

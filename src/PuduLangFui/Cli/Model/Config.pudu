@@ -1,0 +1,61 @@
+/** @Fui.Cli.Config.Module — the project's configuration */
+module PuduLangFui.Cli.Model.Config
+
+import Std.Option as Option
+import Std.Toml.Read as TomlRead
+import Std.Toml as Toml
+import PuduLangFui.Constants.Cli as Constant
+
+/** @Fui.Cli.Config.Config — where owned code lives */
+export type Config = { root: Str, source: Str, preset: Str, registries: Array[(Str, Str)] }
+
+/// A project with every default.
+export fn defaults() -> Config {
+  Config{root: Constant.DEFAULT_ROOT, source: Constant.DEFAULT_SOURCE, preset: Constant.DEFAULT_PRESET, registries: []}
+}
+
+/// A top-level text value, or the fallback.
+fn textOr(document: &Toml.Toml, key: Str, fallback: Str) -> Str {
+  Option.unwrapOr(Option.andThen(Toml.field(document, key), |value: Toml.Toml| Toml.asText(&value)), fallback)
+}
+
+/// The namespace-to-directory table.
+fn registriesOf(document: &Toml.Toml) -> Array[(Str, Str)] {
+  var found: Array[(Str, Str)] = []
+
+  if let Some(section) = Toml.field(document, "registries") {
+    if let Some(entries) = Toml.asTable(&section) {
+      for entry in entries {
+        if let Some(directory) = Toml.asText(&entry[1]) { found = found.push((entry[0], directory)) }
+      }
+    }
+  }
+
+  found
+}
+
+/// The configuration a file spells, or why it spells none.
+export fn decode(text: Str) -> Result[Config, Str] {
+  match TomlRead.read(text) {
+    case Err(problem) => Err("fui.toml is not valid TOML: " + show(problem))
+    case Ok(document) => Ok(Config {
+        root: textOr(&document, "root", Constant.DEFAULT_ROOT),
+        source: textOr(&document, "source", Constant.DEFAULT_SOURCE),
+        preset: textOr(&document, "preset", Constant.DEFAULT_PRESET),
+        registries: registriesOf(&document)
+      })
+  }
+}
+
+/// A configuration as file text.
+export fn encode(config: &Config) -> Str {
+  var lines = ["root = \"" + config.root + "\"", "source = \"" + config.source + "\"", "preset = \"" + config.preset + "\""]
+
+  if !config.registries.isEmpty() {
+    lines = lines.push("").push("[registries]")
+
+    for entry in config.registries { lines = lines.push("\"" + entry[0] + "\" = \"" + entry[1] + "\"") }
+  }
+
+  lines.join("\n") + "\n"
+}

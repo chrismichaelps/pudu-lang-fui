@@ -1,0 +1,29 @@
+/** @Fui.NativeSelect.Component — the platform select, themed */
+module PuduLangFui.Components.Primitives.NativeSelect
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A select with the given name, identified by that name.
+export fn select(name: Str, disabled: Bool = false) -> H.Node {
+  H.select().slot("native-select").id(name).name(name).flagIf(disabled, "disabled")
+}
+
+/// One choice.
+export fn option(value: Str, caption: Str, selected: Bool = false) -> H.Node {
+  H.option().value(value).flagIf(selected, "selected").says(caption)
+}
+
+/// Choices under a heading.
+export fn group(heading: Str) -> H.Node { H.tag("optgroup").at("label", heading) }
+
+/// The styles of a select.
+export fn style() -> Css.Block {
+  Css.block("native-select", [
+      Css.base("appearance: none; display: block; inline-size: 100%; min-inline-size: 0; block-size: $control-md; padding-block: $space-1; padding-inline: $space-3 $space-8; background-color: color-mix(in oklab, $input 50%, transparent); background-image: linear-gradient(45deg, transparent 50%, $muted-foreground 50%), linear-gradient(135deg, $muted-foreground 50%, transparent 50%); background-position: calc(100% - 1rem) 55%, calc(100% - 0.7rem) 55%; background-size: 0.3rem 0.3rem; background-repeat: no-repeat; color: $foreground; border: $border-width solid transparent; border-radius: $radius-3xl; font: inherit; font-size: $text-sm; outline: none"),
+      Css.when(":dir(rtl)", "background-position: 1rem 55%, 0.7rem 55%"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.disabled("opacity: 0.5; cursor: not-allowed")
+    ])
+}

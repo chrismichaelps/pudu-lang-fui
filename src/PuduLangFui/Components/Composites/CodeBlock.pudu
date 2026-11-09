@@ -1,0 +1,108 @@
+/** @Fui.CodeBlock.Component — code, output, or a diff */
+module PuduLangFui.Components.Composites.CodeBlock
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.CodeBlock.LineKind — what a line of a diff did */
+export type LineKind = Context | Added | Removed
+
+/** @Fui.CodeBlock.Props — how lines are presented */
+export type Props = { numbered: Bool, start: Int, wrapped: Bool, maximumHeight: Str, highlighted: Array[Int] }
+
+/** @Fui.CodeBlock.Line — one line and what happened to it */
+export type Line = { text: Str, kind: LineKind }
+
+/// Copies the block's code when its button is pressed.
+const COPY: Str = "document.addEventListener('click',function(e)\{var b=e.target.closest('[data-slot=code-block-copy]');if(!b)return;var c=b.closest('[data-slot=code-block]').querySelector('code');navigator.clipboard.writeText(c.innerText);\});"
+
+/// Numbered from one, unwrapped, at full height.
+export fn props() -> Props { Props{numbered: true, start: 1, wrapped: false, maximumHeight: "", highlighted: []} }
+
+/** @Fui.CodeBlock.Configuring — one method per prop */
+export trait Configuring {
+  /// Hides the line numbers.
+  fn unnumbered(self: &Self) -> Self
+
+  /// Sets the first line's number.
+  fn start(self: &Self, value: Int) -> Self
+
+  /// Wraps long lines.
+  fn wrapped(self: &Self) -> Self
+
+  /// Scrolls past the given height, such as `20rem`.
+  fn maximumHeight(self: &Self, value: Str) -> Self
+
+  /// Emphasizes the lines with the given numbers.
+  fn highlighted(self: &Self, value: Array[Int]) -> Self
+}
+
+impl Configuring for Props {
+  fn unnumbered(self: &Self) -> Self { Props{..*self, numbered: false} }
+
+  fn start(self: &Self, value: Int) -> Self { Props{..*self, start: value} }
+
+  fn wrapped(self: &Self) -> Self { Props{..*self, wrapped: true} }
+
+  fn maximumHeight(self: &Self, value: Str) -> Self { Props{..*self, maximumHeight: value} }
+
+  fn highlighted(self: &Self, value: Array[Int]) -> Self { Props{..*self, highlighted: value} }
+}
+
+/// An unchanged line.
+export fn line(text: Str) -> Line { Line{text: text, kind: Context} }
+
+/// A line that was added.
+export fn added(text: Str) -> Line { Line{text: text, kind: Added} }
+
+/// A line that was removed.
+export fn removed(text: Str) -> Line { Line{text: text, kind: Removed} }
+
+/// Text split into unchanged lines.
+export fn linesOf(text: Str) -> Array[Line] { text.split("\n").map(|one: Str| line(one)) }
+
+/// One numbered line.
+fn written(item: &Line, number: Int, given: &Props) -> H.Node {
+  H.span().slot("code-block-line").data("kind", Core.spelled(item.kind)).atIf(given.highlighted.contains(number), "data-highlighted", "true").says(item.text)
+}
+
+/// The given lines under a title.
+export fn codeBlock(title: Str, lines: &Array[Line], given: Props) -> H.Node {
+  var written_lines: Array[H.Node] = []
+  var number = given.start
+
+  for item in lines {
+    written_lines = written_lines.push(written(&item, number, &given))
+    number = number + 1
+  }
+
+  Core.part("code-block").atIf(given.wrapped, "data-wrapped", "true").atIf(!given.numbered, "data-numbered", "false").holding([
+      Core.part("code-block-header").holding([
+          Core.inline("code-block-title").says(title),
+          H.button().kind("button").slot("code-block-copy").label("Copy").holding([Icon.sized(Icon.Copy, Icon.Small)])
+        ]),
+      H.pre().slot("code-block-body").css("counter-reset", "fui-line " + show(given.start - 1)).atIf(!given.maximumHeight.isEmpty(), "style", "max-block-size: " + given.maximumHeight).holding([H.code().holding(written_lines)])
+    ])
+}
+
+/// The styles of a code block.
+export fn style() -> Css.Block {
+  Css.block("code-block", [
+      Css.behavior(COPY),
+      Css.base("border-radius: $radius-2xl; background: $muted; color: $foreground; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent); overflow: hidden; font-size: $text-sm"),
+      Css.slot("code-block-header", "display: flex; align-items: center; justify-content: space-between; gap: $space-2; padding: $space-5 $space-5 0; color: $muted-foreground"),
+      Css.slot("code-block-title", "font-family: $font-sans; font-size: $text-sm; font-weight: $weight-medium; color: $foreground"),
+      Css.slot("code-block-copy", "display: inline-flex; padding: $space-1; background: transparent; color: $muted-foreground; border: 0; border-radius: $radius-lg; cursor: pointer"),
+      Css.slotWhen("code-block-copy", ":focus-visible", "outline: 2px solid $ring"),
+      Css.slot("code-block-body", "margin: 0; padding-block: $space-5; overflow-x: auto; font-family: $font-mono; line-height: 1.625; counter-reset: fui-line"),
+      Css.slot("code-block-line", "display: block; padding-inline: $space-5; white-space: pre; counter-increment: fui-line"),
+      Css.slotWhen("code-block-line", "::before", "content: counter(fui-line); display: inline-block; min-inline-size: 1.5rem; margin-inline-end: $space-4; text-align: end; color: $muted-foreground; user-select: none"),
+      Css.slotWhen("code-block-line", "[data-kind=\"added\"]", "background: color-mix(in oklab, $foreground 5%, transparent)"),
+      Css.slotWhen("code-block-line", "[data-kind=\"removed\"]", "background: color-mix(in oklab, $destructive 10%, transparent)"),
+      Css.when("[data-wrapped=\"true\"] [data-slot=\"code-block-line\"]", "white-space: pre-wrap; overflow-wrap: anywhere"),
+      Css.when("[data-numbered=\"false\"] [data-slot=\"code-block-line\"]::before", "display: none"),
+      Css.slotWhen("code-block-line", "[data-highlighted=\"true\"]", "background: color-mix(in oklab, $primary 12%, transparent)")
+    ])
+}

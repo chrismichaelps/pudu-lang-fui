@@ -1,0 +1,61 @@
+/** @Fui.DatePicker.Component — a date field with a calendar */
+module PuduLangFui.Components.Patterns.DatePicker
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A native date field beside a popover holding the given calendar.
+export fn datePicker(name: Str, value: Str, calendar: H.Node) -> H.Node {
+  let popover = name + "-calendar"
+
+  Core.part("date-picker").holding([
+      Input.input(name, Input.props().kind("date")).value(value),
+      Popover.opens(Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).label("Open calendar").holding([Icon.icon(Icon.Calendar)]), popover),
+      Popover.content(popover, Popover.Below).css("inline-size", "auto").holding([calendar])
+    ])
+}
+
+/// A pair of fields for the start and end of a range.
+export fn range(startName: Str, endName: Str, startValue: Str, endValue: Str) -> H.Node {
+  Core.part("date-picker").holding([
+      Input.input(startName, Input.props().kind("date")).value(startValue).label("Start date"),
+      Input.input(endName, Input.props().kind("date")).value(endValue).label("End date")
+    ])
+}
+
+/// Quick choices, each a link.
+export fn presets() -> H.Node { Core.part("date-picker-presets") }
+
+/// The date a calendar's link carries, as `YYYY-MM-DD`.
+export fn isoOf(day: &Calendar.Date) -> Str {
+  show(day.year) + "-" + padded(day.month) + "-" + padded(day.day)
+}
+
+/// A number written in two digits.
+fn padded(value: Int) -> Str { if value < 10 { "0" + show(value) } else { show(value) } }
+
+/// A time of day field.
+export fn time(name: Str, value: Str) -> H.Node { Input.input(name, Input.props().kind("time")).value(value) }
+
+/// Dropdowns for a date far away, such as a birthday, through the given years.
+export fn dropdowns(name: Str, years: &Array[Int], names: &Array[Str]) -> H.Node {
+  Core.part("date-picker").holding([
+      NativeSelect.select(name + "-month", false).label("Month").holding(names.map(|one: Str| NativeSelect.option(one, one, false))),
+      NativeSelect.select(name + "-year", false).label("Year").holding(years.map(|one: Int| NativeSelect.option(show(one), show(one), false)))
+    ])
+}
+
+/// The styles of a date picker.
+export fn style() -> Css.Block {
+  Css.block("date-picker", [
+      Css.base("display: flex; align-items: center; gap: $space-2"),
+      Css.slot("date-picker-presets", "display: flex; flex-wrap: wrap; gap: $space-1")
+    ])
+}

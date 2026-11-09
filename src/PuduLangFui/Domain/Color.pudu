@@ -1,0 +1,55 @@
+/** @Fui.Domain.Color.Module — numeric colors and their contrast */
+module PuduLangFui.Domain.Color
+
+import Std.Math.Float as Float
+
+/** @Fui.Domain.Color.Oklch — a color in perceptual coordinates */
+export type Oklch = { lightness: Float64, chroma: Float64, hue: Float64 }
+
+/** @Fui.Domain.Color.Pair — a color for each mode */
+export type Pair = { light: Oklch, dark: Oklch }
+
+/// A color from lightness, chroma, and hue in degrees.
+export fn oklch(lightness: Float64, chroma: Float64, hue: Float64) -> Oklch {
+  Oklch{lightness: lightness, chroma: chroma, hue: hue}
+}
+
+/// A color for each mode.
+export fn pair(light: Oklch, dark: Oklch) -> Pair { Pair{light: light, dark: dark} }
+
+/// A color's CSS spelling.
+export fn spell(color: &Oklch) -> Str { "oklch(" + show(color.lightness) + " " + show(color.chroma) + " " + show(color.hue) + ")" }
+
+/// A pair's CSS spelling, which follows the element's color scheme.
+export fn spellPair(colors: &Pair) -> Str { "light-dark(" + spell(&colors.light) + ", " + spell(&colors.dark) + ")" }
+
+/// A channel held inside the displayable range.
+fn clamped(channel: Float64) -> Float64 { if channel < 0.0 { 0.0 } else if channel > 1.0 { 1.0 } else { channel } }
+
+/// A value cubed.
+fn cubed(value: Float64) -> Float64 { value * value * value }
+
+/// A color's relative luminance, from 0 for black to 1 for white.
+export fn luminance(color: &Oklch) -> Float64 {
+  let radians = color.hue * Float.pi() / 180.0
+  let a = color.chroma * Float.cos(radians)
+  let b = color.chroma * Float.sin(radians)
+  let l = cubed(color.lightness + 0.3963377774 * a + 0.2158037573 * b)
+  let m = cubed(color.lightness - 0.1055613458 * a - 0.0638541728 * b)
+  let s = cubed(color.lightness - 0.0894841775 * a - 1.291485548 * b)
+  let red = clamped(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s)
+  let green = clamped(0.0 - 1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s)
+  let blue = clamped(0.0 - 0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s)
+
+  0.2126 * red + 0.7152 * green + 0.0722 * blue
+}
+
+/// The WCAG contrast ratio between two colors, from 1 to 21.
+export fn contrast(first: &Oklch, second: &Oklch) -> Float64 {
+  let one = luminance(first)
+  let two = luminance(second)
+  let lighter = if one > two { one } else { two }
+  let darker = if one > two { two } else { one }
+
+  (lighter + 0.05) / (darker + 0.05)
+}

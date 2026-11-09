@@ -1,0 +1,70 @@
+/** @Fui.Command.Component — a search-and-run menu */
+module PuduLangFui.Components.Patterns.Command
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Filters items by the text typed, hiding groups left empty.
+const FILTER: Str = "document.addEventListener('input',function(e)\{if(!e.target.matches('[data-slot=command-input]'))return;var r=e.target.closest('[data-slot=command]');var q=e.target.value.toLowerCase();var n=0;r.querySelectorAll('[data-slot=command-item]').forEach(function(i)\{var m=i.textContent.toLowerCase().indexOf(q)>=0;i.hidden=!m;if(m)n++;\});r.querySelectorAll('[data-slot=command-group]').forEach(function(g)\{g.hidden=!g.querySelector('[data-slot=command-item]:not([hidden])');\});var x=r.querySelector('[data-slot=command-empty]');if(x)x.hidden=n>0;\});"
+
+/// Items whose text holds the query, for filtering on the server.
+export fn matching(items: &Array[Str], query: Str) -> Array[Str] {
+  let wanted = query.toLower()
+
+  items.filter(|entry: Str| entry.toLower().contains(wanted))
+}
+
+/// A command menu.
+export fn command() -> H.Node { Core.part("command") }
+
+/// The search field, with the given name.
+export fn input(name: Str, hint: Str) -> H.Node {
+  Core.part("command-input-wrapper").holding([
+      Icon.icon(Icon.Search),
+      H.input().slot("command-input").name(name).kind("search").placeholder(hint).label(hint).at("autocomplete", "off")
+    ])
+}
+
+/// The scrolling list.
+export fn list() -> H.Node { Core.part("command-list") }
+
+/// A titled run of items.
+export fn group(heading: Str) -> H.Node {
+  Core.part("command-group").holding([Core.part("command-group-heading").says(heading)])
+}
+
+/// One item as a button.
+export fn item() -> H.Node { of(H.button().kind("button")) }
+
+/// One item built on the given element, such as a link.
+export fn of(element: H.Node) -> H.Node { element.slot("command-item") }
+
+/// What shows when nothing matches; hidden until the filter runs.
+export fn empty(message: Str) -> H.Node { Core.part("command-empty").flag("hidden").says(message) }
+
+/// A key hint at the end of an item.
+export fn shortcut() -> H.Node { Core.inline("command-shortcut") }
+
+/// A line between groups.
+export fn separator() -> H.Node { Core.part("command-separator").role("separator") }
+
+/// The styles of a command menu.
+export fn style() -> Css.Block {
+  Css.block("command", [
+      Css.behavior(FILTER),
+      Css.base("display: flex; flex-direction: column; inline-size: 100%; padding: $space-1; background: $popover; color: $popover-foreground; border-radius: $radius-4xl; overflow: hidden; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-md"),
+      Css.slot("command-input-wrapper", "display: flex; align-items: center; gap: $space-2; block-size: $control-md; margin: $space-1; padding-inline: $space-3; background: color-mix(in oklab, $input 50%, transparent); border-radius: $radius-4xl; color: $muted-foreground"),
+      Css.slot("command-input", "flex: 1; background: transparent; color: $foreground; border: 0; font: inherit; font-size: $text-sm; outline: none"),
+      Css.slot("command-list", "max-block-size: 18rem; overflow-y: auto; scrollbar-width: none"),
+      Css.slot("command-group", "padding: calc($unit * 1.5)"),
+      Css.slot("command-group-heading", "padding: $space-1 $space-2; font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground"),
+      Css.slot("command-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-align: start; text-decoration: none; cursor: default; user-select: none"),
+      Css.slotWhen("command-item", ":is(:hover, :focus-visible)", "background: $muted; color: $foreground; outline: none"),
+      Css.slotWhen("command-item", "[hidden]", "display: none"),
+      Css.slot("command-empty", "padding: $space-6; font-size: $text-sm; text-align: center"),
+      Css.slot("command-shortcut", "margin-inline-start: auto; font-size: $text-xs; color: $muted-foreground"),
+      Css.slot("command-separator", "block-size: $border-width; margin-block: $space-1; background: $border")
+    ])
+}

@@ -1,0 +1,49 @@
+/** @Fui.Typography.Component — text in every named role */
+module PuduLangFui.Components.Primitives.Typography
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Typography.Kind — the role a piece of text plays */
+export type Kind = H1 | H2 | H3 | H4 | Paragraph | Blockquote | InlineCode | Lead | Large | Small | Muted
+
+/// The element each kind renders on.
+const FACTORIES: Map[Str, fn() -> H.Node] = mapOf([
+    ("h-1", H.h1),
+    ("h-2", H.h2),
+    ("h-3", H.h3),
+    ("h-4", H.h4),
+    ("paragraph", H.p),
+    ("blockquote", H.blockquote),
+    ("inline-code", H.code),
+    ("lead", H.p),
+    ("large", H.div),
+    ("small", H.small),
+    ("muted", H.p)
+  ])
+
+/// Text in the given role.
+export fn text(kind: Kind) -> H.Node {
+  let build = Core.picked(&FACTORIES, kind, H.p)
+
+  build().slot("typography").data("kind", Core.spelled(kind))
+}
+
+/// The styles of text.
+export fn style() -> Css.Block {
+  Css.block("typography", [
+      Css.base("margin: 0"),
+      Css.variant("kind", "h-1", "font-family: $font-heading; font-size: $text-3xl; font-weight: $weight-semibold; letter-spacing: $tracking; line-height: $leading-tight; text-wrap: balance"),
+      Css.variant("kind", "h-2", "font-family: $font-heading; font-size: $text-2xl; font-weight: $weight-semibold; letter-spacing: $tracking; line-height: $leading-tight"),
+      Css.variant("kind", "h-3", "font-family: $font-heading; font-size: $text-xl; font-weight: $weight-semibold; line-height: $leading-tight"),
+      Css.variant("kind", "h-4", "font-family: $font-heading; font-size: $text-lg; font-weight: $weight-semibold; line-height: $leading-tight"),
+      Css.variant("kind", "paragraph", "line-height: $leading"),
+      Css.variant("kind", "blockquote", "padding-inline-start: $space-4; border-inline-start: 2px solid $border; font-style: italic"),
+      Css.variant("kind", "inline-code", "padding: 0.1em 0.3em; background: $muted; border-radius: $radius-xs; font-family: $font-mono; font-size: 0.875em"),
+      Css.variant("kind", "lead", "font-size: $text-xl; color: $muted-foreground"),
+      Css.variant("kind", "large", "font-size: $text-lg; font-weight: $weight-semibold"),
+      Css.variant("kind", "small", "font-size: $text-sm; font-weight: $weight-medium; line-height: $leading-tight"),
+      Css.variant("kind", "muted", "font-size: $text-sm; color: $muted-foreground")
+    ])
+}

@@ -1,0 +1,41 @@
+/** @Fui.Carousel.Component — slides on native scroll snap */
+module PuduLangFui.Components.Composites.Carousel
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Slides scrolled one at a time, with a dot linking to each.
+export fn carousel(id: Str, caption: Str, slides: Array[H.Node]) -> H.Node {
+  var held: Array[H.Node] = []
+  var dots: Array[H.Node] = []
+  var index = 0
+
+  for slide in slides {
+    let target = id + "-slide-" + show(index + 1)
+
+    held = held.push(Core.part("carousel-slide").id(target).holding([slide]))
+    dots = dots.push(H.a().slot("carousel-dot").href("#" + target).label("Slide " + show(index + 1)))
+    index = index + 1
+  }
+
+  H.section().slot("carousel").label(caption).at("aria-roledescription", "carousel").holding([
+      Core.part("carousel-viewport").at("tabindex", "0").holding(held),
+      Core.part("carousel-dots").holding(dots)
+    ])
+}
+
+/// The styles of a carousel.
+export fn style() -> Css.Block {
+  Css.block("carousel", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("carousel-viewport", "display: flex; gap: $space-4; overflow-x: auto; scroll-snap-type: inline mandatory; scroll-behavior: smooth; scrollbar-width: none; outline: none"),
+      Css.slotWhen("carousel-viewport", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.slotWhen("carousel-viewport", "::scroll-button(inline-start)", "content: '<'; position: absolute; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; inline-size: $control-md; block-size: $control-md; cursor: pointer"),
+      Css.slotWhen("carousel-viewport", "::scroll-button(inline-end)", "content: '>'; position: absolute; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; inline-size: $control-md; block-size: $control-md; cursor: pointer"),
+      Css.slot("carousel-slide", "flex: 0 0 100%; scroll-snap-align: start"),
+      Css.slot("carousel-dots", "display: flex; justify-content: center; gap: $space-2"),
+      Css.slot("carousel-dot", "inline-size: $space-2; block-size: $space-2; background: $border; border-radius: $radius-full"),
+      Css.slotWhen("carousel-dot", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px")
+    ])
+}

@@ -1,0 +1,30 @@
+/** @Fui.Slider.Component — a value along a range */
+module PuduLangFui.Components.Primitives.Slider
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A slider with the given name, between `minimum` and `maximum`, starting at `value`.
+export fn slider(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> H.Node {
+  let span = if maximum > minimum { maximum - minimum } else { 1 }
+  let filled = (value - minimum) * 100 / span
+
+  H.input().slot("slider").kind("range").id(name).name(name).value(show(value)).at("min", show(minimum)).at("max", show(maximum)).css("--slider-fill", show(filled) + "%")
+}
+
+/// The styles of a slider.
+export fn style() -> Css.Block {
+  Css.block("slider", [
+      Css.base("appearance: none; display: block; inline-size: 100%; block-size: 1.25rem; margin: 0; background: transparent; cursor: pointer; outline: none"),
+      Css.when("::-webkit-slider-runnable-track", "block-size: 0.5rem; border-radius: $radius-full; background: linear-gradient(to right, $primary var(--slider-fill), color-mix(in oklab, $input 90%, transparent) var(--slider-fill))"),
+      Css.when("::-moz-range-track", "block-size: 0.5rem; border-radius: $radius-full; background: color-mix(in oklab, $input 90%, transparent)"),
+      Css.when("::-moz-range-progress", "block-size: 0.5rem; border-radius: $radius-full; background: $primary"),
+      Css.when("::-webkit-slider-thumb", "appearance: none; inline-size: 1.5rem; block-size: 1rem; margin-block-start: -0.25rem; background: white; border: 0; border-radius: $radius-full; box-shadow: 0 0 0 1px oklch(0 0 0 / 0.1), $shadow-md"),
+      Css.when("::-moz-range-thumb", "inline-size: 1.5rem; block-size: 1rem; background: white; border: 0; border-radius: $radius-full; box-shadow: 0 0 0 1px oklch(0 0 0 / 0.1), $shadow-md"),
+      Css.when(":dir(rtl)::-webkit-slider-runnable-track", "background: linear-gradient(to left, $primary var(--slider-fill), $muted var(--slider-fill))"),
+      Css.when(":focus-visible::-webkit-slider-thumb", "box-shadow: 0 0 0 4px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.when(":focus-visible::-moz-range-thumb", "box-shadow: 0 0 0 4px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.disabled("opacity: 0.5; cursor: not-allowed")
+    ])
+}

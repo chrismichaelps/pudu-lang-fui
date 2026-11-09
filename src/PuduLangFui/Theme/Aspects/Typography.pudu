@@ -1,0 +1,52 @@
+/** @Fui.Theme.Typography.Module — the typography aspect */
+module PuduLangFui.Theme.Aspects.Typography
+
+import PuduLangFui.Constants.Fonts as Fonts
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Typography.Typography — families, a size scale, and weights */
+export type Typography = {
+  fontSans: Str,
+  fontHeading: Str,
+  fontMono: Str,
+  textBase: Str,
+  textXs: Str,
+  textSm: Str,
+  textMd: Str,
+  textLg: Str,
+  textXl: Str,
+  text2xl: Str,
+  text3xl: Str,
+  leading: Str,
+  leadingTight: Str,
+  weightNormal: Str,
+  weightMedium: Str,
+  weightSemibold: Str,
+  tracking: Str
+} derives Tokens.Tokens
+
+/// A step of the scale as a multiple of the base size.
+fn step(multiple: Str) -> Str { "calc(var(--fui-text-base) * " + multiple + ")" }
+
+/// The system fonts over a sixteen-pixel base.
+export fn defaults() -> Typography {
+  Typography {
+    fontSans: Fonts.SANS,
+    fontHeading: Fonts.SANS,
+    fontMono: Fonts.MONO,
+    textBase: "1rem",
+    textXs: step("0.75"),
+    textSm: step("0.875"),
+    textMd: step("1"),
+    textLg: step("1.125"),
+    textXl: step("1.25"),
+    text2xl: step("1.5"),
+    text3xl: step("1.875"),
+    leading: "1.5",
+    leadingTight: "1.25",
+    weightNormal: "400",
+    weightMedium: "500",
+    weightSemibold: "600",
+    tracking: "-0.01em"
+  }
+}

@@ -1,0 +1,39 @@
+/** @Fui.Theme.Shape.Module — the shape aspect */
+module PuduLangFui.Theme.Aspects.Shape
+
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Shape.Shape — a base radius and its scale */
+export type Shape = {
+  radius: Str,
+  radiusXs: Str,
+  radiusSm: Str,
+  radiusMd: Str,
+  radiusLg: Str,
+  radiusXl: Str,
+  radius2xl: Str,
+  radius3xl: Str,
+  radius4xl: Str,
+  radiusFull: Str,
+  borderWidth: Str
+} derives Tokens.Tokens
+
+/// A radius as a multiple of the base.
+fn scaled(multiple: Str) -> Str { "calc(var(--fui-radius) * " + multiple + ")" }
+
+/// The scale from a base radius.
+export fn from(radius: Str) -> Shape {
+  Shape {
+    radius: radius,
+    radiusXs: scaled("0.4"),
+    radiusSm: scaled("0.6"),
+    radiusMd: scaled("0.8"),
+    radiusLg: scaled("1"),
+    radiusXl: scaled("1.4"),
+    radius2xl: scaled("1.8"),
+    radius3xl: scaled("2.2"),
+    radius4xl: scaled("2.6"),
+    radiusFull: "9999px",
+    borderWidth: "1px"
+  }
+}

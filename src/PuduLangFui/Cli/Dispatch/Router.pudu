@@ -1,0 +1,60 @@
+/** @Fui.Cli.Router.Module — runs a command line */
+module PuduLangFui.Cli.Dispatch.Router
+
+import Std.Map as Map
+import Std.Option as Option
+import PuduLangFui.Cli.Commands.Add as Add
+import PuduLangFui.Cli.Commands.Apply as Apply
+import PuduLangFui.Cli.Commands.Build as Build
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Commands.Diff as Diff
+import PuduLangFui.Cli.Commands.Docs as Docs
+import PuduLangFui.Cli.Commands.Doctor as Doctor
+import PuduLangFui.Cli.Commands.Icons as Icons
+import PuduLangFui.Cli.Commands.Info as Info
+import PuduLangFui.Cli.Commands.Init as Init
+import PuduLangFui.Cli.Commands.New as New
+import PuduLangFui.Cli.Commands.Preset as Preset
+import PuduLangFui.Cli.Commands.Search as Search
+import PuduLangFui.Cli.Commands.View as View
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Constants.Cli as Constant
+
+/** @Fui.Cli.Router.Command — one command's summary and action */
+export type Command = { summary: Str, run: fn(&Context.Context) -> Outcome.Outcome }
+
+/// Every command word and what it runs.
+const COMMANDS: Map[Str, Command] = mapOf([
+    ("init", Command{summary: "set a project up", run: Init.run}),
+    ("create", Command{summary: "the same as init", run: Init.run}),
+    ("add", Command{summary: "copy items and what they need into the project", run: Add.run}),
+    ("apply", Command{summary: "apply a preset name or code", run: Apply.run}),
+    ("preset", Command{summary: "list, decode, or resolve presets", run: Preset.run}),
+    ("view", Command{summary: "print an item's source", run: View.run}),
+    ("search", Command{summary: "search items", run: Search.run}),
+    ("list", Command{summary: "the same as search", run: Search.run}),
+    ("build", Command{summary: "write the registry index", run: Build.run}),
+    ("docs", Command{summary: "print an item's reference", run: Docs.run}),
+    ("diff", Command{summary: "compare owned files with upstream", run: Diff.run}),
+    ("info", Command{summary: "report the project's setup", run: Info.run}),
+    ("new", Command{summary: "scaffold a new component", run: New.run}),
+    ("icons", Command{summary: "search and add icons from every library", run: Icons.run}),
+    ("doctor", Command{summary: "audit tokens, contrast, and layout", run: Doctor.run})
+  ])
+
+/// The usage text.
+export fn usage() -> Array[Str] {
+  [Constant.USAGE_HEADER, ""].concat(Map.keys(&COMMANDS).map(|name: Str| "  " + name + "  " + Option.unwrapOr(Option.map(COMMANDS.get(name), |entry: Command| entry.summary), "")))
+}
+
+/// Runs a command line from a working directory.
+export fn run(arguments: &Array[Str], workingDirectory: Str) -> Outcome.Outcome {
+  let invocation = Invocation.parse(arguments)
+  let directory = Invocation.optionOr(&invocation, "--cwd", workingDirectory)
+
+  match COMMANDS.get(invocation.command) {
+    case Some(entry) => (entry.run)(&Context.Context{directory: directory, invocation: invocation})
+    case None => Outcome.Outcome{status: if invocation.command.isEmpty() { 0 } else { 1 }, lines: usage(), problems: []}
+  }
+}

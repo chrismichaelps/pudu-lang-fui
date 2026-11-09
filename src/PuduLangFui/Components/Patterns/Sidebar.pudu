@@ -1,0 +1,132 @@
+/** @Fui.Sidebar.Component — an application shell's navigation */
+module PuduLangFui.Components.Patterns.Sidebar
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Sidebar.Side — which edge the panel sits on */
+export type Side = Start | End
+
+/** @Fui.Sidebar.Variant — how the panel is drawn */
+export type Variant = Plain | Floating | Inset
+
+/// An application shell; `collapsed` renders it closed.
+export fn provider(id: Str, collapsed: Bool = false) -> H.Node {
+  Core.part("sidebar-provider").holding([H.input().kind("checkbox").slot("sidebar-state").id(id).flagIf(collapsed, "checked").at("aria-hidden", "true").at("tabindex", "-1")])
+}
+
+/// A control that opens and closes the sidebar `id`.
+export fn trigger(id: Str) -> H.Node {
+  H.labelFor().slot("sidebar-trigger").at("for", id).label("Toggle sidebar").holding([Icon.icon(Icon.Menu)])
+}
+
+/// The side panel.
+export fn sidebar() -> H.Node { H.aside().slot("sidebar") }
+
+/// The sidebar's opening.
+export fn header() -> H.Node { Core.part("sidebar-header") }
+
+/// The sidebar's scrolling middle.
+export fn content() -> H.Node { Core.part("sidebar-content") }
+
+/// The sidebar's closing.
+export fn footer() -> H.Node { Core.part("sidebar-footer") }
+
+/// A titled run of entries.
+export fn group() -> H.Node { Core.part("sidebar-group") }
+
+/// A group's caption.
+export fn groupLabel() -> H.Node { Core.part("sidebar-group-label") }
+
+/// The entries of a group.
+export fn menu() -> H.Node { H.ul().slot("sidebar-menu") }
+
+/// One entry.
+export fn menuItem() -> H.Node { H.li().slot("sidebar-menu-item") }
+
+/// An entry's link; `active` marks the page being viewed.
+export fn menuButton(target: Str, active: Bool = false) -> H.Node {
+  H.a().slot("sidebar-menu-button").href(target).atIf(active, "aria-current", "page")
+}
+
+/// A count at the end of an entry.
+export fn menuBadge() -> H.Node { Core.inline("sidebar-menu-badge") }
+
+/// The main area beside the sidebar.
+export fn inset() -> H.Node { H.main().slot("sidebar-inset") }
+
+/// The body of a group.
+export fn groupContent() -> H.Node { Core.part("sidebar-group-content") }
+
+/// A control at the end of a group's caption.
+export fn groupAction() -> H.Node { H.button().kind("button").slot("sidebar-group-action") }
+
+/// A control at the end of an entry.
+export fn menuAction() -> H.Node { H.button().kind("button").slot("sidebar-menu-action") }
+
+/// A placeholder entry while the menu loads.
+export fn menuSkeleton() -> H.Node { Core.part("sidebar-menu-skeleton").at("aria-hidden", "true") }
+
+/// Entries nested under an entry.
+export fn menuSub() -> H.Node { H.ul().slot("sidebar-menu-sub") }
+
+/// One nested entry.
+export fn menuSubItem() -> H.Node { H.li().slot("sidebar-menu-sub-item") }
+
+/// A nested entry's link.
+export fn menuSubButton(target: Str, active: Bool) -> H.Node { H.a().slot("sidebar-menu-sub-button").href(target).atIf(active, "aria-current", "page") }
+
+/// A line between groups.
+export fn separator() -> H.Node { Core.part("sidebar-separator").role("separator") }
+
+/// The sidebar's edge, which toggles it when pressed.
+export fn rail(id: Str) -> H.Node { H.labelFor().slot("sidebar-rail").at("for", id).label("Toggle sidebar") }
+
+/// A panel on a side, in a treatment, optionally shrinking to icons when collapsed.
+export fn styled(side: Side, variant: Variant, icons: Bool) -> H.Node {
+  sidebar().data("side", Core.spelled(side)).data("variant", Core.spelled(variant)).atIf(icons, "data-collapsible", "icon")
+}
+
+/// The styles of a sidebar.
+export fn style() -> Css.Block {
+  Css.block("sidebar-provider", [
+      Css.base("--sidebar-width: 16rem; display: flex; min-block-size: 100dvh; background: $background"),
+      Css.slot("sidebar-state", "position: absolute; opacity: 0; pointer-events: none"),
+      Css.slot("sidebar-trigger", "display: inline-flex; align-items: center; justify-content: center; inline-size: $control-sm; block-size: $control-sm; border-radius: $radius-md; cursor: pointer"),
+      Css.slotWhen("sidebar-trigger", ":hover", "background: $accent; color: $accent-foreground"),
+      Css.slot("sidebar", "display: flex; flex-direction: column; flex-shrink: 0; inline-size: var(--sidebar-width); background: $sidebar; color: $sidebar-foreground; border-inline-end: $border-width solid $sidebar-border; transition: margin-inline-start $duration-slow $ease-standard"),
+      Css.rule("[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"]", "margin-inline-start: calc(var(--sidebar-width) * -1)"),
+      Css.rule("[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:focus-visible) [data-slot=\"sidebar-trigger\"]", "outline: 2px solid $ring"),
+      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar\"]", "position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 40; margin-inline-start: calc(var(--sidebar-width) * -1)"),
+      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"]", "margin-inline-start: 0"),
+      Css.slot("sidebar-header", "display: flex; flex-direction: column; gap: $space-2; padding: $space-2"),
+      Css.slot("sidebar-content", "display: flex; flex: 1; flex-direction: column; gap: $space-2; min-block-size: 0; overflow: auto"),
+      Css.slot("sidebar-footer", "display: flex; flex-direction: column; gap: $space-2; padding: $space-2"),
+      Css.slot("sidebar-group", "padding: $space-2"),
+      Css.slot("sidebar-group-label", "display: flex; align-items: center; block-size: $control-sm; padding-inline: $space-3; border-radius: $radius-xl; font-size: $text-xs; font-weight: $weight-medium; color: color-mix(in oklab, $sidebar-foreground 70%, transparent)"),
+      Css.slot("sidebar-menu", "display: flex; flex-direction: column; gap: calc($unit * 0.5); margin: 0; padding: 0; list-style: none"),
+      Css.slot("sidebar-menu-item", "position: relative"),
+      Css.slot("sidebar-menu-button", "display: flex; align-items: center; gap: $space-2; block-size: $control-md; padding: $space-2 $space-3; color: inherit; border-radius: $radius-xl; font-size: $text-sm; text-align: start; text-decoration: none"),
+      Css.slotWhen("sidebar-menu-button", ":hover", "background: $sidebar-accent; color: $sidebar-accent-foreground"),
+      Css.slotWhen("sidebar-menu-button", ":focus-visible", "outline: 2px solid $ring; outline-offset: -2px"),
+      Css.slotWhen("sidebar-menu-button", "[aria-current=\"page\"]", "background: $sidebar-accent; color: $sidebar-accent-foreground; font-weight: $weight-medium"),
+      Css.slot("sidebar-menu-badge", "margin-inline-start: auto; font-size: $text-xs"),
+      Css.slot("sidebar-inset", "flex: 1; min-inline-size: 0"),
+      Css.slot("sidebar-group-content", "display: flex; flex-direction: column; gap: $space-1"),
+      Css.slot("sidebar-group-action", "position: absolute; inset-block-start: $space-3; inset-inline-end: $space-3; padding: 0; background: transparent; color: inherit; border: 0; cursor: pointer"),
+      Css.slot("sidebar-menu-action", "position: absolute; inset-block-start: $space-2; inset-inline-end: $space-1; padding: 0; background: transparent; color: inherit; border: 0; cursor: pointer"),
+      Css.slot("sidebar-menu-skeleton", "block-size: $control-sm; background: $sidebar-accent; border-radius: $radius-md"),
+      Css.slot("sidebar-menu-sub", "display: flex; flex-direction: column; gap: $space-1; margin: 0; margin-inline-start: $space-4; padding: 0; padding-inline-start: $space-3; border-inline-start: $border-width solid $sidebar-border; list-style: none"),
+      Css.slot("sidebar-menu-sub-item", "display: block"),
+      Css.slot("sidebar-menu-sub-button", "display: flex; align-items: center; gap: $space-2; padding: $space-1 $space-2; color: inherit; border-radius: $radius-md; font-size: $text-sm; text-decoration: none"),
+      Css.slotWhen("sidebar-menu-sub-button", ":hover", "background: $sidebar-accent; color: $sidebar-accent-foreground"),
+      Css.slot("sidebar-separator", "block-size: $border-width; margin-inline: $space-2; background: $sidebar-border"),
+      Css.slot("sidebar-rail", "position: absolute; inset-block: 0; inset-inline-end: 0; inline-size: $space-1; cursor: col-resize"),
+      Css.slotWhen("sidebar", "[data-side=\"end\"]", "order: 1; border-inline-end: 0; border-inline-start: $border-width solid $sidebar-border"),
+      Css.slotWhen("sidebar", "[data-variant=\"floating\"]", "margin: $space-2; border: $border-width solid $sidebar-border; border-radius: $radius-lg; box-shadow: $shadow-sm"),
+      Css.slotWhen("sidebar", "[data-variant=\"inset\"]", "border: 0"),
+      Css.rule("[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"][data-collapsible=\"icon\"]", "margin-inline-start: 0; inline-size: calc($space-8 + $space-4); overflow: hidden")
+    ])
+}

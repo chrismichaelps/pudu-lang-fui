@@ -1,0 +1,53 @@
+/** @Fui.Theme.Spacing.Module — the spacing aspect */
+module PuduLangFui.Theme.Aspects.Spacing
+
+import Std.Option as Option
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Spacing.Density — how tightly everything sits */
+export type Density = Compact | Comfortable | Spacious
+
+/** @Fui.Theme.Spacing.Spacing — one unit and what is measured in it */
+export type Spacing = {
+  unit: Str,
+  space1: Str,
+  space2: Str,
+  space3: Str,
+  space4: Str,
+  space5: Str,
+  space6: Str,
+  space8: Str,
+  space10: Str,
+  space12: Str,
+  controlSm: Str,
+  controlMd: Str,
+  controlLg: Str
+} derives Tokens.Tokens
+
+/// A length of so many units.
+fn units(count: Str) -> Str { "calc(var(--fui-unit) * " + count + ")" }
+
+/// The unit each density picks.
+const UNITS: Map[Str, Str] = mapOf([("Compact", "0.2rem"), ("Comfortable", "0.25rem"), ("Spacious", "0.3rem")])
+
+/// The unit a density picks.
+export fn unitOf(density: Density) -> Str { Option.unwrapOr(UNITS.get(show(density)), "0.25rem") }
+
+/// The scale at a density.
+export fn at(density: Density) -> Spacing {
+  Spacing {
+    unit: unitOf(density),
+    space1: units("1"),
+    space2: units("2"),
+    space3: units("3"),
+    space4: units("4"),
+    space5: units("5"),
+    space6: units("6"),
+    space8: units("8"),
+    space10: units("10"),
+    space12: units("12"),
+    controlSm: units("8"),
+    controlMd: units("9"),
+    controlLg: units("10")
+  }
+}

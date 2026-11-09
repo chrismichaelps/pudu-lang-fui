@@ -1,0 +1,63 @@
+/** @Fui.Cli.Invocation.Module — a command line taken apart */
+module PuduLangFui.Cli.Model.Invocation
+
+import Std.Set as Set
+
+/** @Fui.Cli.Invocation.Invocation — the words of one command */
+export type Invocation = { command: Str, words: Array[Str], flags: Set[Str], options: Map[Str, Str] }
+
+/// Options that take the next word as their value.
+const VALUE_OPTIONS: Set[Str] = #{"--cwd", "--from", "--root", "--preset", "--output", "--query", "--limit", "--offset", "--layer", "-q", "-c", "-o", "-l"}
+
+/// The full name of each short option.
+const SHORT_NAMES: Map[Str, Str] = mapOf([("-q", "--query"), ("-c", "--cwd"), ("-o", "--output"), ("-l", "--limit"), ("-y", "--yes"), ("-a", "--all")])
+
+/// An option's full name.
+fn fullName(word: Str) -> Str {
+  match SHORT_NAMES.get(word) {
+    case Some(name) => name
+    case None => word
+  }
+}
+
+/// A command line taken apart; the first bare word is the command.
+export fn parse(arguments: &Array[Str]) -> Invocation {
+  var command = ""
+  var words: Array[Str] = []
+  var flags: Set[Str] = setOf([])
+  var options: Map[Str, Str] = mapOf([])
+  var index = 0
+
+  while index < arguments.length() {
+    let word = arguments[index]
+
+    index = index + 1
+
+    if word.startsWith("-") {
+      if word in VALUE_OPTIONS && index < arguments.length() {
+        options = options.insert(fullName(word), arguments[index])
+        index = index + 1
+      } else {
+        flags = flags.insert(fullName(word))
+      }
+    } else if command.isEmpty() {
+
+      command = word
+    } else {
+      words = words.push(word)
+    }
+  }
+
+  Invocation{command: command, words: words, flags: flags, options: options}
+}
+
+/// Whether a flag was given.
+export fn has(invocation: &Invocation, flag: Str) -> Bool { flag in invocation.flags }
+
+/// An option's value, or the fallback.
+export fn optionOr(invocation: &Invocation, name: Str, fallback: Str) -> Str {
+  match invocation.options.get(name) {
+    case Some(value) => value
+    case None => fallback
+  }
+}

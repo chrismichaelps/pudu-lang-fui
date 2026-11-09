@@ -1,0 +1,61 @@
+/** @Fui.Checkbox.Component — a native checkbox in the theme */
+module PuduLangFui.Components.Primitives.Checkbox
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Checkbox.Props — what a checkbox can be told */
+export type Props = { checked: Bool, mixed: Bool, disabled: Bool, invalid: Bool }
+
+/// An unchecked checkbox.
+export fn props() -> Props { Props{checked: false, mixed: false, disabled: false, invalid: false} }
+
+/** @Fui.Checkbox.Configuring — one method per prop */
+export trait Configuring {
+  /// Checks it.
+  fn checked(self: &Self) -> Self
+
+  /// Shows it as partly checked.
+  fn mixed(self: &Self) -> Self
+
+  /// Disables it.
+  fn disabled(self: &Self) -> Self
+
+  /// Marks it as refused.
+  fn invalid(self: &Self) -> Self
+}
+
+impl Configuring for Props {
+  fn checked(self: &Self) -> Self { Props{..*self, checked: true} }
+
+  fn mixed(self: &Self) -> Self { Props{..*self, mixed: true} }
+
+  fn disabled(self: &Self) -> Self { Props{..*self, disabled: true} }
+
+  fn invalid(self: &Self) -> Self { Props{..*self, invalid: true} }
+}
+
+/// A checkbox with the given name, identified by that name.
+export fn checkbox(name: Str, given: Props) -> H.Node {
+  H.input().slot("checkbox").kind("checkbox").id(name).name(name)
+    .flagIf(given.checked, "checked")
+    .atIf(given.mixed, "aria-checked", "mixed")
+    .flagIf(given.disabled, "disabled")
+    .atIf(given.invalid, "aria-invalid", "true")
+}
+
+/// The styles of a checkbox.
+export fn style() -> Css.Block {
+  Css.block("checkbox", [
+      Css.base("appearance: none; display: inline-grid; place-content: center; flex-shrink: 0; inline-size: 1rem; block-size: 1rem; margin: 0; background: color-mix(in oklab, $input 90%, transparent); border: $border-width solid transparent; border-radius: 5px; cursor: pointer; outline: none; transition: box-shadow $duration-fast $ease-standard"),
+      Css.when("::after", "content: ''; inline-size: 0.7rem; block-size: 0.7rem; background: $primary-foreground; clip-path: polygon(14% 44%, 0 65%, 40% 100%, 100% 16%, 80% 0, 39% 62%); scale: 0; transition: scale $duration-fast $ease-enter"),
+      Css.when(":is(:checked, [aria-checked=\"mixed\"])", "background: $primary; border-color: $primary"),
+      Css.when(":checked::after", "scale: 1"),
+      Css.when("[aria-checked=\"mixed\"]::after", "clip-path: inset(42% 8%); scale: 1"),
+      Css.focusRing(),
+      Css.disabled("opacity: 0.5; cursor: not-allowed"),
+      Css.when("[aria-invalid=\"true\"]", "border-color: $destructive"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)")
+    ])
+}

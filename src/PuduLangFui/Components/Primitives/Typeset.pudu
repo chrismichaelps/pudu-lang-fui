@@ -1,0 +1,61 @@
+/** @Fui.Typeset.Component — styles rendered documents from three controls */
+module PuduLangFui.Components.Primitives.Typeset
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Typeset.Props — the three controls of a document's rhythm */
+export type Props = { size: Str, leading: Str, flow: Str }
+
+/// Fifteen-pixel text, relaxed leading, even flow.
+export fn props() -> Props { Props{size: "0.9375rem", leading: "1.7", flow: "1.25em"} }
+
+/** @Fui.Typeset.Configuring — one method per prop */
+export trait Configuring {
+  /// Sets the base size.
+  fn size(self: &Self, value: Str) -> Self
+
+  /// Sets the line height.
+  fn leading(self: &Self, value: Str) -> Self
+
+  /// Sets the gap between blocks.
+  fn flow(self: &Self, value: Str) -> Self
+}
+
+impl Configuring for Props {
+  fn size(self: &Self, value: Str) -> Self { Props{..*self, size: value} }
+
+  fn leading(self: &Self, value: Str) -> Self { Props{..*self, leading: value} }
+
+  fn flow(self: &Self, value: Str) -> Self { Props{..*self, flow: value} }
+}
+
+/// A container whose contents read as a document.
+export fn typeset(given: Props) -> H.Node {
+  Core.part("typeset").css("--typeset-size", given.size).css("--typeset-leading", given.leading).css("--typeset-flow", given.flow)
+}
+
+/// The styles of a document.
+export fn style() -> Css.Block {
+  Css.block("typeset", [
+      Css.base("font-size: var(--typeset-size); line-height: var(--typeset-leading); max-inline-size: 70ch; overflow-wrap: anywhere"),
+      Css.inside("> * + *", "margin-block-start: var(--typeset-flow)"),
+      Css.inside(":is(h1, h2, h3, h4)", "font-family: $font-heading; font-weight: $weight-semibold; line-height: $leading-tight; letter-spacing: $tracking; margin-block-end: 0"),
+      Css.inside("h1", "font-size: 2em"),
+      Css.inside("h2", "font-size: 1.5em; margin-block-start: calc(var(--typeset-flow) * 2)"),
+      Css.inside("h3", "font-size: 1.25em; margin-block-start: calc(var(--typeset-flow) * 1.5)"),
+      Css.inside("h4", "font-size: 1.05em"),
+      Css.inside("p", "margin-block-end: 0"),
+      Css.inside("a", "color: $primary; text-underline-offset: 3px"),
+      Css.inside(":is(ul, ol)", "padding-inline-start: 1.5em"),
+      Css.inside("li + li", "margin-block-start: 0.4em"),
+      Css.inside("blockquote", "margin-inline: 0; padding-inline-start: 1em; border-inline-start: 2px solid $border; color: $muted-foreground"),
+      Css.inside(":not(pre) > code", "padding: 0.1em 0.3em; background: $muted; border-radius: $radius-xs; font-size: 0.875em; font-family: $font-mono"),
+      Css.inside("pre", "padding: 1em; background: $muted; border-radius: $radius-md; overflow-x: auto; font-size: 0.875em; font-family: $font-mono"),
+      Css.inside("hr", "border: 0; border-block-start: $border-width solid $border; margin-block: calc(var(--typeset-flow) * 2)"),
+      Css.inside("table", "inline-size: 100%; border-collapse: collapse"),
+      Css.inside(":is(th, td)", "padding: 0.5em; border-block-end: $border-width solid $border; text-align: start"),
+      Css.inside("img", "max-inline-size: 100%; border-radius: $radius-md")
+    ])
+}

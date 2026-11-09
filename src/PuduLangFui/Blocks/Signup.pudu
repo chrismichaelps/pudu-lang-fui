@@ -1,0 +1,33 @@
+/** @Fui.Blocks.Signup.Block — an account creation section */
+module PuduLangFui.Blocks.Signup
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A form creating an account, posting to `action`.
+export fn signup(action: Str, errors: &Array[Str]) -> H.Node {
+  Core.part("signup").holding([
+      Card.card().holding([
+          Card.header().holding([Card.title().says("Create an account")]),
+          Card.content().holding([
+              H.form().method("post").action(action).holding([
+                  Field.group().holding([
+                      Field.field().holding([Field.label("name").says("Name"), Input.input("name", Input.props().required())]),
+                      Field.field().holding([Field.label("email").says("Email"), Input.input("email", Input.props().kind("email").required())]),
+                      Field.field().holding([Field.label("password").says("Password"), Input.input("password", Input.props().kind("password").required())]),
+                      Field.error(errors),
+                      Button.submit(Button.props()).says("Create account")
+                    ])
+                ])
+            ])
+        ])
+    ])
+}
+
+/// The styles of a signup section.
+export fn style() -> Css.Block { Css.block("signup", [Css.base("max-inline-size: 24rem; margin-inline: auto")]) }

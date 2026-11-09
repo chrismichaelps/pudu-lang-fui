@@ -1,0 +1,22 @@
+/** @Fui.Effects.Component — shimmer and scroll-edge fades */
+module PuduLangFui.Components.Primitives.Effects
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Text with a moving highlight, for activity in progress.
+export fn shimmer() -> H.Node { Core.inline("shimmer") }
+
+/// A scroller whose edges fade while more content lies beyond them.
+export fn scrollFade() -> H.Node { Core.part("scroll-fade") }
+
+/// The styles of the effects.
+export fn style() -> Css.Block {
+  Css.block("shimmer", [
+      Css.keyframes("fui-shimmer", [("to", "background-position: -200% 0")]),
+      Css.keyframes("fui-fade-edges", [("from", "--fade-start: 0px"), ("10%", "--fade-start: 24px"), ("90%", "--fade-end: 24px"), ("to", "--fade-start: 24px; --fade-end: 0px")]),
+      Css.base("background: linear-gradient(90deg, $muted-foreground 40%, $foreground 50%, $muted-foreground 60%) 0 0 / 200% 100%; color: transparent; background-clip: text; animation: fui-shimmer calc($duration-slow * 8) linear infinite"),
+      Css.slot("scroll-fade", "--fade-start: 24px; --fade-end: 24px; overflow: auto; mask-image: linear-gradient(to bottom, transparent, black var(--fade-start), black calc(100% - var(--fade-end)), transparent); animation: fui-fade-edges linear; animation-timeline: scroll(self)")
+    ])
+}

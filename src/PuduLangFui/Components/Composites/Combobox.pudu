@@ -1,0 +1,20 @@
+/** @Fui.Combobox.Component — a field with suggestions */
+module PuduLangFui.Components.Composites.Combobox
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A field named `name` suggesting the given values.
+export fn combobox(name: Str, suggestions: &Array[Str]) -> H.Node {
+  let list = name + "-suggestions"
+
+  Core.part("combobox").holding([
+      Input.input(name, Input.props()).at("list", list).at("autocomplete", "off"),
+      H.tag("datalist").id(list).holding(suggestions.map(|value: Str| H.option().value(value)))
+    ])
+}
+
+/// The styles of a combobox.
+export fn style() -> Css.Block { Css.block("combobox", [Css.base("display: block; inline-size: 100%")]) }

@@ -1,0 +1,91 @@
+/** @Fui.Button.Component — an action in six treatments */
+module PuduLangFui.Components.Primitives.Button
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Button.Variant — how loud a button reads */
+export type Variant = Primary | Secondary | Outline | Ghost | Hover | Destructive | Plain
+
+/** @Fui.Button.Size — how much room a button takes */
+export type Size = Tiny | Small | Medium | Large | IconTiny | IconSmall | IconMedium | IconLarge
+
+/** @Fui.Button.Props — what a button can be told */
+export type Props = { variant: Variant, size: Size, disabled: Bool }
+
+/// A primary button of medium size.
+export fn props() -> Props { Props{variant: Primary, size: Medium, disabled: false} }
+
+/** @Fui.Button.Configuring — one method per prop */
+export trait Configuring {
+  /// Sets the treatment.
+  fn variant(self: &Self, value: Variant) -> Self
+
+  /// Sets the size.
+  fn size(self: &Self, value: Size) -> Self
+
+  /// Disables the button.
+  fn disabled(self: &Self) -> Self
+}
+
+impl Configuring for Props {
+  fn variant(self: &Self, value: Variant) -> Self { Props{..*self, variant: value} }
+
+  fn size(self: &Self, value: Size) -> Self { Props{..*self, size: value} }
+
+  fn disabled(self: &Self) -> Self { Props{..*self, disabled: true} }
+}
+
+/// The slot and data attributes a node needs to read as a button.
+fn dressed(node: H.Node, given: &Props) -> H.Node {
+  node.slot("button").data("variant", Core.spelled(given.variant)).data("size", Core.spelled(given.size))
+}
+
+/// A button that does nothing until something is attached to it.
+export fn button(given: Props) -> H.Node {
+  dressed(H.button().kind("button"), &given).flagIf(given.disabled, "disabled")
+}
+
+/// A button that submits its form.
+export fn submit(given: Props) -> H.Node {
+  dressed(H.button().submit(), &given).flagIf(given.disabled, "disabled")
+}
+
+/// A link that reads as a button.
+export fn link(target: Str, given: Props) -> H.Node {
+  dressed(H.a().href(target), &given).atIf(given.disabled, "aria-disabled", "true")
+}
+
+/// The styles of a button.
+export fn style() -> Css.Block {
+  Css.block("button", [
+      Css.base("display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; white-space: nowrap; background-clip: padding-box; border: $border-width solid transparent; border-radius: $radius-4xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-decoration: none; cursor: pointer; user-select: none; outline: none; transition: background-color $duration-fast $ease-standard, color $duration-fast $ease-standard, border-color $duration-fast $ease-standard, box-shadow $duration-fast $ease-standard"),
+      Css.when(":active:not(:disabled)", "translate: 0 1px"),
+      Css.focusRing(),
+      Css.disabled("opacity: 0.5; pointer-events: none"),
+      Css.variant("variant", "primary", "background-color: $primary; color: $primary-foreground"),
+      Css.when("[data-variant=\"primary\"]:hover", "background-color: color-mix(in oklab, $primary 80%, transparent)"),
+      Css.variant("variant", "secondary", "background-color: $secondary; color: $secondary-foreground"),
+      Css.when("[data-variant=\"secondary\"]:hover", "background-color: color-mix(in oklch, $secondary, $foreground 5%)"),
+      Css.variant("variant", "outline", "background-color: $background; color: $foreground; border-color: $border"),
+      Css.when("[data-variant=\"outline\"]:hover", "background-color: $muted; color: $foreground"),
+      Css.variant("variant", "ghost", "background: transparent; color: $foreground"),
+      Css.when("[data-variant=\"ghost\"]:hover", "background-color: $muted; color: $foreground"),
+      Css.variant("variant", "destructive", "background-color: color-mix(in oklab, $destructive 10%, transparent); color: $destructive"),
+      Css.when("[data-variant=\"destructive\"]:hover", "background-color: color-mix(in oklab, $destructive 20%, transparent)"),
+      Css.variant("variant", "plain", "background: transparent; color: $primary; text-underline-offset: 4px"),
+      Css.when("[data-variant=\"plain\"]:hover", "text-decoration: underline"),
+      Css.variant("size", "tiny", "block-size: calc($unit * 6); gap: $space-1; padding-inline: calc($unit * 2.5); font-size: $text-xs"),
+      Css.variant("size", "small", "block-size: $control-sm; gap: $space-1; padding-inline: $space-3"),
+      Css.variant("size", "medium", "block-size: $control-md; gap: calc($unit * 1.5); padding-inline: $space-3"),
+      Css.variant("size", "large", "block-size: $control-lg; gap: calc($unit * 1.5); padding-inline: $space-4"),
+      Css.variant("size", "icon-tiny", "inline-size: calc($unit * 6); block-size: calc($unit * 6)"),
+      Css.variant("size", "icon-small", "inline-size: $control-sm; block-size: $control-sm"),
+      Css.variant("size", "icon-medium", "inline-size: $control-md; block-size: $control-md"),
+      Css.variant("size", "icon-large", "inline-size: $control-lg; block-size: $control-lg"),
+      Css.variant("variant", "hover", "background: transparent; color: $foreground"),
+      Css.when("[data-variant=\"hover\"]:hover", "background: $muted"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)")
+    ])
+}

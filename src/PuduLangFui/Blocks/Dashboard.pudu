@@ -1,0 +1,58 @@
+/** @Fui.Blocks.Dashboard.Block — an application home */
+module PuduLangFui.Blocks.Dashboard
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Patterns.Chart as Chart
+import PuduLangFui.Components.Patterns.Sidebar as Sidebar
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Blocks.Dashboard.Stat — one headline figure */
+export type Stat = { caption: Str, figure: Str }
+
+/** @Fui.Blocks.Dashboard.Link — one navigation entry */
+export type Link = { caption: Str, target: Str, active: Bool }
+
+/// A headline figure.
+export fn stat(caption: Str, figure: Str) -> Stat { Stat{caption: caption, figure: figure} }
+
+/// A navigation entry.
+export fn link(caption: Str, target: Str, active: Bool = false) -> Link { Link{caption: caption, target: target, active: active} }
+
+/// One figure's card.
+fn statCard(one: &Stat) -> H.Node {
+  Card.sized(Card.Compact).holding([Card.header().holding([Card.description().says(one.caption), Card.title().says(one.figure)])])
+}
+
+/// One navigation entry.
+fn navEntry(one: &Link) -> H.Node {
+  Sidebar.menuItem().holding([Sidebar.menuButton(one.target, one.active).says(one.caption)])
+}
+
+/// A shell with navigation, figures, and a chart over the given content.
+export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: Array[Chart.Series], content: H.Node) -> H.Node {
+  Sidebar.provider("dashboard-sidebar").holding([
+      Sidebar.sidebar().holding([
+          Sidebar.header().says(title),
+          Sidebar.content().holding([Sidebar.group().holding([Sidebar.menu().holding(links.map(|one: Link| navEntry(&one)))])])
+        ]),
+      Sidebar.inset().holding([
+          Core.part("dashboard").holding([
+              Core.part("dashboard-bar").holding([Sidebar.trigger("dashboard-sidebar")]),
+              Core.part("dashboard-stats").holding(stats.map(|one: Stat| statCard(&one))),
+              Card.card().holding([Card.content().holding([Chart.chart(Chart.Areas, title + " trend", trend)])]),
+              content
+            ])
+        ])
+    ])
+}
+
+/// The styles of a dashboard.
+export fn style() -> Css.Block {
+  Css.block("dashboard", [
+      Css.base("display: flex; flex-direction: column; gap: $space-4; padding: $space-4"),
+      Css.slot("dashboard-bar", "display: flex; align-items: center; gap: $space-2"),
+      Css.slot("dashboard-stats", "display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: $space-4")
+    ])
+}

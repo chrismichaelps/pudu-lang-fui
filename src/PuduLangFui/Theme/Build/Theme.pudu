@@ -1,0 +1,128 @@
+/** @Fui.Theme.Theme.Module — a complete theme and its tokens */
+module PuduLangFui.Theme.Build.Theme
+
+import PuduLangFui.Constants.Css as Constant
+import PuduLangFui.Theme.Aspects.Elevation as Elevation
+import PuduLangFui.Theme.Aspects.Iconography as Iconography
+import PuduLangFui.Theme.Aspects.Motion as Motion
+import PuduLangFui.Theme.Aspects.Palette as Palette
+import PuduLangFui.Theme.Aspects.Shape as Shape
+import PuduLangFui.Theme.Aspects.Spacing as Spacing
+import PuduLangFui.Theme.Aspects.Typography as Typography
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Theme.Theme — the seven design aspects */
+export type Theme = {
+  color: Palette.Palette,
+  typography: Typography.Typography,
+  spacing: Spacing.Spacing,
+  shape: Shape.Shape,
+  elevation: Elevation.Elevation,
+  motion: Motion.Motion,
+  iconography: Iconography.Iconography,
+  extra: Array[(Str, Str)]
+}
+
+/// A neutral theme with comfortable density.
+export fn defaults() -> Theme {
+  Theme {
+    color: Palette.derived(0.0, 0.0),
+    typography: Typography.defaults(),
+    spacing: Spacing.at(Spacing.Comfortable),
+    shape: Shape.from("0.625rem"),
+    elevation: Elevation.defaults(),
+    motion: Motion.of(Motion.Snappy),
+    iconography: Iconography.defaults(),
+    extra: []
+  }
+}
+
+/** @Fui.Theme.Theme.Tuning — the chain that adjusts one aspect */
+export trait Tuning {
+  /// Recolors everything from one hue and chroma.
+  fn brand(self: &Self, hue: Float64, chroma: Float64) -> Self
+
+  /// Replaces the whole palette.
+  fn palette(self: &Self, value: Palette.Palette) -> Self
+
+  /// Sets the text and heading families.
+  fn fonts(self: &Self, sans: Str, heading: Str) -> Self
+
+  /// Sets the code family.
+  fn monospace(self: &Self, family: Str) -> Self
+
+  /// Sets the base size every step is measured from.
+  fn textBase(self: &Self, size: Str) -> Self
+
+  /// Re-spaces every component.
+  fn density(self: &Self, value: Spacing.Density) -> Self
+
+  /// Sets the base radius every corner is measured from.
+  fn radius(self: &Self, value: Str) -> Self
+
+  /// Sets how much the interface moves.
+  fn mood(self: &Self, value: Motion.Mood) -> Self
+
+  /// Sets the icon stroke width.
+  fn iconStroke(self: &Self, value: Str) -> Self
+
+  /// Adds or overrides any token.
+  fn token(self: &Self, name: Str, value: Str) -> Self
+}
+
+impl Tuning for Theme {
+  fn brand(self: &Self, hue: Float64, chroma: Float64) -> Self { Theme{..*self, color: Palette.derived(hue, chroma)} }
+
+  fn palette(self: &Self, value: Palette.Palette) -> Self { Theme{..*self, color: value} }
+
+  fn fonts(self: &Self, sans: Str, heading: Str) -> Self {
+    Theme{..*self, typography: Typography.Typography{..self.typography, fontSans: sans, fontHeading: heading}}
+  }
+
+  fn monospace(self: &Self, family: Str) -> Self {
+    Theme{..*self, typography: Typography.Typography{..self.typography, fontMono: family}}
+  }
+
+  fn textBase(self: &Self, size: Str) -> Self {
+    Theme{..*self, typography: Typography.Typography{..self.typography, textBase: size}}
+  }
+
+  fn density(self: &Self, value: Spacing.Density) -> Self { Theme{..*self, spacing: Spacing.at(value)} }
+
+  fn radius(self: &Self, value: Str) -> Self { Theme{..*self, shape: Shape.from(value)} }
+
+  fn mood(self: &Self, value: Motion.Mood) -> Self { Theme{..*self, motion: Motion.of(value)} }
+
+  fn iconStroke(self: &Self, value: Str) -> Self {
+    Theme{..*self, iconography: Iconography.Iconography{..self.iconography, iconStroke: value}}
+  }
+
+  fn token(self: &Self, name: Str, value: Str) -> Self { Theme{..*self, extra: self.extra.push((name, value))} }
+}
+
+/// Every token of the theme, aspect by aspect, project tokens last.
+export fn tokens(theme: &Theme) -> Array[(Str, Str)] {
+  theme.color.tokens()
+    .concat(theme.typography.tokens())
+    .concat(theme.spacing.tokens())
+    .concat(theme.shape.tokens())
+    .concat(theme.elevation.tokens())
+    .concat(theme.motion.tokens())
+    .concat(theme.iconography.tokens())
+    .concat(theme.extra)
+}
+
+/// The theme's tokens as declarations.
+fn declarations(theme: &Theme) -> Str {
+  tokens(theme).map(|entry: (Str, Str)| Constant.TOKEN_PREFIX + entry[0] + ": " + entry[1] + ";").join("\n")
+}
+
+/// The theme for the whole document, following the visitor's color mode unless `data-mode` forces one.
+export fn render(theme: &Theme) -> Str {
+  "@layer fui.tokens \{\n:root \{\ncolor-scheme: light dark;\n" + declarations(theme) + "\n\}\n:root[data-mode=\"light\"] \{ color-scheme: light; \}\n:root[data-mode=\"dark\"] \{ color-scheme: dark; \}\n\}"
+}
+
+/// The theme for one region of a page.
+export fn renderScoped(theme: &Theme, selector: Str) -> Str {
+  "@layer fui.tokens \{\n" + selector + " \{\n" + declarations(theme) + "\n\}\n\}"
+}

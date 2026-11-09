@@ -1,0 +1,17 @@
+/** @Fui.Constants.Calendar.Module — names and lengths of calendar units */
+module PuduLangFui.Constants.Calendar
+
+/// The month names, January first.
+export const MONTHS: Array[Str] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+/// Two-letter weekday captions, Sunday first.
+export const WEEKDAYS: Array[Str] = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
+/// Days in each month of a common year, January first.
+export const MONTH_LENGTHS: Array[Int] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+/// The weekday of the first day of 1970, Sunday as zero.
+export const EPOCH_WEEKDAY: Int = 4
+
+/// Days from 0000-03-01 to 1970-01-01 in the proleptic calendar.
+export const EPOCH_OFFSET: Int = 719468

@@ -1,0 +1,84 @@
+/** @Fui.Cli.Project.Module — the project on disk */
+module PuduLangFui.Cli.Workspace.Project
+
+import Std.Io as Io
+import Std.List as List
+import Std.Path as Path
+import Std.Result as Result
+import PuduLangFui.Cli.Model.Config as Config
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Scaffold as Scaffold
+import PuduLangFui.Constants.Cli as Constant
+
+/** @Fui.Cli.Project.Project — a set-up project */
+export type Project = { directory: Str, config: Config.Config }
+
+/// The project in a directory, or why it is not set up.
+export fn load(directory: Str) -> Result[Project, Str] {
+  let path = Path.join(directory, Constant.CONFIG_FILE)
+
+  if !Io.exists(path) { return Err(Constant.NOT_SET_UP) }
+
+  let text = Io.read(path) ?
+  let config = Config.decode(text) ?
+
+  Ok(Project{directory: directory, config: config})
+}
+
+/// The directory of the project's module root.
+export fn rootDirectory(project: &Project) -> Str {
+  Path.join(Path.join(project.directory, project.config.source), project.config.root)
+}
+
+/// Writes a file, creating the folders it sits in.
+export fn writing(path: Str, text: Str) -> Result[(), Str] {
+  let _made = Io.makeDirectory(Path.directoryOf(path))
+
+  Io.write(path, text)
+}
+
+/// Saves the configuration.
+export fn saveConfig(project: &Project) -> Result[(), Str] {
+  Io.write(Path.join(project.directory, Constant.CONFIG_FILE), Config.encode(&project.config))
+}
+
+/// Every source file under a directory, sorted.
+export fn sources(directory: Str) -> Array[Str] {
+  var found: Array[Str] = []
+
+  for path in List.sortBy(&Result.unwrapOr(Io.listPaths(directory), []), |left: Str, right: Str| left < right) {
+    if path.endsWith(".pudu") {
+      found = found.push(path)
+    } else if !Path.nameOf(path).contains(".") {
+      found = found.concat(sources(path))
+    }
+  }
+
+  found
+}
+
+/// Every owned file declaring a component's styles.
+export fn owned(project: &Project) -> Array[Str] {
+  sources(rootDirectory(project)).filter(|path: Str| Result.unwrapOr(Io.read(path), "").contains("export fn style() -> "))
+}
+
+/// The module a file under the source directory declares.
+fn moduleOfPath(project: &Project, path: Str) -> Str {
+  let base = Path.join(project.directory, project.config.source) + "/"
+
+  (if path.startsWith(base) { path.drop(base.length()) } else { path }).replace(".pudu", "").replace("/", ".")
+}
+
+/// Rewrites the catalog to list every owned component.
+export fn refreshCatalog(project: &Project) -> Result[(), Str] {
+  let pairs = owned(project).map(|path: Str| (moduleOfPath(project, path), Path.stemOf(path)))
+
+  writing(Path.join(rootDirectory(project), Constant.CATALOG_MODULE + ".pudu"), Scaffold.catalog(project.config.root, &pairs))
+}
+
+/// Where an item is written in a project.
+export fn targetOf(project: &Project, item: &Item.Item) -> Str {
+  let folder = if item.layer.startsWith("Components/") { item.layer.drop(11) } else { item.layer }
+
+  Path.join(Path.join(rootDirectory(project), folder), Path.stemOf(item.path) + ".pudu")
+}

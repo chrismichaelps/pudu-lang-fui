@@ -1,0 +1,38 @@
+/** @Fui.Elements.Tool.Element — a tool call input to output */
+module PuduLangFui.Elements.Tool
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The word each status reads.
+const WORDS: Map[Str, Str] = mapOf([("pending", "Pending"), ("running", "Running"), ("done", "Done"), ("failed", "Failed")])
+
+/// One labelled run of text.
+fn panel(caption: Str, text: Str) -> H.Node {
+  Core.part("tool-panel").holding([Core.part("tool-panel-caption").says(caption), H.pre().slot("tool-panel-text").says(text)])
+}
+
+/// A call to the tool `name`; `output` is empty while it runs.
+export fn tool(name: Str, status: Trace.Status, input: Str, output: Str, open: Bool = false) -> H.Node {
+  Trace.line(status).slot("tool").holding([
+      Trace.body().holding([
+          Trace.details(name, open).holding([
+              panel("Input", input),
+              if output.isEmpty() { H.nothing() } else { panel("Output", output) }
+            ])
+        ]),
+      Trace.note().says(Core.picked(&WORDS, status, ""))
+    ])
+}
+
+/// The styles of a tool.
+export fn style() -> Css.Block {
+  Css.block("tool", [
+      Css.base("display: grid; grid-template-columns: auto 1fr auto; gap: $space-2"),
+      Css.slot("tool-panel", "display: flex; flex-direction: column; gap: $space-1; margin-block-start: $space-2"),
+      Css.slot("tool-panel-caption", "font-size: $text-xs; color: $muted-foreground"),
+      Css.slot("tool-panel-text", "margin: 0; padding: $space-2; background: $muted; border-radius: $radius-sm; font-family: $font-mono; font-size: $text-xs; overflow-x: auto")
+    ])
+}

@@ -1,0 +1,56 @@
+/** @Fui.Cli.Commands.New.Command — scaffolds a new component */
+module PuduLangFui.Cli.Commands.New
+
+import Std.Char as Char
+import Std.Io as Io
+import Std.Option as Option
+import Std.Path as Path
+import Std.Text as Text
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Model.Scaffold as Scaffold
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Utils.Spelling as Spelling
+
+/// The folder each layer word names.
+const LAYERS: Map[Str, Str] = mapOf([("primitive", "Primitives"), ("composite", "Composites"), ("pattern", "Patterns")])
+
+/// Whether a name is kebab case.
+export fn isKebab(name: Str) -> Bool {
+  !name.isEmpty() && Char.isLower(Option.unwrapOr(Text.head(name), ' ')) && Text.allChars(name, |one: Char| Char.isLower(one) || Char.isDigit(one) || one == '-')
+}
+
+/// Writes a new component at the requested layer.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.isEmpty() { return Outcome.failed(["name the component"]) }
+
+  let name = context.invocation.words[0]
+
+  if !isKebab(name) { return Outcome.failed(["a component's name is kebab case, as in price-tag"]) }
+
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let word = Invocation.optionOr(&context.invocation, "--layer", "primitive")
+  let folder = match LAYERS.get(word) {
+    case Some(found) => found
+    case None => { return Outcome.failed(["unknown layer: " + word]) }
+  }
+  let stem = Spelling.pascal(name)
+  let target = Path.join(Path.join(Project.rootDirectory(&project), folder), stem + ".pudu")
+
+  if Io.exists(target) { return Outcome.failed([target + " already exists"]) }
+
+  let moduleName = project.config.root + "." + folder + "." + stem
+
+  match Project.writing(target, Scaffold.component(project.config.root, moduleName, name)) {
+    case Err(problem) => Outcome.failed([problem])
+    case Ok(_) => {
+      let _refreshed = Project.refreshCatalog(&project)
+
+      Outcome.done(["wrote   " + target])
+    }
+  }
+}

@@ -1,0 +1,38 @@
+/** @Fui.Cli.Commands.Docs.Command — prints an item's reference */
+module PuduLangFui.Cli.Commands.Docs
+
+import Std.Io as Io
+import Std.Json as Json
+import Std.Result as Result
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Commands.Search as Search
+import PuduLangFui.Cli.Model.Closure as Closure
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+
+/// The exported lines of a source, its public surface.
+fn surface(source: Str) -> Array[Str] { source.split("\n").filter(|line: Str| line.startsWith("export ")) }
+
+/// Prints the named item's reference.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.isEmpty() { return Outcome.failed(["name an item"]) }
+
+  let name = context.invocation.words[0]
+  let (registry, bare) = match Context.locate(context, name, None) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let item = match Closure.find(&registry.items, bare) {
+    case Some(found) => found
+    case None => { return Outcome.failed(["unknown item: " + name]) }
+  }
+  let exported = surface(Result.unwrapOr(Io.read(item.path), ""))
+
+  if Invocation.has(&context.invocation, "--json") {
+    let document = Json.withField(&Search.encoded(&item), "surface", Json.list(&exported.map(|line: Str| Json.Text(line))))
+
+    return Outcome.done([Json.encodePretty(&document)])
+  }
+
+  Outcome.done([item.name + ": " + item.description, "", "Add it:  fui add " + item.name, "Needs:   " + item.dependencies.join(", "), ""].concat(exported))
+}

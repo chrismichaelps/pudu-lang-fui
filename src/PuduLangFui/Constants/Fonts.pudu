@@ -1,0 +1,8 @@
+/** @Fui.Constants.Fonts.Module — the default font stacks */
+module PuduLangFui.Constants.Fonts
+
+/// The system font stack for running text.
+export const SANS: Str = "ui-sans-serif, system-ui, sans-serif"
+
+/// The system font stack for code.
+export const MONO: Str = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"

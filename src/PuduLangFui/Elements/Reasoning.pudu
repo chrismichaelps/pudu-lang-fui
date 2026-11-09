@@ -1,0 +1,45 @@
+/** @Fui.Elements.Reasoning.Element — thinking as it streams */
+module PuduLangFui.Elements.Reasoning
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Primitives.Effects as Effects
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Elements.Reasoning.State — whether thinking is under way */
+export type State = Thinking | Finished
+
+/// The caption each state reads.
+const CAPTIONS: Map[Str, Str] = mapOf([("thinking", "Thinking"), ("finished", "Thought")])
+
+/// The headline each state shows.
+const HEADLINES: Map[Str, fn(Str) -> H.Node] = mapOf([("thinking", shimmering), ("finished", plain)])
+
+/// A caption with a moving highlight.
+fn shimmering(caption: Str) -> H.Node { Effects.shimmer().says(caption) }
+
+/// A plain caption.
+fn plain(caption: Str) -> H.Node { H.words(caption) }
+
+/// The thinking under a caption; `duration` follows it when given.
+export fn reasoning(state: State, thought: H.Node, duration: Str = "") -> H.Node {
+  let caption = Core.picked(&CAPTIONS, state, "Thought")
+  let headline = Core.picked(&HEADLINES, state, plain)
+  let isOpen = state == Thinking
+
+  H.details().slot("reasoning").flagIf(isOpen, "open").holding([
+      H.summary().slot("reasoning-summary").holding([headline(caption), Trace.note().says(duration)]),
+      Core.part("reasoning-content").holding([thought])
+    ])
+}
+
+/// The styles of reasoning.
+export fn style() -> Css.Block {
+  Css.block("reasoning", [
+      Css.base("display: block; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("reasoning-summary", "display: flex; align-items: center; gap: $space-2; cursor: pointer; list-style: none"),
+      Css.slotWhen("reasoning-summary", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.slot("reasoning-content", "margin-block-start: $space-2; padding-inline-start: $space-3; border-inline-start: $border-width solid $border")
+    ])
+}

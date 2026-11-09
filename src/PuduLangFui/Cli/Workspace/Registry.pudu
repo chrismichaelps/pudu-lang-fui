@@ -1,0 +1,62 @@
+/** @Fui.Cli.Registry.Module — reads a registry from a directory */
+module PuduLangFui.Cli.Workspace.Registry
+
+import Std.Io as Io
+import Std.List as List
+import Std.Option as Option
+import Std.Path as Path
+import Std.Result as Result
+import Std.Toml.Read as TomlRead
+import Std.Toml as Toml
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Constants.Cli as Constant
+
+/** @Fui.Cli.Registry.Registry — a package's items */
+export type Registry = { directory: Str, moduleRoot: Str, items: Array[Item.Item] }
+
+/// A manifest value, or empty text.
+fn packageValue(document: &Toml.Toml, key: Str) -> Str {
+  Option.unwrapOr(Option.andThen(Toml.path(document, "package." + key), |value: Toml.Toml| Toml.asText(&value)), "")
+}
+
+/// Every source file directly in a folder, sorted.
+fn filesIn(folder: Str) -> Array[Str] {
+  List.sortBy(&Result.unwrapOr(Io.listPaths(folder), []), |left: Str, right: Str| left < right).filter(|path: Str| path.endsWith(".pudu"))
+}
+
+/// The items of one folder under the module root.
+fn itemsIn(root: Str, layer: Str, moduleRoot: Str) -> Array[Item.Item] {
+  var found: Array[Item.Item] = []
+
+  for path in filesIn(Path.join(root, layer)) {
+    let source = Result.unwrapOr(Io.read(path), "")
+
+    found = found.push(Item.read(layer, Path.stemOf(path), path, moduleRoot, source))
+  }
+
+  found
+}
+
+/// The registry in a directory, or why there is none.
+export fn load(directory: Str) -> Result[Registry, Str] {
+  let manifest = Path.join(directory, Constant.MANIFEST_FILE)
+
+  if !Io.exists(manifest) { return Err("no registry at " + directory + ": it has no pudu.toml") }
+
+  let text = Io.read(manifest) ?
+  let document = match TomlRead.read(text) {
+    case Ok(held) => held
+    case Err(problem) => { return Err("the manifest at " + directory + " is not valid: " + show(problem)) }
+  }
+  let moduleRoot = packageValue(&document, "root")
+
+  if moduleRoot.isEmpty() { return Err("the manifest at " + directory + " names no module root") }
+
+  let source = packageValue(&document, "source")
+  let root = Path.join(Path.join(directory, if source.isEmpty() { "src" } else { source }), moduleRoot)
+  var items: Array[Item.Item] = []
+
+  for layer in Constant.ITEM_FOLDERS { items = items.concat(itemsIn(root, layer, moduleRoot)) }
+
+  Ok(Registry{directory: directory, moduleRoot: moduleRoot, items: items})
+}

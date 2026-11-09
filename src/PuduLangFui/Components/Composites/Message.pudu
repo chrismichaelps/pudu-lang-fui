@@ -1,0 +1,45 @@
+/** @Fui.Message.Component — one message in a thread */
+module PuduLangFui.Components.Composites.Message
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Avatar as Avatar
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Message.Side — whose message it is */
+export type Side = Received | Sent
+
+/// A message row.
+export fn message(side: Side) -> H.Node { Core.part("message").data("side", Core.spelled(side)) }
+
+/// The author's initials.
+export fn author(initials: Str, description: Str) -> H.Node { Avatar.initials(initials, description, Avatar.Small) }
+
+/// The message's content.
+export fn content() -> H.Node { Core.part("message-content") }
+
+/// Controls under the message.
+export fn actions() -> H.Node { Core.part("message-actions") }
+
+/// Messages from one speaker, set close together.
+export fn group() -> H.Node { Core.part("message-group") }
+
+/// The line above a message, such as a name and a time.
+export fn header() -> H.Node { Core.part("message-header") }
+
+/// The line under a message.
+export fn footer() -> H.Node { Core.part("message-footer") }
+
+/// The styles of a message.
+export fn style() -> Css.Block {
+  Css.block("message", [
+      Css.base("display: flex; align-items: flex-start; gap: $space-2; font-size: $text-sm"),
+      Css.variant("side", "sent", "flex-direction: row-reverse"),
+      Css.slot("message-content", "display: flex; flex-direction: column; gap: calc($unit * 2.5); min-inline-size: 0; flex: 1"),
+      Css.rule("[data-slot=\"message\"][data-side=\"sent\"] > [data-slot=\"message-content\"]", "align-items: flex-end"),
+      Css.slot("message-actions", "display: flex; gap: $space-1; color: $muted-foreground"),
+      Css.slot("message-group", "display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("message-header", "padding-inline: calc($unit * 3.5); font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground"),
+      Css.slot("message-footer", "padding-inline: calc($unit * 3.5); font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground")
+    ])
+}

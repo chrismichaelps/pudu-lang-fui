@@ -1,0 +1,25 @@
+/** @Fui.Elements.Context.Element — how full the context window is */
+module PuduLangFui.Elements.Context
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A meter of `used` out of `limit`.
+export fn context(used: Int, limit: Int) -> H.Node {
+  let percent = if limit > 0 { used * 100 / limit } else { 0 }
+
+  Core.part("context").holding([
+      Progress.progress(used, if limit > 0 { limit } else { 1 }, "Context used"),
+      Core.inline("context-caption").says(show(percent) + "% · " + show(used) + " of " + show(limit))
+    ])
+}
+
+/// The styles of a context meter.
+export fn style() -> Css.Block {
+  Css.block("context", [
+      Css.base("display: flex; flex-direction: column; gap: $space-1"),
+      Css.slot("context-caption", "font-size: $text-xs; color: $muted-foreground")
+    ])
+}

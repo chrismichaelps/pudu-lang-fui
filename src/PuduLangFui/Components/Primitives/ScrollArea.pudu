@@ -1,0 +1,17 @@
+/** @Fui.ScrollArea.Component — a region with a themed scrollbar */
+module PuduLangFui.Components.Primitives.ScrollArea
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A scrolling region, named for assistive software and reachable by keyboard.
+export fn scrollArea(caption: Str) -> H.Node { Core.part("scroll-area").role("region").label(caption).at("tabindex", "0") }
+
+/// The styles of a region.
+export fn style() -> Css.Block {
+  Css.block("scroll-area", [
+      Css.base("overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: $border transparent; outline: none"),
+      Css.focusRing()
+    ])
+}

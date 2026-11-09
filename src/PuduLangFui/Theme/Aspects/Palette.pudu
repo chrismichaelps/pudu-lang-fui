@@ -1,0 +1,109 @@
+/** @Fui.Theme.Palette.Module — the color aspect */
+module PuduLangFui.Theme.Aspects.Palette
+
+import PuduLangFui.Constants.Hues as Hues
+import PuduLangFui.Domain.Color as Color
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Palette.Palette — every color token, as mode pairs */
+export type Palette = {
+  background: Color.Pair,
+  foreground: Color.Pair,
+  card: Color.Pair,
+  cardForeground: Color.Pair,
+  popover: Color.Pair,
+  popoverForeground: Color.Pair,
+  primary: Color.Pair,
+  primaryForeground: Color.Pair,
+  secondary: Color.Pair,
+  secondaryForeground: Color.Pair,
+  muted: Color.Pair,
+  mutedForeground: Color.Pair,
+  accent: Color.Pair,
+  accentForeground: Color.Pair,
+  destructive: Color.Pair,
+  destructiveForeground: Color.Pair,
+  success: Color.Pair,
+  successForeground: Color.Pair,
+  warning: Color.Pair,
+  warningForeground: Color.Pair,
+  info: Color.Pair,
+  infoForeground: Color.Pair,
+  border: Color.Pair,
+  input: Color.Pair,
+  ring: Color.Pair,
+  chart1: Color.Pair,
+  chart2: Color.Pair,
+  chart3: Color.Pair,
+  chart4: Color.Pair,
+  chart5: Color.Pair,
+  sidebar: Color.Pair,
+  sidebarForeground: Color.Pair,
+  sidebarPrimary: Color.Pair,
+  sidebarPrimaryForeground: Color.Pair,
+  sidebarAccent: Color.Pair,
+  sidebarAccentForeground: Color.Pair,
+  sidebarBorder: Color.Pair
+} derives Tokens.Tokens
+
+/// A pair sharing hue and chroma, differing in lightness.
+fn tone(light: Float64, dark: Float64, chroma: Float64, hue: Float64) -> Color.Pair {
+  Color.pair(Color.oklch(light, chroma, hue), Color.oklch(dark, chroma, hue))
+}
+
+/// The palette one hue and chroma derive; chroma zero is a pure neutral.
+export fn derived(hue: Float64, chroma: Float64) -> Palette {
+  let tint = if chroma > 0.02 { 0.008 } else { chroma * 0.4 }
+  let lifted = chroma * 0.7
+  let inkLight = if chroma > 0.0 { 0.45 } else { 0.205 }
+  let inkDark = if chroma > 0.0 { 0.82 } else { 0.922 }
+  let background = tone(1.0, 0.145, tint, hue)
+  let foreground = tone(0.145, 0.985, tint, hue)
+  let raised = tone(1.0, 0.205, tint, hue)
+  let quiet = tone(0.97, 0.269, tint, hue)
+  let ink = tone(0.205, 0.985, tint, hue)
+  let primary = Color.pair(Color.oklch(inkLight, chroma, hue), Color.oklch(inkDark, lifted, hue))
+  let onPrimary = tone(0.985, 0.205, tint, hue)
+  let line = tone(0.922, 0.275, tint, hue)
+  let chartHue = if chroma > 0.0 { 1.0 } else { 0.0 }
+
+  Palette {
+    background: background,
+    foreground: foreground,
+    card: raised,
+    cardForeground: foreground,
+    popover: raised,
+    popoverForeground: foreground,
+    primary: primary,
+    primaryForeground: onPrimary,
+    secondary: quiet,
+    secondaryForeground: ink,
+    muted: quiet,
+    mutedForeground: tone(0.525, 0.708, tint, hue),
+    accent: quiet,
+    accentForeground: ink,
+    destructive: Color.pair(Color.oklch(0.577, 0.245, Hues.DESTRUCTIVE), Color.oklch(0.704, 0.191, Hues.DESTRUCTIVE)),
+    destructiveForeground: tone(0.985, 0.145, 0.01, Hues.DESTRUCTIVE),
+    success: tone(0.45, 0.78, 0.12, Hues.SUCCESS),
+    successForeground: tone(0.985, 0.17, 0.01, Hues.SUCCESS),
+    warning: tone(0.48, 0.82, 0.11, Hues.WARNING),
+    warningForeground: tone(0.985, 0.17, 0.01, Hues.WARNING),
+    info: tone(0.47, 0.78, 0.13, Hues.INFO),
+    infoForeground: tone(0.985, 0.17, 0.01, Hues.INFO),
+    border: line,
+    input: tone(0.922, 0.32, tint, hue),
+    ring: Color.pair(Color.oklch(0.556, chroma, hue), Color.oklch(0.708, lifted, hue)),
+    chart1: tone(0.87, 0.87, 0.14 * chartHue, hue),
+    chart2: tone(0.556, 0.556, 0.15 * chartHue, hue + 60.0 * chartHue),
+    chart3: tone(0.439, 0.439, 0.13 * chartHue, hue + 150.0 * chartHue),
+    chart4: tone(0.371, 0.371, 0.12 * chartHue, hue + 210.0 * chartHue),
+    chart5: tone(0.269, 0.269, 0.14 * chartHue, hue + 300.0 * chartHue),
+    sidebar: tone(0.985, 0.205, tint, hue),
+    sidebarForeground: foreground,
+    sidebarPrimary: primary,
+    sidebarPrimaryForeground: onPrimary,
+    sidebarAccent: quiet,
+    sidebarAccentForeground: ink,
+    sidebarBorder: line
+  }
+}

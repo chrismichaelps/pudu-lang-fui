@@ -1,0 +1,54 @@
+/** @Fui.Elements.TestResults.Element — a test run */
+module PuduLangFui.Elements.TestResults
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Elements.TestResults.Outcome — how a suite ended */
+export type Outcome = Passed | Failed | Skipped
+
+/** @Fui.Elements.TestResults.Suite — one suite's result */
+export type Suite = { name: Str, outcome: Outcome, failures: Array[Str] }
+
+/// The badge each outcome wears.
+const TONES: Map[Str, Badge.Variant] = mapOf([("passed", Badge.Success), ("failed", Badge.Destructive), ("skipped", Badge.Secondary)])
+
+/// A suite's result.
+export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite {
+  Suite{name: name, outcome: outcome, failures: failures}
+}
+
+/// One suite written out.
+fn written(one: &Suite) -> H.Node {
+  H.li().slot("test-results-suite").holding([
+      Core.part("test-results-row").holding([
+          H.span().says(one.name),
+          Badge.badge(Core.picked(&TONES, one.outcome, Badge.Secondary)).says(Core.spelled(one.outcome))
+        ]),
+      if one.failures.isEmpty() { H.nothing() } else { H.ul().slot("test-results-failures").holding(one.failures.map(|failure: Str| H.li().says(failure))) }
+    ])
+}
+
+/// Totals over a row per suite.
+export fn testResults(suites: Array[Suite]) -> H.Node {
+  let passed = suites.filter(|one: Suite| one.outcome == Passed).length()
+
+  Core.part("test-results").holding([
+      Core.part("test-results-summary").says(show(passed) + " of " + show(suites.length()) + " suites passed"),
+      H.ul().slot("test-results-list").holding(suites.map(|one: Suite| written(&one)))
+    ])
+}
+
+/// The styles of test results.
+export fn style() -> Css.Block {
+  Css.block("test-results", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2; font-size: $text-sm"),
+      Css.slot("test-results-summary", "font-weight: $weight-medium"),
+      Css.slot("test-results-list", "display: flex; flex-direction: column; gap: $space-1; margin: 0; padding: 0; list-style: none"),
+      Css.slot("test-results-suite", "display: flex; flex-direction: column"),
+      Css.slot("test-results-row", "display: flex; justify-content: space-between; gap: $space-4"),
+      Css.slot("test-results-failures", "margin: $space-1 0 0; padding-inline-start: $space-4; color: $destructive; font-family: $font-mono; font-size: $text-xs")
+    ])
+}

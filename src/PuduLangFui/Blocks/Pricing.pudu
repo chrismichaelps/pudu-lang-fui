@@ -1,0 +1,50 @@
+/** @Fui.Blocks.Pricing.Block — plans side by side */
+module PuduLangFui.Blocks.Pricing
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Blocks.Pricing.Plan — one plan on offer */
+export type Plan = { name: Str, price: Str, features: Array[Str], target: Str, featured: Bool }
+
+/// A plan on offer.
+export fn plan(name: Str, price: Str, features: Array[Str], target: Str, featured: Bool = false) -> Plan {
+  Plan{name: name, price: price, features: features, target: target, featured: featured}
+}
+
+/// One feature with its check mark.
+fn feature(text: Str) -> H.Node { H.li().slot("pricing-feature").holding([Icon.sized(Icon.Check, Icon.Small), H.words(text)]) }
+
+/// One plan's card.
+fn planCard(one: &Plan) -> H.Node {
+  let treatment = if one.featured { Button.Primary } else { Button.Outline }
+
+  Card.card().holding([
+      Card.header().holding([
+          Card.title().says(one.name),
+          if one.featured { Card.action().holding([Badge.badge(Badge.Primary).says("Popular")]) } else { H.nothing() },
+          Card.description().says(one.price)
+        ]),
+      Card.content().holding([H.ul().slot("pricing-features").holding(one.features.map(|text: Str| feature(text)))]),
+      Card.footer().holding([Button.link(one.target, Button.props().variant(treatment)).css("inline-size", "100%").says("Choose " + one.name)])
+    ])
+}
+
+/// The plans in a grid.
+export fn pricing(plans: Array[Plan]) -> H.Node {
+  Core.part("pricing").holding(plans.map(|one: Plan| planCard(&one)))
+}
+
+/// The styles of pricing.
+export fn style() -> Css.Block {
+  Css.block("pricing", [
+      Css.base("display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: $space-4"),
+      Css.slot("pricing-features", "display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: 0; list-style: none; font-size: $text-sm"),
+      Css.slot("pricing-feature", "display: flex; align-items: center; gap: $space-2")
+    ])
+}

@@ -1,0 +1,92 @@
+/** @Fui.Cli.Commands.Add.Command — copies items into the project */
+module PuduLangFui.Cli.Commands.Add
+
+import Std.Io as Io
+import Std.Result as Result
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Closure as Closure
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Model.Rewrite as Rewrite
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Cli.Workspace.Registry as Registry
+import PuduLangFui.Constants.Cli as Constant
+
+/// One item written, or left alone when it exists and may not be replaced.
+fn place(project: &Project.Project, registry: &Registry.Registry, item: &Item.Item, overwrite: Bool, dryRun: Bool) -> Result[Str, Str] {
+  let target = Project.targetOf(project, item)
+
+  if Io.exists(target) && !overwrite { return Ok("kept    " + target) }
+  if dryRun { return Ok("would write " + target) }
+
+  let source = Io.read(item.path) ?
+
+  Project.writing(target, Rewrite.rewrite(source, registry.moduleRoot, project.config.root)) ?
+  Ok("wrote   " + target)
+}
+
+/// Writes the closure of the names drawn from one registry.
+fn addFrom(project: &Project.Project, registry: &Registry.Registry, names: &Array[Str], invocation: &Invocation.Invocation) -> Result[Array[Str], Array[Str]] {
+  let items = match Closure.closure(&registry.items, names) {
+    case Ok(found) => found
+    case Err(unknown) => { return Err(unknown.map(|name: Str| "unknown item: " + name)) }
+  }
+  var told: Array[Str] = []
+
+  for item in items {
+    match place(project, registry, &item, Invocation.has(invocation, "--overwrite"), Invocation.has(invocation, "--dry-run")) {
+      case Ok(line) => { told = told.push(line) }
+      case Err(problem) => { return Err([problem]) }
+    }
+  }
+
+  Ok(told)
+}
+
+/// Adds the named items, or every item with `--all`.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let invocation = context.invocation
+
+  if Invocation.has(&invocation, "--all") {
+    let registry = match Context.defaultLoaded(context) {
+      case Ok(found) => found
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+
+    return finish(&project, &invocation, addFrom(&project, &registry, &registry.items.map(|item: Item.Item| item.name), &invocation))
+  }
+  if invocation.words.isEmpty() { return Outcome.failed([Constant.NOTHING_NAMED]) }
+
+  var told: Array[Str] = []
+
+  for name in invocation.words {
+    let located = match Context.locate(context, name, Some(project)) {
+      case Ok(found) => found
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+
+    match addFrom(&project, &located[0], &[located[1]], &invocation) {
+      case Ok(lines) => { told = told.concat(lines) }
+      case Err(problems) => { return Outcome.failed(problems) }
+    }
+  }
+
+  finish(&project, &invocation, Ok(told))
+}
+
+/// The outcome after the catalog is refreshed.
+fn finish(project: &Project.Project, invocation: &Invocation.Invocation, result: Result[Array[Str], Array[Str]]) -> Outcome.Outcome {
+  match result {
+    case Err(problems) => Outcome.failed(problems)
+    case Ok(lines) => {
+      if !Invocation.has(invocation, "--dry-run") { let _refreshed = Project.refreshCatalog(project) }
+
+      Outcome.done(lines)
+    }
+  }
+}

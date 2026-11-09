@@ -1,0 +1,64 @@
+/** @Fui.Constants.Templates.Module — source text the generator writes */
+module PuduLangFui.Constants.Templates
+
+/// A project's owned theme.
+export const THEME: Array[Str] = [
+  "/** @__ROOT__.Theme.Module — this project's design tokens */",
+  "module __ROOT__.Theme",
+  "",
+  "import PuduLangFui.Theme.Build.Theme as Theme",
+  "import PuduLangFui.Theme.Presets.Preset as Preset",
+  "",
+  "/// The starting point; `fui apply` rewrites this line.",
+  "const PRESET: Str = \"__PRESET__\"",
+  "",
+  "/// This project's theme. Chain any tuning after the preset.",
+  "export fn theme() -> Theme.Theme \{",
+  "  match Preset.named(PRESET) \{",
+  "    case Ok(preset) => Preset.theme(&preset)",
+  "    case Err(_) => Theme.defaults()",
+  "  \}",
+  "\}"
+]
+
+/// A new component.
+export const COMPONENT: Array[Str] = [
+  "/** @__ROOT__.__PASCAL__.Component — describe what this is */",
+  "module __MODULE__",
+  "",
+  "import Std.Html.Build as H",
+  "import PuduLangFui.Core.Styling as Core",
+  "import PuduLangFui.Domain.Css as Css",
+  "",
+  "/** @__ROOT__.__PASCAL__.Variant — how it reads */",
+  "export type Variant = Plain | Strong",
+  "",
+  "/** @__ROOT__.__PASCAL__.Props — what it can be told */",
+  "export type Props = \{ variant: Variant \}",
+  "",
+  "/// The plain treatment.",
+  "export fn props() -> Props \{ Props\{variant: Plain\} \}",
+  "",
+  "/** @__ROOT__.__PASCAL__.Configuring — one method per prop */",
+  "export trait Configuring \{",
+  "  /// Sets the treatment.",
+  "  fn variant(self: &Self, value: Variant) -> Self",
+  "\}",
+  "",
+  "impl Configuring for Props \{",
+  "  fn variant(self: &Self, value: Variant) -> Self \{ Props\{..*self, variant: value\} \}",
+  "\}",
+  "",
+  "/// The component.",
+  "export fn __CAMEL__(given: Props) -> H.Node \{",
+  "  Core.part(\"__NAME__\").data(\"variant\", Core.spelled(given.variant))",
+  "\}",
+  "",
+  "/// The styles of the component.",
+  "export fn style() -> Css.Block \{",
+  "  Css.block(\"__NAME__\", [",
+  "    Css.base(\"padding: $space-2 $space-3; border-radius: $radius-md\"),",
+  "    Css.variant(\"variant\", \"strong\", \"background: $primary; color: $primary-foreground\")",
+  "  ])",
+  "\}"
+]

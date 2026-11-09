@@ -1,0 +1,71 @@
+/** @Fui.Field.Component — a control with label and errors */
+module PuduLangFui.Components.Composites.Field
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Field.Orientation — how a label and control sit */
+export type Orientation = Vertical | Horizontal | Responsive
+
+/// A field with its label above its control.
+export fn field() -> H.Node { oriented(Vertical, false) }
+
+/// A field in the given orientation; `invalid` tints its label.
+export fn oriented(orientation: Orientation, invalid: Bool) -> H.Node {
+  Core.part("field").role("group").data("orientation", Core.spelled(orientation)).atIf(invalid, "data-invalid", "true")
+}
+
+/// The field's caption for the control with the given id.
+export fn label(control: Str) -> H.Node { Label.label(control) }
+
+/// Text and description stacked together.
+export fn content() -> H.Node { Core.part("field-content") }
+
+/// Supporting text.
+export fn description() -> H.Node { H.p().slot("field-description") }
+
+/// Nothing for no messages, one line for one, a list for several.
+export fn error(messages: &Array[Str]) -> H.Node {
+  if messages.isEmpty() { return H.nothing() }
+  if messages.length() == 1 { return Core.part("field-error").role("alert").says(messages[0]) }
+
+  Core.part("field-error").role("alert").holding([H.ul().holding(messages.map(|message: Str| H.li().says(message)))])
+}
+
+/// Fields stacked together.
+export fn group() -> H.Node { Core.part("field-group") }
+
+/// A set of related fields.
+export fn set() -> H.Node { H.fieldset().slot("field-set") }
+
+/// A set's caption.
+export fn legend() -> H.Node { H.legend().slot("field-legend") }
+
+/// A heading for a field whose control is not a labelled input.
+export fn title() -> H.Node { Core.part("field-title") }
+
+/// A line between fields, with optional text on it.
+export fn separator(caption: Str) -> H.Node { Core.part("field-separator").says(caption) }
+
+/// The styles of a field.
+export fn style() -> Css.Block {
+  Css.block("field", [
+      Css.base("display: flex; flex-direction: column; gap: $space-3; inline-size: 100%"),
+      Css.variant("orientation", "horizontal", "flex-direction: row; align-items: center"),
+      Css.within("@container field-group (min-width: 28rem)", "[data-slot=\"field\"][data-orientation=\"responsive\"]", "flex-direction: row; align-items: center"),
+      Css.when("[data-invalid=\"true\"]", "color: $destructive"),
+      Css.slot("field-content", "display: flex; flex: 1; flex-direction: column; gap: $space-1"),
+      Css.slot("field-description", "margin: 0; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("field-error", "font-size: $text-sm; color: $destructive"),
+      Css.rule("[data-slot=\"field-error\"] ul", "margin: 0; padding-inline-start: $space-4"),
+      Css.slot("field-group", "container: field-group / inline-size; display: flex; flex-direction: column; gap: calc($unit * 7); inline-size: 100%"),
+      Css.slot("field-set", "display: flex; flex-direction: column; gap: $space-6; margin: 0; padding: 0; border: 0"),
+      Css.slot("field-legend", "margin-block-end: $space-3; padding: 0; font-size: $text-md; font-weight: $weight-medium"),
+      Css.slot("field-title", "font-size: $text-sm; font-weight: $weight-medium"),
+      Css.slot("field-separator", "display: flex; align-items: center; gap: $space-3; font-size: $text-xs; color: $muted-foreground"),
+      Css.slotWhen("field-separator", "::before", "content: ''; flex: 1; border-block-start: $border-width solid $border"),
+      Css.slotWhen("field-separator", "::after", "content: ''; flex: 1; border-block-start: $border-width solid $border")
+    ])
+}

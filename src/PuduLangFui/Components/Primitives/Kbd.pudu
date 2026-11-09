@@ -1,0 +1,20 @@
+/** @Fui.Kbd.Component — a key or a chord */
+module PuduLangFui.Components.Primitives.Kbd
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// One key with the given caption.
+export fn key(caption: Str) -> H.Node { H.tag("kbd").slot("kbd").says(caption) }
+
+/// Keys pressed together.
+export fn group() -> H.Node { Core.inline("kbd-group") }
+
+/// The styles of a key.
+export fn style() -> Css.Block {
+  Css.block("kbd", [
+      Css.base("display: inline-flex; align-items: center; justify-content: center; inline-size: fit-content; min-inline-size: calc($unit * 5.5); block-size: calc($unit * 5.5); gap: $space-1; padding-inline: calc($unit * 1.5); background: $muted; color: $muted-foreground; border-radius: $radius-lg; font-family: $font-sans; font-size: $text-xs; font-weight: $weight-medium; user-select: none"),
+      Css.slot("kbd-group", "display: inline-flex; align-items: center; gap: $space-1")
+    ])
+}

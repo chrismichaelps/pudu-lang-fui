@@ -1,0 +1,19 @@
+/** @Fui.Elements.Turn.Element — one person-and-agent exchange */
+module PuduLangFui.Elements.Turn
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Message as Message
+import PuduLangFui.Components.Primitives.Bubble as Bubble
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The person's message and the agent's reply, which holds its steps and text.
+export fn turn(asked: Str, reply: Array[H.Node]) -> H.Node {
+  Core.part("turn").holding([
+      Bubble.bubble(Bubble.Secondary, Bubble.End).says(asked),
+      Message.message(Message.Received).holding([Message.content().holding(reply)])
+    ])
+}
+
+/// The styles of a turn.
+export fn style() -> Css.Block { Css.block("turn", [Css.base("display: flex; flex-direction: column; gap: $space-4")]) }

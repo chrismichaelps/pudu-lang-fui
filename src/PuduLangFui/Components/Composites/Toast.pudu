@@ -1,0 +1,177 @@
+/** @Fui.Toast.Component — stacked messages outside the flow */
+module PuduLangFui.Components.Composites.Toast
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Toast.Kind — what a toast reports */
+export type Kind = Neutral | Success | Info | Warning | Failure | Loading
+
+/** @Fui.Toast.Position — which corner or edge toasts collect at */
+export type Position = TopStart | TopCenter | TopEnd | BottomStart | BottomCenter | BottomEnd
+
+/** @Fui.Toast.Props — how the region behaves */
+export type Props = { position: Position, expanded: Bool, rich: Bool, closable: Bool, visible: Int }
+
+/** @Fui.Toast.Notice — how one toast behaves */
+export type Notice = { kind: Kind, duration: Int, dismissible: Bool, inverted: Bool }
+
+/// The icon each kind shows.
+const GLYPHS: Map[Str, Icon.Glyph] = mapOf([
+    ("neutral", Icon.Spark),
+    ("success", Icon.Success),
+    ("info", Icon.Info),
+    ("warning", Icon.Alert),
+    ("failure", Icon.ErrorCircle),
+    ("loading", Icon.SpinnerArc)
+  ])
+
+/// Pauses, closes, swipes, and creates toasts; without it a toast stays until its close control is pressed.
+const BEHAVIOR: Str = "(function()\{var T=[];function close(t)\{t.dataset.leaving='true';setTimeout(function()\{t.remove()\},200)\}function arm(t)\{var d=parseInt(t.dataset.duration||'0');if(d<=0||t.dataset.armed)return;t.dataset.armed='1';T.push(\{t:t,left:d,at:Date.now()\})\}function scan()\{document.querySelectorAll('[data-slot=toast]').forEach(arm)\}var paused=false;setInterval(function()\{if(paused||document.hidden)\{T.forEach(function(e)\{e.at=Date.now()\});return\}T=T.filter(function(e)\{e.left-=Date.now()-e.at;e.at=Date.now();if(e.left<=0)\{close(e.t);return false\}return true\})\},100);document.addEventListener('pointerover',function(e)\{paused=!!e.target.closest('[data-slot=toast-region]')\});var S=null;document.addEventListener('pointerdown',function(e)\{var t=e.target.closest('[data-slot=toast][data-dismissible=true]');if(t&&!e.target.closest('button,a'))S=\{t:t,x:e.clientX\}\});document.addEventListener('pointermove',function(e)\{if(S)S.t.style.translate=(e.clientX-S.x)+'px 0'\});document.addEventListener('pointerup',function(e)\{if(!S)return;if(Math.abs(e.clientX-S.x)>60)close(S.t);else S.t.style.translate='';S=null\});document.addEventListener('keydown',function(e)\{if(e.altKey&&e.code==='KeyT')\{var r=document.querySelector('[data-slot=toast-region]');if(r)\{r.dataset.expanded='true';r.focus()\}\}\});window.fuiToast=function(o)\{var r=document.querySelector('[data-slot=toast-region]');var p=document.querySelector('template[data-slot=toast-template]');if(!r||!p)return;var n=p.content.firstElementChild.cloneNode(true);n.dataset.kind=o.kind||'neutral';n.dataset.duration=String(o.duration==null?4000:o.duration);n.querySelector('[data-slot=toast-message]').textContent=o.title||'';var d=n.querySelector('[data-slot=toast-description]');d.textContent=o.description||'';if(!o.description)d.remove();r.appendChild(n);arm(n)\};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan()\})();"
+
+/// A bottom-end region showing three at a time.
+export fn props() -> Props { Props{position: BottomEnd, expanded: false, rich: false, closable: false, visible: 3} }
+
+/// A neutral toast closing after four seconds.
+export fn notice() -> Notice { Notice{kind: Neutral, duration: 4000, dismissible: true, inverted: false} }
+
+/** @Fui.Toast.Configuring — one method per prop */
+export trait Configuring {
+  /// Sets where toasts collect.
+  fn position(self: &Self, value: Position) -> Self
+
+  /// Keeps the stack fanned out.
+  fn expanded(self: &Self) -> Self
+
+  /// Colors toasts by kind.
+  fn rich(self: &Self) -> Self
+
+  /// Shows a close control on every toast.
+  fn closable(self: &Self) -> Self
+
+  /// Sets how many toasts show at once.
+  fn visible(self: &Self, count: Int) -> Self
+}
+
+impl Configuring for Props {
+  fn position(self: &Self, value: Position) -> Self { Props{..*self, position: value} }
+
+  fn expanded(self: &Self) -> Self { Props{..*self, expanded: true} }
+
+  fn rich(self: &Self) -> Self { Props{..*self, rich: true} }
+
+  fn closable(self: &Self) -> Self { Props{..*self, closable: true} }
+
+  fn visible(self: &Self, count: Int) -> Self { Props{..*self, visible: count} }
+}
+
+/** @Fui.Toast.Noticing — one method per notice prop */
+export trait Noticing {
+  /// Sets what the toast reports.
+  fn kind(self: &Self, value: Kind) -> Self
+
+  /// Sets the milliseconds before it closes; zero keeps it open.
+  fn duration(self: &Self, value: Int) -> Self
+
+  /// Prevents swiping it away.
+  fn persistent(self: &Self) -> Self
+
+  /// Draws it in the opposite mode.
+  fn inverted(self: &Self) -> Self
+}
+
+impl Noticing for Notice {
+  fn kind(self: &Self, value: Kind) -> Self { Notice{..*self, kind: value} }
+
+  fn duration(self: &Self, value: Int) -> Self { Notice{..*self, duration: value} }
+
+  fn persistent(self: &Self) -> Self { Notice{..*self, dismissible: false} }
+
+  fn inverted(self: &Self) -> Self { Notice{..*self, inverted: true} }
+}
+
+/// The region toasts collect in, with the template new ones are cloned from.
+export fn toaster(given: Props) -> H.Node {
+  let region = Core.part("toast-region").role("region").label("Notifications").at("tabindex", "-1")
+  let placed = region.data("position", Core.spelled(given.position)).atIf(given.expanded, "data-expanded", "true")
+
+  placed.atIf(given.rich, "data-rich", "true").atIf(given.closable, "data-closable", "true").css("--toast-visible", show(given.visible)).holding([template()])
+}
+
+/// The shape a script-created toast is cloned from.
+fn template() -> H.Node {
+  H.tag("template").slot("toast-template").holding([
+      H.dialog().slot("toast").flag("open").role("status").data("dismissible", "true").holding([
+          Icon.icon(Icon.Spark),
+          message(),
+          description()
+        ])
+    ])
+}
+
+/// A toast shown as rendered.
+export fn toast(id: Str, given: Notice) -> H.Node {
+  let base = H.dialog().slot("toast").id(id).flag("open").role(if given.kind == Failure { "alert" } else { "status" })
+  let described = base.data("kind", Core.spelled(given.kind)).data("duration", show(given.duration)).data("dismissible", show(given.dismissible))
+
+  described.atIf(given.inverted, "data-inverted", "true").holding([Icon.icon(Core.picked(&GLYPHS, given.kind, Icon.Spark))])
+}
+
+/// The toast's message.
+export fn message() -> H.Node { Core.part("toast-message") }
+
+/// Further detail.
+export fn description() -> H.Node { Core.part("toast-description") }
+
+/// A control doing what the toast offers.
+export fn action(given: Button.Props) -> H.Node { Button.button(given).slot("toast-action") }
+
+/// A control declining what the toast offers.
+export fn cancel(id: Str) -> H.Node {
+  Button.button(Button.props().variant(Button.Ghost).size(Button.Small)).at("commandfor", id).at("command", "close").says("Cancel")
+}
+
+/// A control closing the toast `id`.
+export fn close(id: Str) -> H.Node {
+  H.button().kind("button").slot("toast-close").label("Dismiss").at("commandfor", id).at("command", "close").holding([Icon.sized(Icon.X, Icon.Small)])
+}
+
+/// The styles of toasts.
+export fn style() -> Css.Block {
+  Css.block("toast-region", [
+      Css.behavior(BEHAVIOR),
+      Css.keyframes("fui-toast-in", [("from", "opacity: 0; translate: 0 var(--toast-from)")]),
+      Css.keyframes("fui-toast-spin", [("to", "rotate: 360deg")]),
+      Css.base("--toast-gap: $space-2; --toast-from: 1rem; position: fixed; z-index: 60; display: flex; flex-direction: column; gap: var(--toast-gap); inline-size: min(22rem, calc(100vw - $space-8)); outline: none"),
+      Css.variant("position", "bottom-end", "inset-block-end: $space-4; inset-inline-end: $space-4"),
+      Css.variant("position", "bottom-start", "inset-block-end: $space-4; inset-inline-start: $space-4"),
+      Css.variant("position", "bottom-center", "inset-block-end: $space-4; inset-inline-start: 50%; translate: -50% 0"),
+      Css.variant("position", "top-end", "--toast-from: -1rem; inset-block-start: $space-4; inset-inline-end: $space-4"),
+      Css.variant("position", "top-start", "--toast-from: -1rem; inset-block-start: $space-4; inset-inline-start: $space-4"),
+      Css.variant("position", "top-center", "--toast-from: -1rem; inset-block-start: $space-4; inset-inline-start: 50%; translate: -50% 0"),
+      Css.slot("toast", "position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: $space-1 $space-3; margin: 0; padding: $space-4; inline-size: 100%; background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-2xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; font-size: $text-sm; animation: fui-toast-in $duration-slow $ease-enter; transition: opacity $duration-base $ease-standard, translate $duration-base $ease-standard, scale $duration-base $ease-standard, margin $duration-base $ease-standard; touch-action: pan-y"),
+      Css.slotWhen("toast", ":not([open])", "display: none"),
+      Css.slotWhen("toast", "[data-leaving=\"true\"]", "opacity: 0; translate: 0 var(--toast-from)"),
+      Css.slotWhen("toast", "[data-kind=\"loading\"] > [data-slot=\"icon\"]", "animation: fui-toast-spin 800ms linear infinite"),
+      Css.slotWhen("toast", "[data-inverted=\"true\"]", "background: $foreground; color: $background"),
+      Css.rule("[data-slot=\"toast-region\"]:not([data-expanded=\"true\"], :hover, :focus-within) > [data-slot=\"toast\"]:nth-last-of-type(2)", "scale: 0.95; margin-block-start: -3.2rem; z-index: -1"),
+      Css.rule("[data-slot=\"toast-region\"]:not([data-expanded=\"true\"], :hover, :focus-within) > [data-slot=\"toast\"]:nth-last-of-type(3)", "scale: 0.9; margin-block-start: -3.2rem; z-index: -2"),
+      Css.rule("[data-slot=\"toast-region\"]:not([data-expanded=\"true\"], :hover, :focus-within) > [data-slot=\"toast\"]:nth-last-of-type(n+4)", "opacity: 0; pointer-events: none; margin-block-start: -3.2rem"),
+      Css.rule("[data-slot=\"toast-region\"][data-rich=\"true\"] [data-slot=\"toast\"][data-kind=\"success\"]", "background: color-mix(in oklab, $success 14%, $popover); color: $success; border-color: color-mix(in oklab, $success 40%, $border)"),
+      Css.rule("[data-slot=\"toast-region\"][data-rich=\"true\"] [data-slot=\"toast\"][data-kind=\"info\"]", "background: color-mix(in oklab, $info 14%, $popover); color: $info; border-color: color-mix(in oklab, $info 40%, $border)"),
+      Css.rule("[data-slot=\"toast-region\"][data-rich=\"true\"] [data-slot=\"toast\"][data-kind=\"warning\"]", "background: color-mix(in oklab, $warning 14%, $popover); color: $warning; border-color: color-mix(in oklab, $warning 40%, $border)"),
+      Css.rule("[data-slot=\"toast-region\"][data-rich=\"true\"] [data-slot=\"toast\"][data-kind=\"failure\"]", "background: color-mix(in oklab, $destructive 14%, $popover); color: $destructive; border-color: color-mix(in oklab, $destructive 40%, $border)"),
+      Css.rule("[data-slot=\"toast\"][data-kind=\"success\"] > [data-slot=\"icon\"]", "color: $success"),
+      Css.rule("[data-slot=\"toast\"][data-kind=\"info\"] > [data-slot=\"icon\"]", "color: $info"),
+      Css.rule("[data-slot=\"toast\"][data-kind=\"warning\"] > [data-slot=\"icon\"]", "color: $warning"),
+      Css.rule("[data-slot=\"toast\"][data-kind=\"failure\"] > [data-slot=\"icon\"]", "color: $destructive"),
+      Css.slot("toast-template", "display: none"),
+      Css.slot("toast-message", "grid-column: 2; font-weight: $weight-medium"),
+      Css.slot("toast-description", "grid-column: 2; color: $muted-foreground"),
+      Css.slot("toast-action", "grid-column: 3; grid-row: 1 / span 2"),
+      Css.slot("toast-close", "grid-column: 3; grid-row: 1; padding: 0; background: transparent; color: $muted-foreground; border: 0; cursor: pointer")
+    ])
+}

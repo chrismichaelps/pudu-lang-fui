@@ -1,0 +1,32 @@
+/** @Fui.Domain.Slots.Module — finds slots in a rendered tree */
+module PuduLangFui.Domain.Slots
+
+import Std.Html as Html
+import Std.Set as Set
+import PuduLangFui.Constants.Css as Constant
+
+/// Every slot name the tree holds.
+export fn used(view: &Html.Html) -> Set[Str] {
+  var found: Set[Str] = setOf([])
+  var pending: Array[Html.Html] = [*view]
+
+  while pending.length() > 0 {
+    let current = pending[pending.length() - 1]
+
+    pending = pending.pop()
+
+    match current {
+      case Html.Element(_, attributes, children) => {
+        for attribute in attributes {
+          if attribute[0] == Constant.SLOT_ATTRIBUTE { found = found.insert(attribute[1]) }
+        }
+
+        pending = pending.concat(children)
+      }
+      case Html.Fragment(children) => { pending = pending.concat(children) }
+      case _ => {}
+    }
+  }
+
+  found
+}

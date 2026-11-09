@@ -1,0 +1,42 @@
+/** @Fui.Popover.Component — content floating beside its trigger */
+module PuduLangFui.Components.Primitives.Popover
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Popover.Side — which side of the trigger it opens on */
+export type Side = Above | Below | Start | End
+
+/// Marks a control as what opens the popover `id`.
+export fn opens(control: H.Node, id: Str) -> H.Node { control.at("popovertarget", id).anchors(id) }
+
+/// The floating content for the id its trigger names.
+export fn content(id: Str, side: Side) -> H.Node {
+  Core.part("popover").id(id).at("popover", "auto").data("side", Core.spelled(side)).anchoredTo(id)
+}
+
+/// The popover's opening.
+export fn header() -> H.Node { Core.part("popover-header") }
+
+/// The popover's headline.
+export fn title() -> H.Node { Core.part("popover-title") }
+
+/// What the popover is about.
+export fn description() -> H.Node { Core.part("popover-description") }
+
+/// The styles of a popover.
+export fn style() -> Css.Block {
+  Css.block("popover", [
+      Css.keyframes("fui-pop", [("from", "opacity: 0; scale: 0.97")]),
+      Css.base("display: none; margin: 0; padding: $space-4; inline-size: 18rem; background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; font-size: $text-sm; position-try-fallbacks: flip-block, flip-inline; margin-block: $space-1"),
+      Css.when(":popover-open", "display: flex; flex-direction: column; gap: $space-4; animation: fui-pop $duration-fast $ease-enter"),
+      Css.variant("side", "below", "position-area: block-end span-inline-end"),
+      Css.variant("side", "above", "position-area: block-start span-inline-end"),
+      Css.variant("side", "start", "position-area: inline-start span-block-end"),
+      Css.variant("side", "end", "position-area: inline-end span-block-end"),
+      Css.slot("popover-header", "display: flex; flex-direction: column; gap: $space-1"),
+      Css.slot("popover-title", "font-size: $text-md; font-weight: $weight-medium"),
+      Css.slot("popover-description", "color: $muted-foreground")
+    ])
+}

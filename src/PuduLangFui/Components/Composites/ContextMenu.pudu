@@ -1,0 +1,59 @@
+/** @Fui.ContextMenu.Component — a menu on the secondary button */
+module PuduLangFui.Components.Composites.ContextMenu
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Shows the menu an area names at the pointer.
+const OPEN_AT_POINTER: Str = "document.addEventListener('contextmenu',function(e)\{var a=e.target.closest('[data-slot=context-menu-area]');if(!a)return;var m=document.getElementById(a.dataset.menu);if(!m)return;e.preventDefault();m.style.position='fixed';m.style.margin='0';m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';m.style.right='auto';m.style.bottom='auto';m.showPopover();\});"
+
+/// The region that opens the menu `id` on the secondary button.
+export fn area(id: Str) -> H.Node { Core.part("context-menu-area").data("menu", id) }
+
+/// The menu for the id its area names.
+export fn menu(id: Str) -> H.Node { Core.part("context-menu").id(id).at("popover", "auto").role("menu") }
+
+/// A menu entry.
+export fn item() -> H.Node { H.button().kind("button").slot("context-menu-item").role("menuitem") }
+
+/// A line between runs of entries.
+export fn separator() -> H.Node { Core.part("context-menu-separator").role("separator") }
+
+/// A caption over a run of entries.
+export fn label() -> H.Node { Core.part("context-menu-label") }
+
+/// A key hint at the end of an entry.
+export fn shortcut() -> H.Node { Core.inline("context-menu-shortcut") }
+
+/// An entry holding a checkbox.
+export fn checkboxItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node {
+  H.labelFor().slot("context-menu-item").holding([H.input().kind("checkbox").name(name).value(value).flagIf(checked, "checked"), H.words(caption)])
+}
+
+/// An entry holding a radio.
+export fn radioItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node {
+  H.labelFor().slot("context-menu-item").holding([H.input().kind("radio").name(name).value(value).flagIf(checked, "checked"), H.words(caption)])
+}
+
+/// An entry opening the nested menu `id`.
+export fn subTrigger(id: Str, caption: Str) -> H.Node {
+  H.button().kind("button").slot("context-menu-item").at("popovertarget", id).anchors(id).says(caption)
+}
+
+/// The nested menu for the id its entry names.
+export fn subMenu(id: Str) -> H.Node { menu(id).anchoredTo(id).css("position-area", "inline-end span-block-end") }
+
+/// The styles of a context menu.
+export fn style() -> Css.Block {
+  Css.block("context-menu", [
+      Css.behavior(OPEN_AT_POINTER),
+      Css.base("min-inline-size: 12rem; padding: calc($unit * 1.5); background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg"),
+      Css.slot("context-menu-area", "display: block"),
+      Css.slot("context-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-align: start; text-decoration: none; cursor: default; user-select: none"),
+      Css.slotWhen("context-menu-item", ":is(:hover, :focus-visible)", "background: $accent; color: $accent-foreground; outline: none"),
+      Css.slot("context-menu-separator", "block-size: $border-width; margin-block: calc($unit * 1.5); margin-inline: calc($unit * -1.5); background: color-mix(in oklab, $border 50%, transparent)"),
+      Css.slot("context-menu-label", "padding: $space-1 $space-2; font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground"),
+      Css.slot("context-menu-shortcut", "margin-inline-start: auto; font-size: $text-xs; color: $muted-foreground")
+    ])
+}

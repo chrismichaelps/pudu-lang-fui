@@ -1,0 +1,49 @@
+/** @Fui.Table.Component — a styled table in a scrolling frame */
+module PuduLangFui.Components.Primitives.Table
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A table inside its scrolling frame, holding the given rows and groups.
+export fn table(rows: Array[H.Node]) -> H.Node {
+  Core.part("table-container").holding([H.table().slot("table").holding(rows)])
+}
+
+/// A caption under the table.
+export fn caption() -> H.Node { H.tag("caption").slot("table-caption") }
+
+/// The heading rows.
+export fn header() -> H.Node { H.thead().slot("table-header") }
+
+/// The body rows.
+export fn body() -> H.Node { H.tbody().slot("table-body") }
+
+/// The summary rows.
+export fn footer() -> H.Node { H.tfoot().slot("table-footer") }
+
+/// One row.
+export fn row() -> H.Node { H.tr().slot("table-row") }
+
+/// A heading cell.
+export fn head() -> H.Node { H.th().slot("table-head").at("scope", "col") }
+
+/// A data cell.
+export fn cell() -> H.Node { H.td().slot("table-cell") }
+
+/// The styles of a table.
+export fn style() -> Css.Block {
+  Css.block("table-container", [
+      Css.base("position: relative; inline-size: 100%; overflow-x: auto"),
+      Css.slot("table", "inline-size: 100%; caption-side: bottom; border-collapse: collapse; font-size: $text-sm"),
+      Css.slot("table-caption", "margin-block-start: $space-4; color: $muted-foreground; font-size: $text-sm"),
+      Css.slot("table-header", "border-block-end: $border-width solid $border"),
+      Css.slot("table-footer", "border-block-start: $border-width solid $border; background: color-mix(in oklab, $muted 50%, transparent); font-weight: $weight-medium"),
+      Css.slot("table-row", "border-block-end: $border-width solid $border; transition: background-color $duration-fast $ease-standard"),
+      Css.slotWhen("table-row", ":hover", "background: color-mix(in oklab, $muted 50%, transparent)"),
+      Css.slotWhen("table-row", "[data-state=\"selected\"]", "background: $muted"),
+      Css.slot("table-head", "block-size: calc($unit * 12); padding-inline: $space-3; color: $foreground; text-align: start; vertical-align: middle; font-weight: $weight-medium; white-space: nowrap"),
+      Css.slot("table-cell", "padding: $space-3; vertical-align: middle; white-space: nowrap"),
+      Css.slot("table-body", "border: 0")
+    ])
+}

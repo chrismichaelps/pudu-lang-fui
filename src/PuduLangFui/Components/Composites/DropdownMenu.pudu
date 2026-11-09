@@ -1,0 +1,78 @@
+/** @Fui.DropdownMenu.Component — a menu opened from a button */
+module PuduLangFui.Components.Composites.DropdownMenu
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A button that opens the menu `id`.
+export fn trigger(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("popovertarget", id).anchors(id)
+}
+
+/// The menu for the id its trigger names.
+export fn menu(id: Str) -> H.Node { Core.part("dropdown-menu").id(id).at("popover", "auto").role("menu").anchoredTo(id) }
+
+/// A menu entry that runs an action.
+export fn item(destructive: Bool = false) -> H.Node {
+  H.button().kind("button").slot("dropdown-menu-item").role("menuitem").atIf(destructive, "data-variant", "destructive")
+}
+
+/// A menu entry that navigates.
+export fn link(target: Str) -> H.Node { H.a().slot("dropdown-menu-item").role("menuitem").href(target) }
+
+/// A menu entry holding a checkbox.
+export fn checkboxItem(name: Str, value: Str, caption: Str, checked: Bool = false) -> H.Node {
+  H.labelFor().slot("dropdown-menu-item").holding([
+      H.input().kind("checkbox").name(name).value(value).flagIf(checked, "checked"),
+      H.words(caption)
+    ])
+}
+
+/// A menu entry holding a radio.
+export fn radioItem(name: Str, value: Str, caption: Str, checked: Bool = false) -> H.Node {
+  H.labelFor().slot("dropdown-menu-item").holding([
+      H.input().kind("radio").name(name).value(value).flagIf(checked, "checked"),
+      H.words(caption)
+    ])
+}
+
+/// A caption over a run of entries.
+export fn label() -> H.Node { Core.part("dropdown-menu-label") }
+
+/// A line between runs of entries.
+export fn separator() -> H.Node { Core.part("dropdown-menu-separator").role("separator") }
+
+/// A key hint at the end of an entry.
+export fn shortcut() -> H.Node { Core.inline("dropdown-menu-shortcut") }
+
+/// An entry opening the nested menu `id`.
+export fn subTrigger(id: Str, caption: Str) -> H.Node {
+  H.button().kind("button").slot("dropdown-menu-item").at("popovertarget", id).anchors(id).holding([
+      H.words(caption),
+      Icon.sized(Icon.ChevronRight, Icon.Small).css("margin-inline-start", "auto")
+    ])
+}
+
+/// The nested menu for the id its entry names.
+export fn subMenu(id: Str) -> H.Node { menu(id).data("side", "end") }
+
+/// A run of related entries.
+export fn group() -> H.Node { Core.part("dropdown-menu-group").role("group") }
+
+/// The styles of a menu.
+export fn style() -> Css.Block {
+  Css.block("dropdown-menu", [
+      Css.base("margin: 0; margin-block: $space-1; min-inline-size: 12rem; padding: calc($unit * 1.5); background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; position-area: block-end span-inline-end; position-try-fallbacks: flip-block, flip-inline"),
+      Css.variant("side", "end", "position-area: inline-end span-block-end; margin-block: 0; margin-inline: $space-1"),
+      Css.slot("dropdown-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-align: start; text-decoration: none; cursor: default; user-select: none"),
+      Css.slotWhen("dropdown-menu-item", ":is(:hover, :focus-visible)", "background: $accent; color: $accent-foreground; outline: none"),
+      Css.slotWhen("dropdown-menu-item", "[data-variant=\"destructive\"]", "color: $destructive"),
+      Css.slot("dropdown-menu-label", "padding: calc($unit * 2.5) $space-3; font-size: $text-xs; color: $muted-foreground"),
+      Css.slot("dropdown-menu-separator", "block-size: $border-width; margin-block: calc($unit * 1.5); margin-inline: calc($unit * -1.5); background: color-mix(in oklab, $border 50%, transparent)"),
+      Css.slot("dropdown-menu-shortcut", "margin-inline-start: auto; font-size: $text-xs; color: $muted-foreground; letter-spacing: 0.1em"),
+      Css.slot("dropdown-menu-group", "display: flex; flex-direction: column")
+    ])
+}

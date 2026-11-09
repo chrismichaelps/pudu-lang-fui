@@ -1,0 +1,28 @@
+/** @Fui.Domain.Names.Module — spellings between code and markup */
+module PuduLangFui.Utils.Spelling
+
+import Std.Char as Char
+import Std.Text as Text
+
+/// The kebab-case spelling of a PascalCase or camelCase name.
+export fn kebab(name: Str) -> Str {
+  var out = ""
+  var previous = ' '
+
+  for current in name.chars() {
+    let startsWord = Char.isUpper(current) && out != ""
+    let startsNumber = Char.isDigit(current) && Char.isLetter(previous)
+
+    if startsWord || startsNumber { out = out + "-" }
+
+    out = out + Text.singleton(Char.toLower(current))
+    previous = current
+  }
+
+  out
+}
+
+/// The PascalCase spelling of a kebab-case name.
+export fn pascal(name: Str) -> Str {
+  Text.splitNonEmpty(name, "-").map(|piece: Str| Text.capitalize(piece)).join("")
+}

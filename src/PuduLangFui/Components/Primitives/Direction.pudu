@@ -1,0 +1,12 @@
+/** @Fui.Direction.Component — sets a region's text direction */
+module PuduLangFui.Components.Primitives.Direction
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A region laid out in the given direction, `ltr` or `rtl`.
+export fn direction(value: Str) -> H.Node { Core.part("direction").at("dir", value) }
+
+/// The styles of a region.
+export fn style() -> Css.Block { Css.block("direction", [Css.base("display: contents")]) }

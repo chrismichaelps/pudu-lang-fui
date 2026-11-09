@@ -1,0 +1,37 @@
+/** @Fui.Toggle.Component — a two-state button */
+module PuduLangFui.Components.Primitives.Toggle
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Toggle.Variant — how a toggle is drawn */
+export type Variant = Plain | Outline
+
+/** @Fui.Toggle.Size — how much room a toggle takes */
+export type Size = Small | Medium | Large
+
+/// A toggle of the given size.
+export fn sized(toggled: H.Node, size: Size) -> H.Node { toggled.data("size", Core.spelled(size)) }
+
+/// A toggle submitting `value` under `name` while pressed.
+export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node {
+  H.labelFor().slot("toggle").data("variant", Core.spelled(variant)).holding([
+      H.input().kind("checkbox").name(name).value(value).flagIf(pressed, "checked")
+    ])
+}
+
+/// The styles of a toggle.
+export fn style() -> Css.Block {
+  Css.block("toggle", [
+      Css.base("display: inline-flex; align-items: center; justify-content: center; gap: $space-1; block-size: $control-md; min-inline-size: $control-md; padding-inline: $space-3; background: transparent; color: $foreground; border: $border-width solid transparent; border-radius: $radius-3xl; font-size: $text-sm; font-weight: $weight-medium; cursor: pointer; user-select: none; transition: background-color $duration-fast $ease-standard, color $duration-fast $ease-standard"),
+      Css.inside("> input", "position: absolute; opacity: 0; pointer-events: none"),
+      Css.hover("background: $muted"),
+      Css.when(":has(> input:checked)", "background: $muted; color: $foreground"),
+      Css.when(":has(> input:focus-visible)", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.when(":has(> input:disabled)", "opacity: 0.5; pointer-events: none"),
+      Css.variant("variant", "outline", "border-color: $input"),
+      Css.variant("size", "small", "block-size: $control-sm; min-inline-size: $control-sm; padding-inline: $space-1"),
+      Css.variant("size", "large", "block-size: $control-lg; min-inline-size: $control-lg; padding-inline: $space-3")
+    ])
+}

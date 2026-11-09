@@ -1,0 +1,55 @@
+/** @Fui.AlertDialog.Component — a modal asking for a decision */
+module PuduLangFui.Components.Composites.AlertDialog
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A button that opens the alert dialog `id`.
+export fn trigger(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "show-modal")
+}
+
+/// A control that dismisses the decision.
+export fn cancel(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "close")
+}
+
+/// A modal that closes only through its controls.
+export fn alertDialog(id: Str, name: Str) -> H.Node {
+  H.dialog().slot("alert-dialog").id(id).role("alertdialog").at("closedby", "none").label(name)
+}
+
+/// The dialog's headline.
+export fn title() -> H.Node { H.h2().slot("alert-dialog-title") }
+
+/// What the decision means.
+export fn description() -> H.Node { H.p().slot("alert-dialog-description") }
+
+/// The dialog's closing row of controls.
+export fn footer() -> H.Node { Core.part("alert-dialog-footer") }
+
+/// A control carrying out the decision, inside a form or wired by the caller.
+export fn action(id: Str, given: Button.Props) -> H.Node { Button.button(given).at("commandfor", id).at("command", "close") }
+
+/// The dialog's opening.
+export fn header() -> H.Node { Core.part("alert-dialog-header") }
+
+/// An icon or image over the headline.
+export fn media() -> H.Node { Core.part("alert-dialog-media") }
+
+/// The styles of an alert dialog.
+export fn style() -> Css.Block {
+  Css.block("alert-dialog", [
+      Css.base("inline-size: min(28rem, calc(100vw - $space-8)); padding: $space-6; background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-4xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-xl"),
+      Css.when("[open]", "display: flex; flex-direction: column; gap: $space-6; animation: fui-alert-rise $duration-fast $ease-enter"),
+      Css.keyframes("fui-alert-rise", [("from", "opacity: 0; scale: 0.96")]),
+      Css.when("::backdrop", "background: $backdrop"),
+      Css.slot("alert-dialog-title", "margin: 0; font-size: $text-lg; font-weight: $weight-medium"),
+      Css.slot("alert-dialog-description", "margin: 0; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("alert-dialog-footer", "display: flex; flex-wrap: wrap; justify-content: flex-end; gap: $space-2; margin-block-start: $space-2"),
+      Css.slot("alert-dialog-header", "display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("alert-dialog-media", "display: inline-flex; align-items: center; justify-content: center; inline-size: calc($unit * 16); block-size: calc($unit * 16); margin-block-end: $space-2; background: $muted; border-radius: $radius-full")
+    ])
+}

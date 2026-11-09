@@ -1,0 +1,66 @@
+/** @Fui.Trace.Component — steps every agent element shares */
+module PuduLangFui.Components.Composites.Trace
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Trace.Status — how a step stands */
+export type Status = Pending | Running | Done | Failed
+
+/// The icon each status shows.
+const GLYPHS: Map[Str, Icon.Glyph] = mapOf([
+    ("pending", Icon.Circle),
+    ("running", Icon.SpinnerArc),
+    ("done", Icon.Success),
+    ("failed", Icon.ErrorCircle)
+  ])
+
+/// A list of steps.
+export fn trace() -> H.Node { H.ol().slot("trace") }
+
+/// A step with its status icon in place.
+export fn line(state: Status) -> H.Node {
+  H.li().slot("trace-line").data("status", Core.spelled(state)).holding([statusIcon(state)])
+}
+
+/// The icon a status shows, hidden from assistive software.
+fn statusIcon(state: Status) -> H.Node { Icon.sized(Core.picked(&GLYPHS, state, Icon.Circle), Icon.Small) }
+
+/// The step's text.
+export fn body() -> H.Node { Core.part("trace-body") }
+
+/// The step's headline.
+export fn title() -> H.Node { Core.part("trace-title") }
+
+/// The step's supporting text.
+export fn description() -> H.Node { Core.part("trace-description") }
+
+/// A short word at the end of a step.
+export fn note() -> H.Node { Core.inline("trace-status") }
+
+/// A disclosure inside a step: a headline and what opens under it.
+export fn details(headline: Str, open: Bool = false) -> H.Node {
+  H.details().slot("trace-details").flagIf(open, "open").holding([H.summary().slot("trace-summary").says(headline)])
+}
+
+/// The styles of a trace.
+export fn style() -> Css.Block {
+  Css.block("trace", [
+      Css.keyframes("fui-trace-spin", [("to", "rotate: 360deg")]),
+      Css.base("display: flex; flex-direction: column; gap: $space-3; margin: 0; padding: 0; list-style: none; font-size: $text-sm"),
+      Css.slot("trace-line", "display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: $space-2"),
+      Css.rule("[data-slot=\"trace-line\"] > [data-slot=\"icon\"]", "translate: 0 0.2em; color: $muted-foreground"),
+      Css.rule("[data-slot=\"trace-line\"][data-status=\"running\"] > [data-slot=\"icon\"]", "animation: fui-trace-spin 800ms linear infinite; color: $primary"),
+      Css.rule("[data-slot=\"trace-line\"][data-status=\"done\"] > [data-slot=\"icon\"]", "color: $success"),
+      Css.rule("[data-slot=\"trace-line\"][data-status=\"failed\"] > [data-slot=\"icon\"]", "color: $destructive"),
+      Css.slot("trace-body", "display: flex; flex-direction: column; gap: $space-1; min-inline-size: 0"),
+      Css.slot("trace-title", "font-weight: $weight-medium"),
+      Css.slot("trace-description", "color: $muted-foreground"),
+      Css.slot("trace-status", "color: $muted-foreground; font-size: $text-xs"),
+      Css.slot("trace-details", "display: block"),
+      Css.slot("trace-summary", "cursor: pointer; font-weight: $weight-medium"),
+      Css.slotWhen("trace-summary", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px")
+    ])
+}

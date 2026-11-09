@@ -1,0 +1,69 @@
+/** @Fui.Cli.Commands.Preset.Command — lists and decodes presets */
+module PuduLangFui.Cli.Commands.Preset
+
+import Std.Json as Json
+import Std.Option as Option
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Theme.Presets.Preset as Preset
+
+/// The action each subcommand runs.
+const ACTIONS: Map[Str, fn(&Context.Context) -> Outcome.Outcome] = mapOf([("list", list), ("decode", decode), ("resolve", resolve)])
+
+/// Every named preset with its code.
+fn list(_context: &Context.Context) -> Outcome.Outcome {
+  var lines: Array[Str] = []
+
+  for name in Preset.names() {
+    if let Ok(preset) = Preset.named(name) { lines = lines.push(name + "  " + Preset.encode(&preset)) }
+  }
+
+  Outcome.done(lines)
+}
+
+/// A preset as JSON.
+fn encoded(preset: &Preset.Preset) -> Str {
+  Json.encodePretty(&Json.object(&[
+        ("hue", Json.Number(preset.hue)),
+        ("chroma", Json.Number(preset.chroma)),
+        ("radius", Json.Number(preset.radius)),
+        ("code", Json.Text(Preset.encode(preset)))
+      ]))
+}
+
+/// What a code spells.
+fn decode(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.length() < 2 { return Outcome.failed(["name a code to decode"]) }
+
+  match Preset.decode(context.invocation.words[1]) {
+    case Err(problem) => Outcome.failed([problem])
+    case Ok(preset) => {
+      if Invocation.has(&context.invocation, "--json") {
+        Outcome.done([encoded(&preset)])
+      } else {
+        Outcome.done(["hue " + show(preset.hue), "chroma " + show(preset.chroma), "radius " + show(preset.radius) + "px", "density " + show(preset.density)])
+      }
+    }
+  }
+}
+
+/// The preset the project uses.
+fn resolve(context: &Context.Context) -> Outcome.Outcome {
+  match Project.load(context.directory) {
+    case Ok(project) => Outcome.done([project.config.preset])
+    case Err(problem) => Outcome.failed([problem])
+  }
+}
+
+/// Answered for an unknown subcommand.
+fn usage(_context: &Context.Context) -> Outcome.Outcome { Outcome.failed(["usage: fui preset <list|decode|resolve>"]) }
+
+/// Runs the subcommand.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let word = if context.invocation.words.isEmpty() { "list" } else { context.invocation.words[0] }
+  let action = Option.unwrapOr(ACTIONS.get(word), usage)
+
+  action(context)
+}

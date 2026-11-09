@@ -1,0 +1,20 @@
+/** @Fui.HoverCard.Component — a preview shown over a link */
+module PuduLangFui.Components.Primitives.HoverCard
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A link with a card revealed on hover or keyboard focus.
+export fn hoverCard(link: H.Node, card: H.Node) -> H.Node {
+  Core.inline("hover-card").holding([link, Core.part("hover-card-content").holding([card])])
+}
+
+/// The styles of a hover card.
+export fn style() -> Css.Block {
+  Css.block("hover-card", [
+      Css.base("position: relative; display: inline-block"),
+      Css.slot("hover-card-content", "position: absolute; inset-block-start: calc(100% + $space-1); inset-inline-start: 0; z-index: 50; inline-size: 18rem; padding: $space-4; background: $popover; color: $popover-foreground; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; font-size: $text-sm; opacity: 0; visibility: hidden; transition: opacity $duration-fast $ease-standard $duration-slow"),
+      Css.rule("[data-slot=\"hover-card\"]:is(:hover, :focus-within) > [data-slot=\"hover-card-content\"]", "opacity: 1; visibility: visible")
+    ])
+}

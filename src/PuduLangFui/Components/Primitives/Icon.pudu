@@ -1,0 +1,90 @@
+/** @Fui.Icon.Component — a built-in stroke icon set */
+module PuduLangFui.Components.Primitives.Icon
+
+import Std.Html.Build as H
+import Std.Option as Option
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Icon.Glyph — every icon the set draws */
+export type Glyph
+  = Alert | ArrowDown | ArrowLeft | ArrowRight | ArrowUp | Book | Bot | Calendar | Check | ChevronDown
+  | ChevronLeft | ChevronRight | ChevronUp | Circle | Clock | CodeBrackets | Copy | Edit | ErrorCircle
+  | External | File | Flag | Folder | Globe | Grip | Image | Info | Link | List | Menu | Minus | Moon
+  | More | Paperclip | Plus | Search | Send | Settings | Spark | SpinnerArc | Star | Stop | Success | Sun
+  | Terminal | Trash | User | Wrench | X
+
+/** @Fui.Icon.Size — how large an icon sits */
+export type Size = Small | Medium | Large
+
+/// Each glyph's drawing on a 24-unit square.
+export const GLYPHS: Map[Str, Str] = mapOf([
+    ("alert", "<path d='M12 4l9 16H3zM12 10v4M12 17h.01'/>"),
+    ("arrow-down", "<path d='M12 5v14M6 13l6 6 6-6'/>"),
+    ("arrow-left", "<path d='M19 12H5M11 6l-6 6 6 6'/>"),
+    ("arrow-right", "<path d='M5 12h14M13 6l6 6-6 6'/>"),
+    ("arrow-up", "<path d='M12 19V5M6 11l6-6 6 6'/>"),
+    ("book", "<path d='M5 4h12a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2zM5 18a2 2 0 0 1 2-2h12'/>"),
+    ("bot", "<rect x='5' y='8' width='14' height='11' rx='2'/><path d='M12 4v4M9 13h.01M15 13h.01'/>"),
+    ("calendar", "<rect x='4' y='5' width='16' height='15' rx='2'/><path d='M4 10h16M8 3v4M16 3v4'/>"),
+    ("check", "<path d='M5 12l5 5L20 7'/>"),
+    ("chevron-down", "<path d='M6 9l6 6 6-6'/>"),
+    ("chevron-left", "<path d='M15 6l-6 6 6 6'/>"),
+    ("chevron-right", "<path d='M9 6l6 6-6 6'/>"),
+    ("chevron-up", "<path d='M6 15l6-6 6 6'/>"),
+    ("circle", "<circle cx='12' cy='12' r='9'/>"),
+    ("clock", "<circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/>"),
+    ("code-brackets", "<path d='M8 7l-5 5 5 5M16 7l5 5-5 5'/>"),
+    ("copy", "<rect x='8' y='8' width='12' height='12' rx='2'/><path d='M16 8V4H4v12h4'/>"),
+    ("edit", "<path d='M4 20l1-4L16 5l3 3L8 19z'/>"),
+    ("error-circle", "<circle cx='12' cy='12' r='9'/><path d='M9 9l6 6M15 9l-6 6'/>"),
+    ("external", "<path d='M14 4h6v6M20 4l-9 9M18 14v6H4V6h6'/>"),
+    ("file", "<path d='M6 3h8l4 4v14H6zM14 3v4h4'/>"),
+    ("flag", "<path d='M5 21V4h13l-3 4 3 4H5'/>"),
+    ("folder", "<path d='M3 6h6l2 3h10v11H3z'/>"),
+    ("globe", "<circle cx='12' cy='12' r='9'/><path d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/>"),
+    ("grip", "<path d='M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01'/>"),
+    ("image", "<rect x='3' y='4' width='18' height='16' rx='2'/><circle cx='8.5' cy='9.5' r='1.5'/><path d='M21 16l-5-5L5 20'/>"),
+    ("info", "<circle cx='12' cy='12' r='9'/><path d='M12 11v5M12 8h.01'/>"),
+    ("link", "<path d='M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1'/>"),
+    ("list", "<path d='M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01'/>"),
+    ("menu", "<path d='M4 6h16M4 12h16M4 18h16'/>"),
+    ("minus", "<path d='M5 12h14'/>"),
+    ("moon", "<path d='M20 14a8 8 0 1 1-10-10 7 7 0 0 0 10 10z'/>"),
+    ("more", "<path d='M5 12h.01M12 12h.01M19 12h.01'/>"),
+    ("paperclip", "<path d='M20 11l-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7'/>"),
+    ("plus", "<path d='M12 5v14M5 12h14'/>"),
+    ("search", "<circle cx='11' cy='11' r='7'/><path d='M21 21l-4.5-4.5'/>"),
+    ("send", "<path d='M4 12l16-8-6 16-3-7z'/>"),
+    ("settings", "<circle cx='12' cy='12' r='3'/><path d='M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1'/>"),
+    ("spark", "<path d='M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z'/>"),
+    ("spinner-arc", "<path d='M12 3a9 9 0 1 0 9 9'/>"),
+    ("star", "<path d='M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3-5.5-3-5.5 3 1-6.3L3 9.7l6.2-.9z'/>"),
+    ("stop", "<rect x='6' y='6' width='12' height='12' rx='1'/>"),
+    ("success", "<circle cx='12' cy='12' r='9'/><path d='M8 12l3 3 5-6'/>"),
+    ("sun", "<circle cx='12' cy='12' r='4'/><path d='M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5'/>"),
+    ("terminal", "<path d='M5 7l5 5-5 5M12 18h7'/>"),
+    ("trash", "<path d='M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13'/>"),
+    ("user", "<circle cx='12' cy='8' r='4'/><path d='M4 21a8 8 0 0 1 16 0'/>"),
+    ("wrench", "<path d='M14 7a4 4 0 0 1 5-2l-3 3 1 2 2 1 3-3a4 4 0 0 1-5 5l-9 8-3-3 8-9a4 4 0 0 1 1-2z'/>"),
+    ("x", "<path d='M6 6l12 12M18 6L6 18'/>")
+  ])
+
+/// A glyph at the size running text and controls use.
+export fn icon(glyph: Glyph) -> H.Node { sized(glyph, Medium) }
+
+/// A glyph, hidden from assistive software, at the given size.
+export fn sized(glyph: Glyph, size: Size) -> H.Node {
+  let drawing = Option.unwrapOr(GLYPHS.get(Core.spelled(glyph)), "")
+
+  H.Node{name: "svg", attributes: [("data-slot", "icon"), ("data-size", Core.spelled(size)), ("viewBox", "0 0 24 24"), ("aria-hidden", "true"), ("fill", "none"), ("stroke", "currentColor"), ("stroke-linecap", "round"), ("stroke-linejoin", "round")], children: []}.raw(drawing)
+}
+
+/// The styles of an icon.
+export fn style() -> Css.Block {
+  Css.block("icon", [
+      Css.base("inline-size: $icon-md; block-size: $icon-md; stroke-width: $icon-stroke; flex-shrink: 0"),
+      Css.variant("size", "small", "inline-size: $icon-sm; block-size: $icon-sm"),
+      Css.variant("size", "large", "inline-size: $icon-lg; block-size: $icon-lg")
+    ])
+}

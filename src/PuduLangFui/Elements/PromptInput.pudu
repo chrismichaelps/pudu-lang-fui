@@ -1,0 +1,37 @@
+/** @Fui.Elements.PromptInput.Element — a message field and send */
+module PuduLangFui.Elements.PromptInput
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Elements.PromptInput.State — whether a reply is under way */
+export type State = Idle | Running
+
+/// The icon and caption of the button each state shows.
+const SEND: Map[Str, (Icon.Glyph, Str)] = mapOf([("idle", (Icon.Send, "Send")), ("running", (Icon.Stop, "Stop"))])
+
+/// A form posting `prompt` to `action`, holding any attachments above the field.
+export fn promptInput(action: Str, hint: Str, state: State, attachments: Array[H.Node] = []) -> H.Node {
+  let (glyph, caption) = Core.picked(&SEND, state, (Icon.Send, "Send"))
+
+  H.form().slot("prompt-input").method("post").action(action).data("state", Core.spelled(state)).holding(attachments.concat([
+        Textarea.textarea("prompt").placeholder(hint).label(hint),
+        Core.part("prompt-input-toolbar").holding([
+            Button.submit(Button.props().size(Button.IconSmall)).label(caption).holding([Icon.icon(glyph)])
+          ])
+      ]))
+}
+
+/// The styles of a prompt.
+export fn style() -> Css.Block {
+  Css.block("prompt-input", [
+      Css.base("display: flex; flex-direction: column; gap: $space-2; margin: 0; padding: $space-3; background: $background; border: $border-width solid $input; border-radius: $radius-xl"),
+      Css.when(":focus-within", "outline: 2px solid $ring; outline-offset: 1px"),
+      Css.inside("[data-slot=\"textarea\"]", "padding: 0; border: 0; outline: none; resize: none"),
+      Css.slot("prompt-input-toolbar", "display: flex; justify-content: flex-end; gap: $space-2")
+    ])
+}

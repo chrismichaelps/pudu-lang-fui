@@ -1,0 +1,22 @@
+/** @Fui.Textarea.Component — multi-line text that grows */
+module PuduLangFui.Components.Primitives.Textarea
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A text area with the given name, identified by that name.
+export fn textarea(name: Str, invalid: Bool = false) -> H.Node {
+  H.textarea().slot("textarea").id(name).name(name).atIf(invalid, "aria-invalid", "true")
+}
+
+/// The styles of a text area.
+export fn style() -> Css.Block {
+  Css.block("textarea", [
+      Css.base("display: block; inline-size: 100%; min-block-size: calc($unit * 16); padding: $space-3; field-sizing: content; background: color-mix(in oklab, $input 50%, transparent); border: $border-width solid transparent; color: $foreground; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; outline: none; resize: none; transition: color $duration-fast $ease-standard, box-shadow $duration-fast $ease-standard"),
+      Css.when("::placeholder", "color: $muted-foreground"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.disabled("opacity: 0.5; cursor: not-allowed"),
+      Css.when(":is([aria-invalid=\"true\"], :user-invalid)", "border-color: $destructive; box-shadow: 0 0 0 3px color-mix(in oklab, $destructive 20%, transparent)")
+    ])
+}

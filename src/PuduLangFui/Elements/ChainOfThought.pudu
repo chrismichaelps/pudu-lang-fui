@@ -1,0 +1,20 @@
+/** @Fui.Elements.ChainOfThought.Element — a summary expanding into steps */
+module PuduLangFui.Elements.ChainOfThought
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A summary that opens to reveal the given steps.
+export fn chainOfThought(summary: Str, steps: Array[H.Node], open: Bool = false) -> H.Node {
+  Core.part("chain-of-thought").holding([Trace.details(summary, open).holding([Trace.trace().holding(steps)])])
+}
+
+/// The styles of a chain of thought.
+export fn style() -> Css.Block {
+  Css.block("chain-of-thought", [
+      Css.base("display: block; color: $muted-foreground"),
+      Css.inside("[data-slot=\"trace\"]", "margin-block-start: $space-2; padding-inline-start: $space-3; border-inline-start: $border-width solid $border")
+    ])
+}

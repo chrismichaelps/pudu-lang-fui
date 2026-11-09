@@ -1,0 +1,11 @@
+/** @Fui.Utils.Numbers.Module — numeric conversions rendering shares */
+module PuduLangFui.Utils.Numbers
+
+import Std.Math.Float as Float
+import Std.Option as Option
+
+/// A whole number as a float.
+export fn floatOf(value: Int) -> Float64 { Option.unwrapOr(show(value).toFloat(), 0.0) }
+
+/// A float rounded to three places, as text.
+export fn fixed(value: Float64) -> Str { show(Float.round(value * 1000.0) / 1000.0) }

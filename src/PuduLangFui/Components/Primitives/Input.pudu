@@ -1,0 +1,57 @@
+/** @Fui.Input.Component — a single-line field */
+module PuduLangFui.Components.Primitives.Input
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Input.Props — what a field can be told */
+export type Props = { kind: Str, invalid: Bool, disabled: Bool, required: Bool }
+
+/// A text field.
+export fn props() -> Props { Props{kind: "text", invalid: false, disabled: false, required: false} }
+
+/** @Fui.Input.Configuring — one method per prop */
+export trait Configuring {
+  /// Sets the input type, such as `email`.
+  fn kind(self: &Self, value: Str) -> Self
+
+  /// Marks the value as refused.
+  fn invalid(self: &Self) -> Self
+
+  /// Disables the field.
+  fn disabled(self: &Self) -> Self
+
+  /// Requires a value.
+  fn required(self: &Self) -> Self
+}
+
+impl Configuring for Props {
+  fn kind(self: &Self, value: Str) -> Self { Props{..*self, kind: value} }
+
+  fn invalid(self: &Self) -> Self { Props{..*self, invalid: true} }
+
+  fn disabled(self: &Self) -> Self { Props{..*self, disabled: true} }
+
+  fn required(self: &Self) -> Self { Props{..*self, required: true} }
+}
+
+/// A field with the given name, identified by that name.
+export fn input(name: Str, given: Props) -> H.Node {
+  H.input().slot("input").id(name).name(name).kind(given.kind)
+    .atIf(given.invalid, "aria-invalid", "true")
+    .flagIf(given.disabled, "disabled")
+    .flagIf(given.required, "required")
+}
+
+/// The styles of a field.
+export fn style() -> Css.Block {
+  Css.block("input", [
+      Css.base("display: block; inline-size: 100%; min-inline-size: 0; block-size: $control-md; padding: $space-1 $space-3; background: color-mix(in oklab, $input 50%, transparent); border: $border-width solid transparent; color: $foreground; border-radius: $radius-3xl; font: inherit; font-size: $text-sm; outline: none; transition: color $duration-fast $ease-standard, box-shadow $duration-fast $ease-standard, background-color $duration-fast $ease-standard"),
+      Css.when("::placeholder", "color: $muted-foreground"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.disabled("opacity: 0.5; cursor: not-allowed"),
+      Css.when(":is([aria-invalid=\"true\"], :user-invalid)", "border-color: $destructive; box-shadow: 0 0 0 3px color-mix(in oklab, $destructive 20%, transparent)"),
+      Css.when("::file-selector-button", "border: 0; background: transparent; color: $foreground; font: inherit; font-weight: $weight-medium; margin-inline-end: $space-3")
+    ])
+}

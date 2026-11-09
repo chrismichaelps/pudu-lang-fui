@@ -1,0 +1,24 @@
+/** @Fui.Elements.Chat.Element — the thread and the field under it */
+module PuduLangFui.Elements.Chat
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.MessageScroller as MessageScroller
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A thread of the given turns with the field under it.
+export fn chat(caption: Str, turns: Array[H.Node], prompt: H.Node) -> H.Node {
+  Core.part("chat").holding([
+      MessageScroller.scroller(caption).holding([MessageScroller.content().holding(turns)]),
+      Core.part("chat-prompt").holding([prompt])
+    ])
+}
+
+/// The styles of a chat.
+export fn style() -> Css.Block {
+  Css.block("chat", [
+      Css.base("display: flex; flex-direction: column; block-size: 100%; min-block-size: 20rem"),
+      Css.inside("> [data-slot=\"message-scroller\"]", "flex: 1; min-block-size: 0"),
+      Css.slot("chat-prompt", "padding: $space-3")
+    ])
+}

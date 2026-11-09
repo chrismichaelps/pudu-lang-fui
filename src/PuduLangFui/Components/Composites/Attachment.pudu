@@ -1,0 +1,63 @@
+/** @Fui.Attachment.Component — a file with upload state */
+module PuduLangFui.Components.Composites.Attachment
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Attachment.Kind — what is attached */
+export type Kind = Document | Picture | Code
+
+/** @Fui.Attachment.Orientation — how media and text sit */
+export type Orientation = Horizontal | Vertical
+
+/** @Fui.Attachment.State — how the upload stands */
+export type State = Ready | Uploading | Failed
+
+/// The icon each kind shows.
+const GLYPHS: Map[Str, Icon.Glyph] = mapOf([("document", Icon.File), ("picture", Icon.Image), ("code", Icon.CodeBrackets)])
+
+/// An attachment with its name and size caption.
+export fn attachment(kind: Kind, name: Str, size: Str, state: State) -> H.Node {
+  Core.part("attachment").data("kind", Core.spelled(kind)).data("state", Core.spelled(state)).holding([
+      Core.part("attachment-media").holding([Icon.icon(Core.picked(&GLYPHS, kind, Icon.File))]),
+      Core.part("attachment-body").holding([
+          Core.part("attachment-name").says(name),
+          Core.part("attachment-size").says(size)
+        ])
+    ])
+}
+
+/// Attachments in a row.
+export fn group() -> H.Node { Core.part("attachment-group") }
+
+/// The attachment's name.
+export fn title() -> H.Node { Core.part("attachment-name") }
+
+/// The attachment's supporting line.
+export fn description() -> H.Node { Core.part("attachment-size") }
+
+/// Controls beside an attachment.
+export fn actions() -> H.Node { Core.part("attachment-actions") }
+
+/// A frame for an attachment composed from its parts.
+export fn frame(kind: Kind, state: State, orientation: Orientation) -> H.Node {
+  Core.part("attachment").data("kind", Core.spelled(kind)).data("state", Core.spelled(state)).data("orientation", Core.spelled(orientation))
+}
+
+/// The styles of an attachment.
+export fn style() -> Css.Block {
+  Css.block("attachment", [
+      Css.base("display: inline-flex; align-items: center; gap: $space-2; padding: $space-2; min-inline-size: 10rem; inline-size: fit-content; max-inline-size: 16rem; background: $card; border: $border-width solid $border; border-radius: $radius-3xl; font-size: $text-sm"),
+      Css.variant("state", "uploading", "opacity: 0.7"),
+      Css.variant("state", "failed", "border-color: $destructive; color: $destructive"),
+      Css.slot("attachment-media", "display: flex; align-items: center; justify-content: center; inline-size: $space-10; block-size: $space-10; background: $muted; color: $foreground; border-radius: $radius-2xl"),
+      Css.slot("attachment-body", "display: flex; flex-direction: column; min-inline-size: 0"),
+      Css.slot("attachment-name", "font-weight: $weight-medium; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"),
+      Css.slot("attachment-size", "margin-block-start: calc($unit * 0.5); font-size: $text-xs; color: $muted-foreground"),
+      Css.slot("attachment-group", "display: flex; flex-wrap: wrap; gap: $space-2"),
+      Css.variant("orientation", "vertical", "flex-direction: column; align-items: flex-start"),
+      Css.slot("attachment-actions", "display: flex; gap: $space-1; margin-inline-start: auto")
+    ])
+}

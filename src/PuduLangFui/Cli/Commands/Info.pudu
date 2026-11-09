@@ -1,0 +1,29 @@
+/** @Fui.Cli.Commands.Info.Command — reports the project's setup */
+module PuduLangFui.Cli.Commands.Info
+
+import Std.Json as Json
+import Std.Path as Path
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Workspace.Project as Project
+
+/// Reports the project's configuration and owned items.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let owned = Project.owned(&project).map(|path: Str| Path.stemOf(path))
+
+  if Invocation.has(&context.invocation, "--json") {
+    return Outcome.done([Json.encodePretty(&Json.object(&[
+              ("root", Json.Text(project.config.root)),
+              ("source", Json.Text(project.config.source)),
+              ("preset", Json.Text(project.config.preset)),
+              ("owned", Json.list(&owned.map(|name: Str| Json.Text(name))))
+            ]))])
+  }
+
+  Outcome.done(["root    " + project.config.root, "source  " + project.config.source, "preset  " + project.config.preset, "owned   " + owned.join(", ")])
+}

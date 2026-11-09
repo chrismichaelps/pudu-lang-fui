@@ -1,0 +1,27 @@
+/** @Fui.RadioGroup.Component — one choice among several */
+module PuduLangFui.Components.Primitives.RadioGroup
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A group of radios, named for assistive software.
+export fn group(caption: Str) -> H.Node { Core.part("radio-group").role("radiogroup").label(caption) }
+
+/// A radio of the group `name`, identified by `name` and `value` together.
+export fn radio(name: Str, value: Str, checked: Bool = false) -> H.Node {
+  H.input().slot("radio").kind("radio").id(name + "-" + value).name(name).value(value).flagIf(checked, "checked")
+}
+
+/// The styles of a radio group.
+export fn style() -> Css.Block {
+  Css.block("radio-group", [
+      Css.base("display: grid; gap: $space-3"),
+      Css.slot("radio", "appearance: none; display: inline-grid; place-content: center; flex-shrink: 0; inline-size: 1rem; block-size: 1rem; margin: 0; background: color-mix(in oklab, $input 90%, transparent); border: $border-width solid transparent; border-radius: $radius-full; cursor: pointer; outline: none"),
+      Css.slotWhen("radio", "::after", "content: ''; inline-size: 0.5rem; block-size: 0.5rem; background: $primary-foreground; border-radius: $radius-full; scale: 0; transition: scale $duration-fast $ease-enter"),
+      Css.slotWhen("radio", ":checked", "background: $primary; border-color: $primary"),
+      Css.slotWhen("radio", ":checked::after", "scale: 1"),
+      Css.slotWhen("radio", ":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.slotWhen("radio", ":disabled", "opacity: 0.5; cursor: not-allowed")
+    ])
+}

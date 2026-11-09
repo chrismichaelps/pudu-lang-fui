@@ -1,0 +1,34 @@
+/** @Fui.MessageScroller.Component — a thread pinned to its newest */
+module PuduLangFui.Components.Composites.MessageScroller
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A scrolling thread; the children sit in reading order inside `content`.
+export fn scroller(caption: Str) -> H.Node {
+  Core.part("message-scroller").role("log").label(caption).at("tabindex", "0")
+}
+
+/// The thread in reading order.
+export fn content() -> H.Node { Core.part("message-scroller-content") }
+
+/// A link jumping to the message with the given id.
+export fn jump(target: Str) -> H.Node {
+  H.a().slot("message-scroller-jump").href("#" + target).label("Jump to message").holding([Icon.sized(Icon.ArrowDown, Icon.Small)])
+}
+
+/// One message, reachable by a jump link.
+export fn item(id: Str) -> H.Node { Core.part("message-scroller-item").id(id) }
+
+/// The styles of a thread.
+export fn style() -> Css.Block {
+  Css.block("message-scroller", [
+      Css.base("display: flex; flex-direction: column-reverse; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: $border transparent; outline: none"),
+      Css.focusRing(),
+      Css.slot("message-scroller-content", "display: flex; flex-direction: column; gap: $space-8; padding: $space-4"),
+      Css.slot("message-scroller-jump", "position: sticky; inset-block-end: $space-2; align-self: center; display: inline-flex; padding: $space-1; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; box-shadow: $shadow-sm"),
+      Css.slot("message-scroller-item", "scroll-margin-block: $space-4")
+    ])
+}

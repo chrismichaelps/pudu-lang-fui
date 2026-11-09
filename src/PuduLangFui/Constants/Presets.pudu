@@ -1,0 +1,23 @@
+/** @Fui.Constants.Presets.Module — limits and messages of preset codes */
+module PuduLangFui.Constants.Presets
+
+/// How many hyphen-separated parts a code has.
+export const CODE_PARTS: Int = 4
+
+/// The largest hue a code may name.
+export const MAXIMUM_HUE: Int = 360
+
+/// The largest chroma, in hundredths, a code may name.
+export const MAXIMUM_CHROMA: Int = 40
+
+/// Why a code has the wrong shape.
+export const BAD_SHAPE: Str = "a preset code has four parts, as in h264-c14-r10-compact"
+
+/// Why a hue was refused.
+export const BAD_HUE: Str = "a hue is between 0 and 360"
+
+/// Why a chroma was refused.
+export const BAD_CHROMA: Str = "a chroma is between 0 and 40"
+
+/// Why a radius was refused.
+export const BAD_RADIUS: Str = "a radius is not negative"

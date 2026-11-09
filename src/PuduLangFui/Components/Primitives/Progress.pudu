@@ -1,0 +1,21 @@
+/** @Fui.Progress.Component — completion of a task */
+module PuduLangFui.Components.Primitives.Progress
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A bar at `value` out of `maximum`, named for assistive software.
+export fn progress(value: Int, maximum: Int, caption: Str) -> H.Node {
+  H.progress().slot("progress").at("value", show(value)).at("max", show(maximum)).label(caption)
+}
+
+/// The styles of a bar.
+export fn style() -> Css.Block {
+  Css.block("progress", [
+      Css.base("display: block; inline-size: 100%; block-size: $space-3; appearance: none; border: 0; border-radius: $radius-full; overflow: hidden; background: $muted"),
+      Css.when("::-webkit-progress-bar", "background: $muted"),
+      Css.when("::-webkit-progress-value", "background: $primary; transition: inline-size $duration-base $ease-standard"),
+      Css.when("::-moz-progress-bar", "background: $primary")
+    ])
+}

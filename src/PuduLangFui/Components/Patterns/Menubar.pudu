@@ -1,0 +1,24 @@
+/** @Fui.Menubar.Component — a row of menus */
+module PuduLangFui.Components.Patterns.Menubar
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Composites.DropdownMenu as DropdownMenu
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A row of menus, each placed with `menu`.
+export fn menubar() -> H.Node { Core.part("menubar").role("menubar") }
+
+/// A menu in the row: its trigger and its already-built entries.
+export fn menu(id: Str, caption: Str, entries: Array[H.Node]) -> H.Node {
+  H.nothing().holding([
+      DropdownMenu.trigger(id, Button.props().variant(Button.Ghost).size(Button.Small)).says(caption),
+      DropdownMenu.menu(id).holding(entries)
+    ])
+}
+
+/// The styles of a menubar.
+export fn style() -> Css.Block {
+  Css.block("menubar", [Css.base("display: inline-flex; align-items: center; gap: $space-1; block-size: $control-md; padding: $space-1; background: $background; border: $border-width solid $border; border-radius: $radius-3xl")])
+}

@@ -1,0 +1,55 @@
+/** @Fui.Sheet.Component — a panel from an edge */
+module PuduLangFui.Components.Composites.Sheet
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Sheet.Side — which edge a sheet comes from */
+export type Side = Start | End | Top | Bottom
+
+/// A button that opens the sheet `id`.
+export fn trigger(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "show-modal")
+}
+
+/// A button that closes the sheet `id`.
+export fn close(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "close")
+}
+
+/// A panel named for assistive software.
+export fn sheet(id: Str, name: Str, side: Side) -> H.Node {
+  H.dialog().slot("sheet").id(id).at("closedby", "any").label(name).data("side", Core.spelled(side))
+}
+
+/// The sheet's headline.
+export fn title() -> H.Node { H.h2().slot("sheet-title") }
+
+/// What the sheet is about.
+export fn description() -> H.Node { H.p().slot("sheet-description") }
+
+/// The sheet's closing row.
+export fn footer() -> H.Node { Core.part("sheet-footer") }
+
+/// The sheet's opening.
+export fn header() -> H.Node { Core.part("sheet-header") }
+
+/// The styles of a sheet.
+export fn style() -> Css.Block {
+  Css.block("sheet", [
+      Css.keyframes("fui-appear", [("from", "opacity: 0")]),
+      Css.base("position: fixed; margin: 0; max-inline-size: none; max-block-size: none; padding: 0; background: $popover; color: $popover-foreground; border: 0; box-shadow: $shadow-xl; font-size: $text-sm"),
+      Css.when("[open]", "display: flex; flex-direction: column; animation: fui-appear $duration-base $ease-enter"),
+      Css.when("::backdrop", "background: $backdrop"),
+      Css.variant("side", "end", "inset-block: 0; inset-inline-start: auto; inset-inline-end: 0; inline-size: min(24rem, 90vw); block-size: 100dvh; border-inline-start: $border-width solid $border"),
+      Css.variant("side", "start", "inset-block: 0; inset-inline-end: auto; inset-inline-start: 0; inline-size: min(24rem, 90vw); block-size: 100dvh; border-inline-end: $border-width solid $border"),
+      Css.variant("side", "top", "inset-inline: 0; inset-block-end: auto; inset-block-start: 0; inline-size: 100vw; border-block-end: $border-width solid $border"),
+      Css.variant("side", "bottom", "inset-inline: 0; inset-block-start: auto; inset-block-end: 0; inline-size: 100vw; border-block-start: $border-width solid $border"),
+      Css.slot("sheet-title", "margin: 0; font-size: $text-md; font-weight: $weight-medium"),
+      Css.slot("sheet-description", "margin: 0; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("sheet-footer", "display: flex; flex-direction: column; gap: $space-2; padding: $space-6; margin-block-start: auto"),
+      Css.slot("sheet-header", "display: flex; flex-direction: column; gap: calc($unit * 1.5); padding: $space-6")
+    ])
+}

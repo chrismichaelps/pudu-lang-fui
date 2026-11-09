@@ -1,0 +1,65 @@
+/** @Fui.Constants.Cli.Module — names and messages of the generator */
+module PuduLangFui.Constants.Cli
+
+/// The project's configuration file.
+export const CONFIG_FILE: Str = "fui.toml"
+
+/// The package manifest.
+export const MANIFEST_FILE: Str = "pudu.toml"
+
+/// The default registry's place in a project.
+export const DEFAULT_REGISTRY: Str = "deps/@chrismichaelps/pudu-lang-fui"
+
+/// This package's module root.
+export const PACKAGE_ROOT: Str = "PuduLangFui"
+
+/// The project's module root by default.
+export const DEFAULT_ROOT: Str = "Ui"
+
+/// The project's source directory by default.
+export const DEFAULT_SOURCE: Str = "src"
+
+/// The preset a new project starts from.
+export const DEFAULT_PRESET: Str = "graphite"
+
+/// The registry index's default path.
+export const DEFAULT_INDEX: Str = "registry.json"
+
+/// How many items a search shows by default.
+export const DEFAULT_LIMIT: Int = 200
+
+/// The owned theme module's name.
+export const THEME_MODULE: Str = "Theme"
+
+/// The generated catalog module's name.
+export const CATALOG_MODULE: Str = "Catalog"
+
+/// The line prefix `apply` rewrites.
+export const PRESET_LINE: Str = "const PRESET: Str = "
+
+/// The folders under a module root that hold items.
+export const ITEM_FOLDERS: Array[Str] = ["Components/Primitives", "Components/Composites", "Components/Patterns", "Elements", "Blocks"]
+
+/// Told when a project has no manifest.
+export const NO_MANIFEST: Str = "no pudu.toml here; run this in a Pudu project or pass --cwd"
+
+/// Told when a project is set up already.
+export const ALREADY_SET_UP: Str = "fui.toml already exists; pass --force to replace it"
+
+/// Told when a project is not set up.
+export const NOT_SET_UP: Str = "no fui.toml here; run: fui init"
+
+/// Told when no item was named.
+export const NOTHING_NAMED: Str = "name at least one item, or pass --all"
+
+/// The usage line of the generator.
+export const USAGE_HEADER: Str = "usage: fui <command> [options]"
+
+/// The service holding every icon library.
+export const ICON_SERVICE: Str = "https://api.iconify.design"
+
+/// The side of an icon that does not state its own.
+export const DEFAULT_ICON_SIZE: Int = 24
+
+/// The owned icon module's name.
+export const ICONS_MODULE: Str = "Icons"

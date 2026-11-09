@@ -1,0 +1,48 @@
+/** @Fui.Cli.Commands.Init.Command — sets a project up */
+module PuduLangFui.Cli.Commands.Init
+
+import Std.Io as Io
+import Std.Path as Path
+import PuduLangFui.Cli.Commands.Add as Add
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Config as Config
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Model.Scaffold as Scaffold
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Constants.Cli as Constant
+
+/// The steps of setting a project up.
+fn setUp(project: &Project.Project) -> Result[(), Str] {
+  Project.saveConfig(project) ?
+
+  let themePath = Path.join(Project.rootDirectory(project), Constant.THEME_MODULE + ".pudu")
+
+  Project.writing(themePath, Scaffold.theme(project.config.root, project.config.preset)) ?
+  Project.refreshCatalog(project)
+}
+
+/// Sets the project up and adds any named items.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  if !Io.exists(Path.join(context.directory, Constant.MANIFEST_FILE)) { return Outcome.failed([Constant.NO_MANIFEST]) }
+  if Io.exists(Path.join(context.directory, Constant.CONFIG_FILE)) && !Invocation.has(&context.invocation, "--force") {
+    return Outcome.failed([Constant.ALREADY_SET_UP])
+  }
+
+  let invocation = context.invocation
+  let config = Config.Config {
+    ..Config.defaults(),
+    root: Invocation.optionOr(&invocation, "--root", Constant.DEFAULT_ROOT),
+    preset: Invocation.optionOr(&invocation, "--preset", Constant.DEFAULT_PRESET)
+  }
+  let project = Project.Project{directory: context.directory, config: config}
+
+  match setUp(&project) {
+    case Err(problem) => Outcome.failed([problem])
+    case Ok(_) => {
+      let told = ["Set up " + config.root + " in " + config.source + "/" + config.root]
+
+      if invocation.words.isEmpty() { Outcome.done(told) } else { Add.run(context) }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+/** @Fui.Dialog.Component — a modal window on the platform */
+module PuduLangFui.Components.Composites.Dialog
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A button that opens the dialog `id`.
+export fn trigger(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "show-modal")
+}
+
+/// A button that closes the dialog `id`.
+export fn close(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "close")
+}
+
+/// A modal named for assistive software.
+export fn dialog(id: Str, name: Str) -> H.Node { H.dialog().slot("dialog").id(id).at("closedby", "any").label(name) }
+
+/// The dialog's opening.
+export fn header() -> H.Node { Core.part("dialog-header") }
+
+/// The dialog's headline.
+export fn title() -> H.Node { H.h2().slot("dialog-title") }
+
+/// What the dialog is about.
+export fn description() -> H.Node { H.p().slot("dialog-description") }
+
+/// The dialog's closing row of controls.
+export fn footer() -> H.Node { Core.part("dialog-footer") }
+
+/// The styles of a dialog.
+export fn style() -> Css.Block {
+  Css.block("dialog", [
+      Css.keyframes("fui-rise", [("from", "opacity: 0; translate: 0 $space-2; scale: 0.98")]),
+      Css.base("inline-size: min(28rem, calc(100vw - $space-8)); max-block-size: calc(100dvh - $space-8); padding: $space-6; background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-4xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-xl; font-size: $text-sm; overflow: auto"),
+      Css.when("[open]", "display: flex; flex-direction: column; gap: $space-6; animation: fui-rise $duration-fast $ease-enter"),
+      Css.when("::backdrop", "background: $backdrop"),
+      Css.slot("dialog-header", "display: flex; flex-direction: column; gap: calc($unit * 1.5)"),
+      Css.slot("dialog-title", "margin: 0; font-size: $text-md; font-weight: $weight-medium; line-height: 1"),
+      Css.slot("dialog-description", "margin: 0; font-size: $text-sm; color: $muted-foreground"),
+      Css.slot("dialog-footer", "display: flex; flex-wrap: wrap; justify-content: flex-end; gap: $space-2")
+    ])
+}

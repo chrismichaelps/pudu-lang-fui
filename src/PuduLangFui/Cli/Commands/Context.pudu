@@ -1,0 +1,51 @@
+/** @Fui.Cli.Commands.Context.Module — what every command receives */
+module PuduLangFui.Cli.Commands.Context
+
+import Std.Io as Io
+import Std.Path as Path
+import Std.Text as Text
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Cli.Workspace.Registry as Registry
+import PuduLangFui.Constants.Cli as Constant
+
+/** @Fui.Cli.Commands.Context.Context — the directory and the words */
+export type Context = { directory: Str, invocation: Invocation.Invocation }
+
+/// The registry a project's items come from by default.
+fn defaultRegistry(context: &Context) -> Str {
+  let given = Invocation.optionOr(&context.invocation, "--from", "")
+
+  if !given.isEmpty() { return Path.join(context.directory, given) }
+  if Io.exists(Path.join(context.directory, "src/" + Constant.PACKAGE_ROOT + ".pudu")) { return context.directory }
+
+  Path.join(context.directory, Constant.DEFAULT_REGISTRY)
+}
+
+/// The registry an item name points at, and the item's bare name.
+export fn locate(context: &Context, name: Str, project: Option[Project.Project]) -> Result[(Registry.Registry, Str), Str] {
+  if !name.startsWith("@") {
+    let registry = Registry.load(defaultRegistry(context)) ?
+
+    return Ok((registry, name))
+  }
+
+  let (namespace, rest) = Text.breakOn(name, "/")
+  let held = match project {
+    case Some(found) => found
+    case None => { return Err("a namespaced item needs a set-up project") }
+  }
+
+  for entry in held.config.registries {
+    if entry[0] == namespace {
+      let registry = Registry.load(Path.join(context.directory, entry[1])) ?
+
+      return Ok((registry, Text.stripPrefix(rest, "/")))
+    }
+  }
+
+  Err("no registry is configured for " + namespace + " in fui.toml")
+}
+
+/// The default registry alone.
+export fn defaultLoaded(context: &Context) -> Result[Registry.Registry, Str] { Registry.load(defaultRegistry(context)) }

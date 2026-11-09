@@ -1,0 +1,8 @@
+/** @Fui.Constants.Accessibility.Module — thresholds the contrast audit enforces */
+module PuduLangFui.Constants.Accessibility
+
+/// The contrast ratio body text needs.
+export const TEXT_RATIO: Float64 = 4.5
+
+/// The contrast ratio a control's boundary needs.
+export const BOUNDARY_RATIO: Float64 = 3.0

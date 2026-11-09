@@ -1,0 +1,142 @@
+/** @Fui.Cli.Commands.Icons.Command — searches and adds icons from every library */
+module PuduLangFui.Cli.Commands.Icons
+
+import Std.Http.Client as Client
+import Std.Io as Io
+import Std.Json as Json
+import Std.List as List
+import Std.Option as Option
+import Std.Path as Path
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Icons as Model
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Cli.Workspace.Project as Project
+import PuduLangFui.Constants.Cli as Constant
+
+/// The action each subcommand runs.
+const ACTIONS: Map[Str, fn(&Context.Context) -> Outcome.Outcome] = mapOf([("search", search), ("add", add), ("libraries", libraries)])
+
+/// The JSON at a path of the icon service, or why it could not be read.
+fn fetched(path: Str) -> Result[Json.Json, Str] {
+  match Client.fetch(Constant.ICON_SERVICE + path, &Client.limits()) {
+    case Err(problem) => Err("the icon service could not be reached: " + Client.explain(&problem))
+    case Ok(response) => {
+      match Json.decode(response.body) {
+        case Ok(document) => Ok(document)
+        case Err(problem) => Err("the icon service answered something unreadable: " + Json.explain(&problem))
+      }
+    }
+  }
+}
+
+/// Lists icons matching the query.
+fn search(context: &Context.Context) -> Outcome.Outcome {
+  if context.invocation.words.length() < 2 { return Outcome.failed(["give words to search for"]) }
+
+  match fetched("/search?limit=" + show(Constant.DEFAULT_LIMIT) + "&query=" + context.invocation.words[1]) {
+    case Err(problem) => Outcome.failed([problem])
+    case Ok(document) => {
+      let names = Option.unwrapOr(Option.andThen(Json.field(&document, "icons"), |held: Json.Json| Json.asList(&held)), [])
+
+      Outcome.done(names.map(|one: Json.Json| Option.unwrapOr(Json.asText(&one), "")))
+    }
+  }
+}
+
+/// Lists every library with its size and license.
+fn libraries(_context: &Context.Context) -> Outcome.Outcome {
+  match fetched("/collections") {
+    case Err(problem) => Outcome.failed([problem])
+    case Ok(document) => {
+      let entries = Option.unwrapOr(Json.asObject(&document), [])
+
+      Outcome.done(entries.map(|entry: (Str, Json.Json)| entry[0] + "  " + summaryOf(&entry[1])))
+    }
+  }
+}
+
+/// One library's name, size, and license.
+fn summaryOf(entry: &Json.Json) -> Str {
+  let name = Option.unwrapOr(Option.andThen(Json.field(entry, "name"), |held: Json.Json| Json.asText(&held)), "")
+  let total = Option.unwrapOr(Option.andThen(Json.field(entry, "total"), |held: Json.Json| Json.asInt(&held)), 0)
+  let license = Option.unwrapOr(Option.andThen(Json.path(entry, &["license", "title"]), |held: Json.Json| Json.asText(&held)), "")
+
+  name + ", " + show(total) + " icons, " + license
+}
+
+/// Fetches the named icons of one library.
+fn glyphsFrom(library: Str, names: &Array[Str]) -> Result[Array[Model.Glyph], Str] {
+  let document = fetched("/" + library + ".json?icons=" + names.join(",")) ?
+  let found = Model.glyphsOf(library, &document)
+
+  if found.length() < names.length() { return Err("not every icon of " + library + " exists: " + names.join(", ")) }
+
+  Ok(found)
+}
+
+/// The requested icons grouped by library.
+fn grouped(wanted: &Array[Str]) -> Result[Map[Str, Array[Str]], Str] {
+  var groups: Map[Str, Array[Str]] = mapOf([])
+
+  for name in wanted {
+    match Model.split(name) {
+      case None => { return Err("an icon is named library:name, not '" + name + "'") }
+      case Some(parts) => { groups = groups.insert(parts[0], Option.unwrapOr(groups.get(parts[0]), []).push(parts[1])) }
+    }
+  }
+
+  Ok(groups)
+}
+
+/// Adds the named icons to the project's icon module.
+fn add(context: &Context.Context) -> Outcome.Outcome {
+  let wanted = List.drop(&context.invocation.words, 1)
+
+  if wanted.isEmpty() { return Outcome.failed(["name icons as library:name"]) }
+
+  let project = match Project.load(context.directory) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let groups = match grouped(&wanted) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  var added: Array[Model.Glyph] = []
+
+  for entry in groups.entries() {
+    match glyphsFrom(entry[0], &entry[1]) {
+      case Ok(found) => { added = added.concat(found) }
+      case Err(problem) => { return Outcome.failed([problem]) }
+    }
+  }
+
+  let path = Path.join(Project.rootDirectory(&project), Constant.ICONS_MODULE + ".pudu")
+  let existing = Model.recorded(Option.unwrapOr(ok(Io.read(path)), ""))
+  let all = Model.merged(&existing, &added)
+
+  match Project.writing(path, Model.moduleText(project.config.root, &all)) {
+    case Ok(_) => Outcome.done(["Added " + show(added.length()) + " icons to " + path])
+    case Err(problem) => Outcome.failed([problem])
+  }
+}
+
+/// A result's value, if any.
+fn ok(result: Result[Str, Str]) -> Option[Str] {
+  match result {
+    case Ok(value) => Some(value)
+    case Err(_) => None
+  }
+}
+
+/// Answered for an unknown subcommand.
+fn usage(_context: &Context.Context) -> Outcome.Outcome { Outcome.failed(["usage: fui icons <search words|add library:name...|libraries>"]) }
+
+/// Runs the subcommand.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let word = if context.invocation.words.isEmpty() { "" } else { context.invocation.words[0] }
+  let action = Option.unwrapOr(ACTIONS.get(word), usage)
+
+  action(context)
+}

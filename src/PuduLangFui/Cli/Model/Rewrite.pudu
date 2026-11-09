@@ -1,0 +1,23 @@
+/** @Fui.Cli.Rewrite.Module — package source into project source */
+module PuduLangFui.Cli.Model.Rewrite
+
+/// A line with the package's item prefixes moved under the project's root.
+fn rewritten(line: Str, packageRoot: Str, projectRoot: Str) -> Str {
+  line
+    .replace(packageRoot + ".Components.", projectRoot + ".")
+    .replace(packageRoot + ".Elements.", projectRoot + ".Elements.")
+    .replace(packageRoot + ".Blocks.", projectRoot + ".Blocks.")
+}
+
+/// The source as it reads inside the project; only `module` and `import` lines change.
+export fn rewrite(source: Str, packageRoot: Str, projectRoot: Str) -> Str {
+  source.split("\n").map(|line: Str| if line.startsWith("module ") || line.startsWith("import ") { rewritten(line, packageRoot, projectRoot) } else { line }).join("\n")
+}
+
+/// Where a layer's files sit under the project's root.
+export fn folderOf(layer: Str) -> Str { if layer.startsWith("Components/") { layer.drop(11) } else { layer } }
+
+/// A project module's name.
+export fn moduleOf(projectRoot: Str, layer: Str, stem: Str) -> Str {
+  projectRoot + "." + folderOf(layer).replace("/", ".") + "." + stem
+}

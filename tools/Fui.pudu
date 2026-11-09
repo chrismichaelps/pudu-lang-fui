@@ -1,0 +1,21 @@
+/** @Tools.Fui.Program — the generator's entry point */
+module Fui
+
+import Std.Env as Env
+import Std.Io as Io
+import PuduLangFui.Cli.Dispatch.Router as Router
+
+/// Runs the generator in the working directory.
+fn main() -> Int {
+  let outcome = Router.run(&Env.all(), ".")
+
+  for line in outcome.lines {
+    let _written = Io.writeLine(line)
+  }
+
+  for problem in outcome.problems {
+    let _written = Io.writeErrorLine(problem)
+  }
+
+  outcome.status
+}

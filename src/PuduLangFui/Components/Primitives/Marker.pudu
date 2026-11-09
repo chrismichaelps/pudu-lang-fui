@@ -1,0 +1,24 @@
+/** @Fui.Marker.Component — an inline note in a conversation */
+module PuduLangFui.Components.Primitives.Marker
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Marker.Kind — which sort of note a marker is */
+export type Kind = Status | System | Row | Divider
+
+/// A note of the given kind.
+export fn marker(kind: Kind) -> H.Node { Core.part("marker").data("kind", Core.spelled(kind)) }
+
+/// The styles of a marker.
+export fn style() -> Css.Block {
+  Css.block("marker", [
+      Css.base("display: flex; align-items: center; gap: $space-2; min-block-size: $space-4; font-size: $text-sm; color: $muted-foreground; text-align: start"),
+      Css.variant("kind", "system", "justify-content: center; text-align: center"),
+      Css.variant("kind", "row", "padding-block-end: $space-2; border-block-end: $border-width solid $border"),
+      Css.variant("kind", "divider", "justify-content: center"),
+      Css.when("[data-kind=\"divider\"]::before", "content: ''; flex: 1; block-size: $border-width; background: $border; margin-inline-end: $space-1"),
+      Css.when("[data-kind=\"divider\"]::after", "content: ''; flex: 1; block-size: $border-width; background: $border; margin-inline-start: $space-1")
+    ])
+}

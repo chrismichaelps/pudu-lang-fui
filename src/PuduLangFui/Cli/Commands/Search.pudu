@@ -1,0 +1,50 @@
+/** @Fui.Cli.Commands.Search.Command — lists and searches items */
+module PuduLangFui.Cli.Commands.Search
+
+import Std.Json as Json
+import Std.List as List
+import Std.Option as Option
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Constants.Cli as Constant
+import PuduLangFui.Utils.Spelling as Spelling
+
+/// Whether an item's name or description holds the query.
+fn matches(item: &Item.Item, query: Str) -> Bool {
+  item.name.contains(query) || item.description.toLower().contains(query)
+}
+
+/// One item as a JSON object.
+export fn encoded(item: &Item.Item) -> Json.Json {
+  Json.object(&[
+      ("name", Json.Text(item.name)),
+      ("kind", Json.Text(Spelling.kebab(show(item.kind)))),
+      ("module", Json.Text(item.moduleName)),
+      ("description", Json.Text(item.description)),
+      ("dependencies", Json.list(&item.dependencies.map(|name: Str| Json.Text(name))))
+    ])
+}
+
+/// A whole-number option, or the fallback.
+fn wholeOr(context: &Context.Context, name: Str, fallback: Int) -> Int {
+  Option.unwrapOr(Invocation.optionOr(&context.invocation, name, "").toInt(), fallback)
+}
+
+/// Lists the items matching any query.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let registry = match Context.defaultLoaded(context) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let query = Invocation.optionOr(&context.invocation, "--query", "").toLower()
+  let matching = registry.items.filter(|item: Item.Item| matches(&item, query))
+  let shown = List.take(&List.drop(&matching, wholeOr(context, "--offset", 0)), wholeOr(context, "--limit", Constant.DEFAULT_LIMIT))
+
+  if Invocation.has(&context.invocation, "--json") {
+    return Outcome.done([Json.encodePretty(&Json.list(&shown.map(|item: Item.Item| encoded(&item))))])
+  }
+
+  Outcome.done(shown.map(|item: Item.Item| item.name + "  " + item.description))
+}

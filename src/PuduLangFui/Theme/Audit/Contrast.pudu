@@ -1,0 +1,47 @@
+/** @Fui.Theme.Contrast.Module — audits a palette's legibility */
+module PuduLangFui.Theme.Audit.Contrast
+
+import PuduLangFui.Constants.Accessibility as Accessibility
+import PuduLangFui.Domain.Color as Color
+import PuduLangFui.Theme.Aspects.Palette as Palette
+
+/** @Fui.Theme.Contrast.Finding — one pairing that falls short */
+export type Finding = { pairing: Str, mode: Str, ratio: Float64, required: Float64 }
+
+/// A named pairing and the ratio it must reach.
+fn pairings(palette: &Palette.Palette) -> Array[(Str, Color.Pair, Color.Pair, Float64)] {
+  [
+    ("foreground on background", palette.foreground, palette.background, Accessibility.TEXT_RATIO),
+    ("card text", palette.cardForeground, palette.card, Accessibility.TEXT_RATIO),
+    ("popover text", palette.popoverForeground, palette.popover, Accessibility.TEXT_RATIO),
+    ("primary text", palette.primaryForeground, palette.primary, Accessibility.TEXT_RATIO),
+    ("secondary text", palette.secondaryForeground, palette.secondary, Accessibility.TEXT_RATIO),
+    ("muted text on muted", palette.mutedForeground, palette.muted, Accessibility.TEXT_RATIO),
+    ("muted text on background", palette.mutedForeground, palette.background, Accessibility.TEXT_RATIO),
+    ("accent text", palette.accentForeground, palette.accent, Accessibility.TEXT_RATIO),
+    ("destructive text", palette.destructiveForeground, palette.destructive, Accessibility.TEXT_RATIO),
+    ("success text", palette.successForeground, palette.success, Accessibility.TEXT_RATIO),
+    ("warning text", palette.warningForeground, palette.warning, Accessibility.TEXT_RATIO),
+    ("info text", palette.infoForeground, palette.info, Accessibility.TEXT_RATIO),
+    ("sidebar text", palette.sidebarForeground, palette.sidebar, Accessibility.TEXT_RATIO),
+    ("sidebar primary text", palette.sidebarPrimaryForeground, palette.sidebarPrimary, Accessibility.TEXT_RATIO),
+    ("sidebar accent text", palette.sidebarAccentForeground, palette.sidebarAccent, Accessibility.TEXT_RATIO),
+    ("focus ring", palette.ring, palette.background, Accessibility.BOUNDARY_RATIO)
+  ]
+}
+
+/// Every pairing that falls short, in both modes.
+export fn audit(palette: &Palette.Palette) -> Array[Finding] {
+  var findings: Array[Finding] = []
+
+  for entry in pairings(palette) {
+    let (name, ink, surface, required) = entry
+    let light = Color.contrast(&ink.light, &surface.light)
+    let dark = Color.contrast(&ink.dark, &surface.dark)
+
+    if light < required { findings = findings.push(Finding{pairing: name, mode: "light", ratio: light, required: required}) }
+    if dark < required { findings = findings.push(Finding{pairing: name, mode: "dark", ratio: dark, required: required}) }
+  }
+
+  findings
+}

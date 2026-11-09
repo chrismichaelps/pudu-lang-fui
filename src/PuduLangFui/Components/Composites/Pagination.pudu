@@ -1,0 +1,62 @@
+/** @Fui.Pagination.Component — links between pages of results */
+module PuduLangFui.Components.Composites.Pagination
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// How many numbers show each side of the current page.
+const WINDOW: Int = 1
+
+/// A link to one page; the current page takes no link target of its own.
+fn number(page: Int, current: Int, linkTo: fn(Int) -> Str) -> H.Node {
+  let treatment = if page == current { Button.Outline } else { Button.Ghost }
+  let linked = Button.link(linkTo(page), Button.props().variant(treatment).size(Button.IconMedium)).says(show(page))
+
+  H.li().holding([linked.atIf(page == current, "aria-current", "page")])
+}
+
+/// The numbered entries, with gaps where pages are skipped.
+fn numbers(current: Int, last: Int, linkTo: fn(Int) -> Str) -> Array[H.Node] {
+  var entries: Array[H.Node] = []
+  var page = 1
+
+  while page <= last {
+    let nearby = page >= current - WINDOW && page <= current + WINDOW
+
+    if page == 1 || page == last || nearby {
+      entries = entries.push(number(page, current, linkTo))
+    } else if page == current - WINDOW - 1 || page == current + WINDOW + 1 {
+      entries = entries.push(H.li().holding([Core.inline("pagination-gap").at("aria-hidden", "true").says("…")]))
+    }
+
+    page = page + 1
+  }
+
+  entries
+}
+
+/// Links for moving between `last` pages, or nothing for a single page.
+export fn pagination(current: Int, last: Int, linkTo: fn(Int) -> Str) -> H.Node {
+  if last <= 1 { return H.nothing() }
+
+  let ghost = Button.props().variant(Button.Ghost).size(Button.IconMedium)
+  let previous = Button.link(linkTo(current - 1), if current <= 1 { ghost.disabled() } else { ghost }).label("Previous page").holding([Icon.icon(Icon.ChevronLeft)])
+  let next = Button.link(linkTo(current + 1), if current >= last { ghost.disabled() } else { ghost }).label("Next page").holding([Icon.icon(Icon.ChevronRight)])
+
+  H.nav().slot("pagination").label("Pagination").holding([
+      H.ul().slot("pagination-list").holding([H.li().holding([previous])].concat(numbers(current, last, linkTo)).concat([H.li().holding([next])]))
+    ])
+}
+
+/// The styles of pagination.
+export fn style() -> Css.Block {
+  Css.block("pagination", [
+      Css.base("display: flex; justify-content: center"),
+      Css.slot("pagination-list", "display: flex; align-items: center; gap: $space-1; margin: 0; padding: 0; list-style: none"),
+      Css.slot("pagination-gap", "display: inline-flex; justify-content: center; inline-size: $control-md; color: $muted-foreground"),
+      Css.rule(":dir(rtl) [data-slot=\"pagination\"] [data-slot=\"icon\"]", "scale: -1 1")
+    ])
+}

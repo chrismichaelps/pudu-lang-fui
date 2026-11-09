@@ -1,0 +1,17 @@
+/** @Fui.Skeleton.Component — a placeholder while content loads */
+module PuduLangFui.Components.Primitives.Skeleton
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A placeholder, sized by the caller with `.css` or a class.
+export fn skeleton() -> H.Node { Core.part("skeleton").at("aria-hidden", "true") }
+
+/// The styles of a placeholder.
+export fn style() -> Css.Block {
+  Css.block("skeleton", [
+      Css.keyframes("fui-pulse", [("50%", "opacity: 0.5")]),
+      Css.base("background: $muted; border-radius: $radius-2xl; animation: fui-pulse calc($duration-slow * 6) $ease-standard infinite")
+    ])
+}

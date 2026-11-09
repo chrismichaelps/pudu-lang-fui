@@ -1,0 +1,30 @@
+/** @Fui.Cli.Commands.Build.Command — writes the registry index */
+module PuduLangFui.Cli.Commands.Build
+
+import Std.Io as Io
+import Std.Json as Json
+import Std.Path as Path
+import PuduLangFui.Cli.Commands.Context as Context
+import PuduLangFui.Cli.Commands.Search as Search
+import PuduLangFui.Cli.Model.Invocation as Invocation
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Model.Outcome as Outcome
+import PuduLangFui.Constants.Cli as Constant
+
+/// Writes the index of the registry.
+export fn run(context: &Context.Context) -> Outcome.Outcome {
+  let registry = match Context.defaultLoaded(context) {
+    case Ok(found) => found
+    case Err(problem) => { return Outcome.failed([problem]) }
+  }
+  let index = Json.object(&[
+      ("root", Json.Text(registry.moduleRoot)),
+      ("items", Json.list(&registry.items.map(|item: Item.Item| Search.encoded(&item))))
+    ])
+  let output = Path.join(context.directory, Invocation.optionOr(&context.invocation, "--output", Constant.DEFAULT_INDEX))
+
+  match Io.write(output, Json.encodePretty(&index) + "\n") {
+    case Ok(_) => Outcome.done(["Wrote " + output + " with " + show(registry.items.length()) + " items"])
+    case Err(problem) => Outcome.failed([problem])
+  }
+}

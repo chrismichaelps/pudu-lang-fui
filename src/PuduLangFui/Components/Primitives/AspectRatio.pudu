@@ -1,0 +1,17 @@
+/** @Fui.AspectRatio.Component — holds content at a ratio */
+module PuduLangFui.Components.Primitives.AspectRatio
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A frame of the given width-to-height ratio, written as in `16 / 9`.
+export fn aspectRatio(ratio: Str) -> H.Node { Core.part("aspect-ratio").css("aspect-ratio", ratio) }
+
+/// The styles of a frame.
+export fn style() -> Css.Block {
+  Css.block("aspect-ratio", [
+      Css.base("position: relative; inline-size: 100%; overflow: hidden"),
+      Css.inside("> *", "inline-size: 100%; block-size: 100%; object-fit: cover")
+    ])
+}

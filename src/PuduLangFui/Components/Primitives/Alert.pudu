@@ -1,0 +1,42 @@
+/** @Fui.Alert.Component — a callout for information or trouble */
+module PuduLangFui.Components.Primitives.Alert
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Alert.Variant — what kind of news an alert carries */
+export type Variant = Neutral | Destructive | Success | Warning | Info
+
+/// The role each kind of callout takes; only trouble interrupts assistive software.
+const ROLES: Map[Str, Str] = mapOf([("destructive", "alert")])
+
+/// A callout.
+export fn alert(variant: Variant) -> H.Node {
+  Core.part("alert").role(Core.picked(&ROLES, variant, "status")).data("variant", Core.spelled(variant))
+}
+
+/// The callout's headline.
+export fn title() -> H.Node { Core.part("alert-title") }
+
+/// The callout's detail.
+export fn description() -> H.Node { Core.part("alert-description") }
+
+/// A control placed at the end of the callout.
+export fn action() -> H.Node { Core.part("alert-action") }
+
+/// The styles of an alert.
+export fn style() -> Css.Block {
+  Css.block("alert", [
+      Css.base("position: relative; display: grid; grid-template-columns: 0 1fr; align-items: start; row-gap: calc($unit * 0.5); inline-size: 100%; padding: $space-3 $space-4; background: $card; color: $card-foreground; border: $border-width solid $border; border-radius: $radius-2xl; font-size: $text-sm; text-align: start"),
+      Css.when(":has(> [data-slot=\"icon\"])", "grid-template-columns: $icon-md 1fr; column-gap: $space-3"),
+      Css.inside("> [data-slot=\"icon\"]", "grid-row: 1 / span 2; translate: 0 2px"),
+      Css.variant("variant", "destructive", "color: $destructive"),
+      Css.variant("variant", "success", "color: $success"),
+      Css.variant("variant", "warning", "color: $warning"),
+      Css.variant("variant", "info", "color: $info"),
+      Css.slot("alert-title", "grid-column: 2; font-weight: $weight-medium; line-height: $leading-tight"),
+      Css.slot("alert-description", "grid-column: 2; color: $muted-foreground"),
+      Css.slot("alert-action", "position: absolute; inset-block-start: $space-2; inset-inline-end: $space-2")
+    ])
+}

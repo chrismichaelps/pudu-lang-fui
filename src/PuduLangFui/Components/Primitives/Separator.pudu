@@ -1,0 +1,28 @@
+/** @Fui.Separator.Component — a divider on either axis */
+module PuduLangFui.Components.Primitives.Separator
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.Separator.Orientation — which way a divider runs */
+export type Orientation = Horizontal | Vertical
+
+/// A divider that separates content.
+export fn separator(orientation: Orientation) -> H.Node {
+  Core.part("separator").role("separator").at("aria-orientation", Core.spelled(orientation)).data("orientation", Core.spelled(orientation))
+}
+
+/// A divider with no meaning of its own.
+export fn decorative(orientation: Orientation) -> H.Node {
+  Core.part("separator").role("none").data("orientation", Core.spelled(orientation))
+}
+
+/// The styles of a separator.
+export fn style() -> Css.Block {
+  Css.block("separator", [
+      Css.base("background: $border; flex-shrink: 0"),
+      Css.variant("orientation", "horizontal", "block-size: $border-width; inline-size: 100%"),
+      Css.variant("orientation", "vertical", "inline-size: $border-width; align-self: stretch")
+    ])
+}

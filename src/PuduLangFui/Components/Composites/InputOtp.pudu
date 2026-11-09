@@ -1,0 +1,19 @@
+/** @Fui.InputOtp.Component — a one-time code as one field */
+module PuduLangFui.Components.Composites.InputOtp
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A code field of the given length, reading digits.
+export fn inputOtp(name: Str, length: Int = 6) -> H.Node {
+  H.input().slot("input-otp").id(name).name(name).at("inputmode", "numeric").at("autocomplete", "one-time-code").at("maxlength", show(length)).at("pattern", "[0-9]*").css("--otp-length", show(length))
+}
+
+/// The styles of a code field.
+export fn style() -> Css.Block {
+  Css.block("input-otp", [
+      Css.base("--otp-cell: $control-md; display: block; inline-size: calc(var(--otp-cell) * var(--otp-length)); block-size: var(--otp-cell); padding: 0; padding-inline-start: calc(var(--otp-cell) / 2 - 0.3ch); background: repeating-linear-gradient(to right, transparent 0 calc(var(--otp-cell) - 1px), $input calc(var(--otp-cell) - 1px) var(--otp-cell)), color-mix(in oklab, $input 50%, transparent); color: $foreground; border: $border-width solid $input; border-radius: $radius-3xl; font-family: $font-mono; font-size: $text-sm; letter-spacing: calc(var(--otp-cell) - 1ch); outline: none; overflow: hidden"),
+      Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)")
+    ])
+}

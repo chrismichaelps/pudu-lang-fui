@@ -1,0 +1,20 @@
+/** @Fui.Spinner.Component — an activity indicator */
+module PuduLangFui.Components.Composites.Spinner
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// An indicator announcing the given caption.
+export fn spinner(caption: Str = "Loading") -> H.Node {
+  Core.inline("spinner").role("status").label(caption).holding([Icon.icon(Icon.SpinnerArc)])
+}
+
+/// The styles of an indicator.
+export fn style() -> Css.Block {
+  Css.block("spinner", [
+      Css.keyframes("fui-spin", [("to", "rotate: 360deg")]),
+      Css.base("display: inline-flex; animation: fui-spin 800ms linear infinite")
+    ])
+}

@@ -1,0 +1,90 @@
+/** @Fui.Theme.Preset.Module — named and coded starting themes */
+module PuduLangFui.Theme.Presets.Preset
+
+import Std.Map as Map
+import Std.Text as Text
+import PuduLangFui.Constants.Presets as Limits
+import PuduLangFui.Theme.Aspects.Spacing as Spacing
+import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Utils.Numbers as Numbers
+import PuduLangFui.Utils.Spelling as Spelling
+
+/** @Fui.Theme.Preset.Preset — what a named look fixes */
+export type Preset = { hue: Int, chroma: Int, radius: Int, density: Spacing.Density }
+
+/// Every named preset; chroma is in hundredths and radius in pixels.
+export const PRESETS: Map[Str, Preset] = mapOf([
+    ("graphite", Preset{hue: 0, chroma: 0, radius: 10, density: Spacing.Comfortable}),
+    ("harbor", Preset{hue: 250, chroma: 14, radius: 10, density: Spacing.Comfortable}),
+    ("moss", Preset{hue: 150, chroma: 10, radius: 8, density: Spacing.Comfortable}),
+    ("ember", Preset{hue: 35, chroma: 15, radius: 12, density: Spacing.Comfortable}),
+    ("orchid", Preset{hue: 310, chroma: 15, radius: 14, density: Spacing.Spacious}),
+    ("sand", Preset{hue: 75, chroma: 8, radius: 6, density: Spacing.Compact})
+  ])
+
+/// The theme a preset describes.
+export fn theme(preset: &Preset) -> Theme.Theme {
+  Theme.defaults()
+    .brand(Numbers.floatOf(preset.hue), Numbers.floatOf(preset.chroma) / 100.0)
+    .radius(show(preset.radius) + "px")
+    .density(preset.density)
+}
+
+/// The number after a one-letter prefix, or why there is none.
+fn numberAfter(piece: Str, prefix: Str) -> Result[Int, Str] {
+  if !piece.startsWith(prefix) { return Err("expected '" + prefix + "' in '" + piece + "'") }
+
+  match Text.stripPrefix(piece, prefix).toInt() {
+    case Some(value) => Ok(value)
+    case None => Err("'" + piece + "' does not hold a whole number")
+  }
+}
+
+/// The density each code word spells.
+const DENSITIES: Map[Str, Spacing.Density] = mapOf([
+    ("compact", Spacing.Compact),
+    ("comfortable", Spacing.Comfortable),
+    ("spacious", Spacing.Spacious)
+  ])
+
+/// The density a code word spells, or why it spells none.
+fn densityOf(name: Str) -> Result[Spacing.Density, Str] {
+  match DENSITIES.get(name) {
+    case Some(density) => Ok(density)
+    case None => Err("unknown density '" + name + "'")
+  }
+}
+
+/// The preset a code such as `h264-c14-r10-compact` spells, or why it spells none.
+export fn decode(code: Str) -> Result[Preset, Str] {
+  let pieces = code.split("-")
+
+  if pieces.length() != Limits.CODE_PARTS { return Err(Limits.BAD_SHAPE) }
+
+  let hue = numberAfter(pieces[0], "h") ?
+  let chroma = numberAfter(pieces[1], "c") ?
+  let radius = numberAfter(pieces[2], "r") ?
+  let density = densityOf(pieces[3]) ?
+
+  if hue < 0 || hue > Limits.MAXIMUM_HUE { return Err(Limits.BAD_HUE) }
+  if chroma < 0 || chroma > Limits.MAXIMUM_CHROMA { return Err(Limits.BAD_CHROMA) }
+  if radius < 0 { return Err(Limits.BAD_RADIUS) }
+
+  Ok(Preset{hue: hue, chroma: chroma, radius: radius, density: density})
+}
+
+/// The code that spells a preset.
+export fn encode(preset: &Preset) -> Str {
+  "h" + show(preset.hue) + "-c" + show(preset.chroma) + "-r" + show(preset.radius) + "-" + Spelling.kebab(show(preset.density))
+}
+
+/// The preset a name or a code picks, or why neither applies.
+export fn named(picked: Str) -> Result[Preset, Str] {
+  match PRESETS.get(picked) {
+    case Some(preset) => Ok(preset)
+    case None => decode(picked)
+  }
+}
+
+/// Every preset's name, in order.
+export fn names() -> Array[Str] { Map.keys(&PRESETS) }

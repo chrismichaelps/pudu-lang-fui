@@ -1,0 +1,37 @@
+/** @Fui.ButtonGroup.Component — related buttons joined as one */
+module PuduLangFui.Components.Primitives.ButtonGroup
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.ButtonGroup.Orientation — which axis buttons join along */
+export type Orientation = Horizontal | Vertical
+
+/// Buttons joined along an axis.
+export fn group(orientation: Orientation) -> H.Node {
+  Core.part("button-group").role("group").data("orientation", Core.spelled(orientation))
+}
+
+/// Plain text sitting inside a group.
+export fn text() -> H.Node { Core.inline("button-group-text") }
+
+/// A line between members of a group.
+export fn separator() -> H.Node { Core.part("button-group-separator").role("separator") }
+
+/// The styles of a button group.
+export fn style() -> Css.Block {
+  Css.block("button-group", [
+      Css.base("display: inline-flex; isolation: isolate"),
+      Css.variant("orientation", "vertical", "flex-direction: column"),
+      Css.inside("> * + *", "margin-inline-start: calc($border-width * -1)"),
+      Css.inside("> :focus-visible", "z-index: 1"),
+      Css.inside("> :not(:first-child)", "border-start-start-radius: 0; border-end-start-radius: 0"),
+      Css.inside("> :not(:last-child)", "border-start-end-radius: 0; border-end-end-radius: 0"),
+      Css.rule("[data-slot=\"button-group\"][data-orientation=\"vertical\"] > * + *", "margin-inline-start: 0; margin-block-start: calc($border-width * -1)"),
+      Css.rule("[data-slot=\"button-group\"][data-orientation=\"vertical\"] > :not(:first-child)", "border-start-start-radius: 0; border-start-end-radius: 0; border-end-start-radius: $radius-md"),
+      Css.rule("[data-slot=\"button-group\"][data-orientation=\"vertical\"] > :not(:last-child)", "border-end-start-radius: 0; border-end-end-radius: 0; border-start-end-radius: $radius-md"),
+      Css.slot("button-group-text", "display: inline-flex; align-items: center; gap: $space-2; padding-inline: calc($unit * 2.5); background: $muted; border: $border-width solid $border; border-radius: $radius-4xl; font-size: $text-sm; font-weight: $weight-medium"),
+      Css.slot("button-group-separator", "inline-size: $border-width; align-self: stretch; background: $input")
+    ])
+}

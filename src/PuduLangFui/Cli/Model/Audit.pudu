@@ -1,0 +1,33 @@
+/** @Fui.Cli.Audit.Module — static checks over owned source */
+module PuduLangFui.Cli.Model.Audit
+
+import Std.Set as Set
+import PuduLangFui.Domain.Css as Css
+
+/// Declaration names that break right-to-left layout.
+export const PHYSICAL: Array[Str] = [
+  "margin-left:", "margin-right:", "padding-left:", "padding-right:", "border-left", "border-right",
+  " left:", " right:", "text-align: left", "text-align: right", "float: left", "float: right"
+]
+
+/// A source line without its comment, or empty when the whole line is one.
+fn code(line: Str) -> Str { if line.trim().startsWith("/") { "" } else { line } }
+
+/// Every problem in one source, each prefixed by its path.
+export fn audit(path: Str, source: Str, known: &Set[Str]) -> Array[Str] {
+  var problems: Array[Str] = []
+
+  for line in source.split("\n") {
+    let held = code(line)
+
+    for token in Css.tokensIn(held) {
+      if !known.contains(token) { problems = problems.push(path + ": unknown token $" + token) }
+    }
+
+    for name in PHYSICAL {
+      if held.contains(name) { problems = problems.push(path + ": physical property '" + name.trim() + "'") }
+    }
+  }
+
+  problems
+}

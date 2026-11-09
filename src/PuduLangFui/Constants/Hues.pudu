@@ -1,0 +1,14 @@
+/** @Fui.Constants.Hues.Module — status hues that never follow brand */
+module PuduLangFui.Constants.Hues
+
+/// The hue of destructive actions and errors.
+export const DESTRUCTIVE: Float64 = 27.0
+
+/// The hue of success.
+export const SUCCESS: Float64 = 150.0
+
+/// The hue of warnings.
+export const WARNING: Float64 = 75.0
+
+/// The hue of information.
+export const INFO: Float64 = 250.0

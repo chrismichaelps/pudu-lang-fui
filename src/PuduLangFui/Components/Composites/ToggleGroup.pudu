@@ -1,0 +1,33 @@
+/** @Fui.ToggleGroup.Component — toggles allowing one or many */
+module PuduLangFui.Components.Composites.ToggleGroup
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/** @Fui.ToggleGroup.Kind — how many may be pressed */
+export type Kind = One | Many
+
+/// The input type each kind uses.
+const INPUTS: Map[Str, Str] = mapOf([("one", "radio"), ("many", "checkbox")])
+
+/// Toggles pressed together.
+export fn group(caption: Str) -> H.Node { Core.part("toggle-group").role("group").label(caption) }
+
+/// A toggle of the group `name`.
+export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node {
+  H.labelFor().slot("toggle-group-item").holding([
+      H.input().kind(Core.picked(&INPUTS, kind, "checkbox")).name(name).value(value).flagIf(pressed, "checked")
+    ])
+}
+
+/// The styles of a toggle group.
+export fn style() -> Css.Block {
+  Css.block("toggle-group", [
+      Css.base("display: inline-flex; gap: 1px; padding: $space-1; background: $muted; border-radius: $radius-4xl"),
+      Css.slot("toggle-group-item", "display: inline-flex; align-items: center; justify-content: center; gap: $space-2; block-size: calc($control-md - $space-2); min-inline-size: calc($control-md - $space-2); padding-inline: $space-3; border-radius: $radius-4xl; font-size: $text-sm; font-weight: $weight-medium; cursor: pointer; user-select: none"),
+      Css.rule("[data-slot=\"toggle-group-item\"] > input", "position: absolute; opacity: 0; pointer-events: none"),
+      Css.slotWhen("toggle-group-item", ":has(> input:checked)", "background: $background; box-shadow: $shadow-sm"),
+      Css.slotWhen("toggle-group-item", ":has(> input:focus-visible)", "outline: 2px solid $ring; outline-offset: 1px")
+    ])
+}

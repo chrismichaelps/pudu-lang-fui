@@ -1,0 +1,64 @@
+/** @Fui.Cli.Item.Module — one addable thing, read from source */
+module PuduLangFui.Cli.Model.Item
+
+import Std.List as List
+import Std.Option as Option
+import Std.Text as Text
+import PuduLangFui.Utils.Spelling as Spelling
+
+/** @Fui.Cli.Item.Kind — what sort of item it is */
+export type Kind = Component | Element | PageBlock
+
+/** @Fui.Cli.Item.Item — an item's identity and needs */
+export type Item = { name: Str, kind: Kind, layer: Str, moduleName: Str, path: Str, description: Str, dependencies: Array[Str] }
+
+/// The kind each item folder holds.
+const KINDS: Map[Str, Kind] = mapOf([
+    ("Components/Primitives", Component),
+    ("Components/Composites", Component),
+    ("Components/Patterns", Component),
+    ("Elements", Element),
+    ("Blocks", PageBlock)
+  ])
+
+/// The separator between an anchor and its intent.
+const INTENT_MARK: Str = " — "
+
+/// The header line's intent, or nothing without one.
+export fn descriptionOf(source: Str) -> Str {
+  let first = Option.unwrapOr(List.first(&source.split("\n")), "")
+  let (_before, after) = Text.breakOn(first, INTENT_MARK)
+
+  if after.isEmpty() { return "" }
+
+  Text.stripSuffix(Text.stripPrefix(after, INTENT_MARK).trim(), "*/").trim()
+}
+
+/// The sibling items a source imports, by item name.
+export fn dependenciesOf(source: Str, packageRoot: Str) -> Array[Str] {
+  var found: Array[Str] = []
+
+  for line in source.split("\n") {
+    if line.startsWith("import " + packageRoot + ".") {
+      let path = Option.unwrapOr(List.first(&line.drop(7).split(" ")), "")
+      let isItem = path.contains(".Components.") || path.contains(".Elements.") || path.contains(".Blocks.")
+
+      if isItem { found = found.push(Spelling.kebab(Option.unwrapOr(List.last(&path.split(".")), ""))) }
+    }
+  }
+
+  found
+}
+
+/// An item from its folder under the module root, its file's stem, its path, and its source.
+export fn read(layer: Str, stem: Str, path: Str, packageRoot: Str, source: Str) -> Item {
+  Item {
+    name: Spelling.kebab(stem),
+    kind: Option.unwrapOr(KINDS.get(layer), Component),
+    layer: layer,
+    moduleName: packageRoot + "." + layer.replace("/", ".") + "." + stem,
+    path: path,
+    description: descriptionOf(source),
+    dependencies: dependenciesOf(source, packageRoot)
+  }
+}

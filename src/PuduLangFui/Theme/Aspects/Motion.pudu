@@ -1,0 +1,39 @@
+/** @Fui.Theme.Motion.Module — the motion aspect */
+module PuduLangFui.Theme.Aspects.Motion
+
+import Std.Option as Option
+import PuduLangFui.Theme.Base.Tokens as Tokens
+
+/** @Fui.Theme.Motion.Mood — how much the interface moves */
+export type Mood = Snappy | Calm | Still
+
+/** @Fui.Theme.Motion.Motion — durations and easings */
+export type Motion = {
+  durationFast: Str,
+  durationBase: Str,
+  durationSlow: Str,
+  easeStandard: Str,
+  easeEnter: Str,
+  easeExit: Str
+} derives Tokens.Tokens
+
+/// The durations each mood sets, fastest first.
+const DURATIONS: Map[Str, (Str, Str, Str)] = mapOf([
+    ("Snappy", ("100ms", "160ms", "240ms")),
+    ("Calm", ("150ms", "240ms", "360ms")),
+    ("Still", ("0ms", "0ms", "0ms"))
+  ])
+
+/// The durations and easings of a mood.
+export fn of(mood: Mood) -> Motion {
+  let (fast, base, slow) = Option.unwrapOr(DURATIONS.get(show(mood)), ("0ms", "0ms", "0ms"))
+
+  Motion {
+    durationFast: fast,
+    durationBase: base,
+    durationSlow: slow,
+    easeStandard: "cubic-bezier(0.2, 0, 0, 1)",
+    easeEnter: "cubic-bezier(0, 0, 0, 1)",
+    easeExit: "cubic-bezier(0.3, 0, 1, 1)"
+  }
+}
