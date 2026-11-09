@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Classic.Module — every part's appearance in the classic look */
 module PuduLangFui.Theme.Looks.Classic
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 1); --slider-track: var(--fui-muted); --slider-track-radius: 9999px; --slider-thumb-width: calc(var(--fui-unit) * 3); --slider-thumb-height: calc(var(--fui-unit) * 3); --slider-thumb-edge: 1px solid var(--fui-ring); --slider-thumb-radius: 9999px; --slider-thumb-shadow: none; --slider-thumb: white", ""),
   ("accordion-item", "[data-slot=\"accordion-item\"]:not(:last-child)", "border-bottom-style: var(--fui-u-border-style); border-bottom-width: 1px", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"])", "outline: 2px solid transparent; outline-offset: 2px", "@media (forced-colors: active)"),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"]):focus", "background-color: var(--fui-accent); color: var(--fui-accent-foreground)", ""),
   ("dropdown-menu-item", ":is([data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"]):focus *)", "color: var(--fui-accent-foreground)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"]):disabled", "pointer-events: none; pointer-events: none; opacity: 50%; opacity: 50%", ""),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"]) svg", "pointer-events: none; flex-shrink: 0", ""),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"radio\"]) svg:not([class*='size-'])", "width: calc(var(--fui-unit) * 4); height: calc(var(--fui-unit) * 4)", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("table-container", "[data-slot=\"table-container\"]", "position: relative; width: 100%; overflow-x: auto", ""),
   ("table", "[data-slot=\"table\"]", "width: 100%; caption-side: bottom; font-size: 0.875rem; line-height: var(--fui-u-leading, calc(1.25 / 0.875))", ""),
   ("table-header", "[data-slot=\"table-header\"] tr", "border-bottom-style: var(--fui-u-border-style); border-bottom-width: 1px", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("table-body", "[data-slot=\"table-body\"] tr:last-child", "border-style: var(--fui-u-border-style); border-width: 0px", ""),
   ("table-footer", "[data-slot=\"table-footer\"]", "border-top-style: var(--fui-u-border-style); border-top-width: 1px; background-color: var(--fui-muted); --fui-u-font-weight: 500; font-weight: 500", ""),
   ("table-footer", "[data-slot=\"table-footer\"]", "background-color: color-mix(in oklab, var(--fui-muted) 50%, transparent)", "@supports (color: color-mix(in lab, red, red))"),
@@ -1177,3 +1185,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Round.Module — every part's appearance in the round look */
 module PuduLangFui.Theme.Looks.Round
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 3); --slider-track: var(--fui-muted); --slider-track-radius: calc(var(--fui-radius) * 2.6); --slider-thumb-width: calc(var(--fui-unit) * 4); --slider-thumb-height: calc(var(--fui-unit) * 4); --slider-thumb-edge: 1px solid var(--fui-primary); --slider-thumb-radius: calc(var(--fui-radius) * 2.6); --slider-thumb-shadow: var(--fui-shadow-sm); --slider-thumb: white", ""),
   ("accordion", "[data-slot=\"accordion\"]", "display: flex; width: 100%; flex-direction: column; overflow: hidden; border-radius: calc(var(--fui-radius) * 1.8); border-style: var(--fui-u-border-style); border-width: 1px", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("dropdown-menu", "[data-slot=\"dropdown-menu\"][data-side=\"end\"]:is([open], :popover-open)", "animation: enter var(--fui-u-animation-duration,var(--fui-u-duration,.15s))var(--fui-u-ease,ease)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none); animation: enter var(--fui-u-animation-duration,var(--fui-u-duration,.15s))var(--fui-u-ease,ease)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none); --fui-u-enter-opacity: calc(0/100); --fui-u-enter-opacity: 0; --fui-u-enter-opacity: calc(0/100); --fui-u-enter-opacity: 0; --fui-u-enter-scale: calc(95*1%); --fui-u-enter-scale: .95; --fui-u-enter-scale: calc(95*1%); --fui-u-enter-scale: .95", ""),
   ("empty", "[data-slot=\"empty\"]", "display: flex; width: 100%; min-width: 0px; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--fui-unit) * 4); border-radius: var(--fui-radius); --fui-u-border-style: dashed; border-style: dashed; padding: calc(var(--fui-unit) * 12); text-align: center; text-wrap: balance", ""),
   ("empty-header", "[data-slot=\"empty-header\"]", "display: flex; max-width: 24rem; flex-direction: column; align-items: center; gap: calc(var(--fui-unit) * 2)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("empty-media", "[data-slot=\"empty-media\"]", "margin-bottom: calc(var(--fui-unit) * 2); display: flex; flex-shrink: 0; align-items: center; justify-content: center; display: flex; width: calc(var(--fui-unit) * 10); height: calc(var(--fui-unit) * 10); flex-shrink: 0; align-items: center; justify-content: center; border-radius: var(--fui-radius); background-color: var(--fui-muted); color: var(--fui-foreground)", ""),
   ("empty-media", "[data-slot=\"empty-media\"] svg", "pointer-events: none; flex-shrink: 0", ""),
   ("empty-media", "[data-slot=\"empty-media\"] svg:not([class*='size-'])", "width: calc(var(--fui-unit) * 6); height: calc(var(--fui-unit) * 6)", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"][aria-disabled=\"true\"]", "pointer-events: none; opacity: 50%", ""),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:is([data-mode=\"dark\"] *)", "color: var(--fui-muted-foreground)", ""),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:is(:root:not([data-mode=\"light\"]) *)", "color: var(--fui-muted-foreground)", "@media (prefers-color-scheme: dark)"),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:is([data-mode=\"dark\"] *):hover", "color: var(--fui-foreground)", "@media (hover: hover)"),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:is(:root:not([data-mode=\"light\"]) *):hover", "color: var(--fui-foreground)", "@media (prefers-color-scheme: dark) | @media (hover: hover)"),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"] svg", "pointer-events: none; flex-shrink: 0", ""),
@@ -1131,3 +1139,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

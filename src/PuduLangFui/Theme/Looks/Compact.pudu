@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Compact.Module — every part's appearance in the compact look */
 module PuduLangFui.Theme.Looks.Compact
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 1); --slider-track: var(--fui-muted); --slider-track-radius: calc(var(--fui-radius) * 0.8); --slider-thumb-width: calc(var(--fui-unit) * 3); --slider-thumb-height: calc(var(--fui-unit) * 3); --slider-thumb-edge: 1px solid var(--fui-ring); --slider-thumb-radius: calc(var(--fui-radius) * 0.8); --slider-thumb-shadow: none; --slider-thumb: white", ""),
   ("accordion", "[data-slot=\"accordion\"]", "display: flex; width: 100%; flex-direction: column; overflow: hidden; border-radius: calc(var(--fui-radius) * 0.8); border-style: var(--fui-u-border-style); border-width: 1px", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"])", "position: relative; display: flex; min-height: calc(var(--fui-unit) * 7); cursor: default; align-items: center; gap: calc(var(--fui-unit) * 2); border-radius: calc(var(--fui-radius) * 0.8); padding-block: calc(var(--fui-unit) * 1.5); padding-right: calc(var(--fui-unit) * 8); padding-left: calc(var(--fui-unit) * 2); font-size: 0.75rem; line-height: var(--fui-u-leading, calc(1 / 0.75)); --fui-u-outline-style: none; outline-style: none; -webkit-user-select: none; user-select: none", ""),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"])", "outline: 2px solid transparent; outline-offset: 2px", "@media (forced-colors: active)"),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"]):focus", "background-color: var(--fui-accent); color: var(--fui-accent-foreground)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("dropdown-menu-item", ":is([data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"]):focus *)", "color: var(--fui-accent-foreground)", ""),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"]):disabled", "pointer-events: none; pointer-events: none; opacity: 50%; opacity: 50%", ""),
   ("dropdown-menu-item", "[data-slot=\"dropdown-menu-item\"]:has(input[type=\"checkbox\"]) svg", "pointer-events: none; flex-shrink: 0", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("switch", "[data-slot=\"switch\"]::after", "pointer-events: none; display: block; border-radius: calc(infinity * 1px); background-color: var(--fui-background); --fui-u-ring-shadow: var(--fui-u-ring-inset, ) 0 0 0 calc(0px + var(--fui-u-ring-offset-width)) var(--fui-u-ring-color, currentcolor); box-shadow: var(--fui-u-inset-shadow), var(--fui-u-inset-ring-shadow), var(--fui-u-ring-offset-shadow), var(--fui-u-ring-shadow), var(--fui-u-shadow); transition-property: transform, translate, scale, rotate; transition-timing-function: var(--fui-u-ease, cubic-bezier(0.4, 0, 0.2, 1)); transition-duration: var(--fui-u-duration, 150ms); width: calc(var(--fui-unit) * 3.5); height: calc(var(--fui-unit) * 3.5); content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0", ""),
   ("switch", "[data-slot=\"switch\"]:is([data-mode=\"dark\"] *):checked::after", "background-color: var(--fui-primary-foreground); background-color: var(--fui-primary-foreground)", ""),
   ("switch", "[data-slot=\"switch\"]:is(:root:not([data-mode=\"light\"]) *):checked::after", "background-color: var(--fui-primary-foreground); background-color: var(--fui-primary-foreground)", "@media (prefers-color-scheme: dark)"),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("switch", "[data-slot=\"switch\"]:is([data-mode=\"dark\"] *):not(:checked)::after", "background-color: var(--fui-foreground); background-color: var(--fui-foreground)", ""),
   ("switch", "[data-slot=\"switch\"]:is(:root:not([data-mode=\"light\"]) *):not(:checked)::after", "background-color: var(--fui-foreground); background-color: var(--fui-foreground)", "@media (prefers-color-scheme: dark)"),
   ("table-container", "[data-slot=\"table-container\"]", "position: relative; width: 100%; overflow-x: auto", ""),
@@ -1175,3 +1183,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

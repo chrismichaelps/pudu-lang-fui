@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Sharp.Module — every part's appearance in the sharp look */
 module PuduLangFui.Theme.Looks.Sharp
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 1); --slider-track: var(--fui-muted); --slider-track-radius: 0; --slider-thumb-width: calc(var(--fui-unit) * 3); --slider-thumb-height: calc(var(--fui-unit) * 3); --slider-thumb-edge: 1px solid var(--fui-ring); --slider-thumb-radius: 0; --slider-thumb-shadow: none; --slider-thumb: white", ""),
   ("accordion-item", "[data-slot=\"accordion-item\"]:not(:last-child)", "border-bottom-style: var(--fui-u-border-style); border-bottom-width: 1px", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("empty-title", "[data-slot=\"empty-title\"]", "font-size: 0.875rem; line-height: var(--fui-u-leading, calc(1.25 / 0.875)); --fui-u-font-weight: 500; font-weight: 500", ""),
   ("empty-description", "[data-slot=\"empty-description\"]", "font-size: 0.75rem; line-height: 1.625; color: var(--fui-muted-foreground)", ""),
   ("empty-description", "[data-slot=\"empty-description\"]>a", "text-decoration-line: underline; text-underline-offset: 4px", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("empty-description", "[data-slot=\"empty-description\"]>a:hover", "color: var(--fui-primary)", ""),
   ("empty-content", "[data-slot=\"empty-content\"]", "display: flex; width: 100%; max-width: 24rem; min-width: 0px; flex-direction: column; align-items: center; gap: calc(var(--fui-unit) * 2.5); font-size: 0.75rem; line-height: var(--fui-u-leading, calc(1 / 0.75)); text-wrap: balance", ""),
   ("field-set", "[data-slot=\"field-set\"]", "display: flex; flex-direction: column; gap: calc(var(--fui-unit) * 4)", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("tabs-list", "[data-slot=\"tabs-list\"]", "display: inline-flex; width: fit-content; align-items: center; justify-content: center; border-radius: 0; padding: 3px; color: var(--fui-muted-foreground)", ""),
   ("tabs-list", "[data-slot=\"tabs-list\"][data-variant=\"line\"]", "border-radius: 0; gap: var(--fui-unit); background-color: transparent", ""),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]", "position: relative; display: inline-flex; height: calc(100% - 1px); flex: 1; align-items: center; justify-content: center; gap: calc(var(--fui-unit) * 1.5); border-radius: 0; border-style: var(--fui-u-border-style); border-width: 1px; border-color: transparent; padding-inline: calc(var(--fui-unit) * 1.5); padding-block: calc(var(--fui-unit) * 0.5); font-size: 0.75rem; line-height: var(--fui-u-leading, calc(1 / 0.75)); --fui-u-font-weight: 500; font-weight: 500; white-space: nowrap; color: var(--fui-foreground); transition-property: all; transition-timing-function: var(--fui-u-ease, cubic-bezier(0.4, 0, 0.2, 1)); transition-duration: var(--fui-u-duration, 150ms)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]", "color: color-mix(in oklab, var(--fui-foreground) 60%, transparent)", "@supports (color: color-mix(in lab, red, red))"),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:hover", "color: var(--fui-foreground)", "@media (hover: hover)"),
   ("tabs-trigger", "[data-slot=\"tabs-trigger\"]:focus-visible", "border-color: var(--fui-ring); --fui-u-ring-shadow: var(--fui-u-ring-inset, ) 0 0 0 calc(3px + var(--fui-u-ring-offset-width)) var(--fui-u-ring-color, currentcolor); box-shadow: var(--fui-u-inset-shadow), var(--fui-u-inset-ring-shadow), var(--fui-u-ring-offset-shadow), var(--fui-u-ring-shadow), var(--fui-u-shadow); --fui-u-ring-color: var(--fui-ring); outline-style: var(--fui-u-outline-style); outline-width: 1px; outline-color: var(--fui-ring)", ""),
@@ -1167,3 +1175,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

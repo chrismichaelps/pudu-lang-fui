@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Gentle.Module — every part's appearance in the gentle look */
 module PuduLangFui.Theme.Looks.Gentle
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 1); --slider-track: color-mix(in oklab, var(--fui-input) 90%, transparent); --slider-track-radius: calc(var(--fui-radius) * 1.8); --slider-thumb-width: calc(var(--fui-unit) * 4); --slider-thumb-height: calc(var(--fui-unit) * 4); --slider-thumb-edge: 0; --slider-thumb-radius: calc(var(--fui-radius) * 1.8); --slider-thumb-shadow: 0 0 0 1px oklch(0 0 0 / 0.1), var(--fui-shadow-md); --slider-thumb: white", ""),
   ("slider", "[data-slot=\"slider\"]", "position: relative; display: flex; width: 100%; touch-action: none; align-items: center; -webkit-user-select: none; user-select: none", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("alert-dialog", "[data-slot=\"alert-dialog\"]::backdrop", "--fui-u-backdrop-blur: blur(8px); -webkit-backdrop-filter: var(--fui-u-backdrop-blur, ) var(--fui-u-backdrop-brightness, ) var(--fui-u-backdrop-contrast, ) var(--fui-u-backdrop-grayscale, ) var(--fui-u-backdrop-hue-rotate, ) var(--fui-u-backdrop-invert, ) var(--fui-u-backdrop-opacity, ) var(--fui-u-backdrop-saturate, ) var(--fui-u-backdrop-sepia, ); backdrop-filter: var(--fui-u-backdrop-blur, ) var(--fui-u-backdrop-brightness, ) var(--fui-u-backdrop-contrast, ) var(--fui-u-backdrop-grayscale, ) var(--fui-u-backdrop-hue-rotate, ) var(--fui-u-backdrop-invert, ) var(--fui-u-backdrop-opacity, ) var(--fui-u-backdrop-saturate, ) var(--fui-u-backdrop-sepia, )", "@supports (backdrop-filter: var(--tw))"),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]:is([open], :popover-open)::backdrop", "animation: enter var(--fui-u-animation-duration,var(--fui-u-duration,.15s))var(--fui-u-ease,ease)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none); animation: enter var(--fui-u-animation-duration,var(--fui-u-duration,.15s))var(--fui-u-ease,ease)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none); --fui-u-enter-opacity: calc(0/100); --fui-u-enter-opacity: 0; --fui-u-enter-opacity: calc(0/100); --fui-u-enter-opacity: 0", ""),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]:is([open], :popover-open)", "display: grid", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("alert-dialog", "[data-slot=\"alert-dialog\"]", "position: fixed; top: calc(1 / 2 * 100%); left: calc(1 / 2 * 100%); z-index: 50; width: 100%; --fui-u-translate-x: calc(calc(1 / 2 * 100%) * -1); --fui-u-translate-y: calc(calc(1 / 2 * 100%) * -1); translate: var(--fui-u-translate-x) var(--fui-u-translate-y); gap: calc(var(--fui-unit) * 6); border-radius: min(calc(var(--fui-radius) * 2.6), 24px); background-color: var(--fui-popover); padding: calc(var(--fui-unit) * 6); color: var(--fui-popover-foreground); --fui-u-shadow: 0 20px 25px -5px var(--fui-u-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--fui-u-shadow-color, rgb(0 0 0 / 0.1)); --fui-u-ring-shadow: var(--fui-u-ring-inset, ) 0 0 0 calc(1px + var(--fui-u-ring-offset-width)) var(--fui-u-ring-color, currentcolor); box-shadow: var(--fui-u-inset-shadow), var(--fui-u-inset-ring-shadow), var(--fui-u-ring-offset-shadow), var(--fui-u-ring-shadow), var(--fui-u-shadow); --fui-u-ring-color: var(--fui-foreground); --fui-u-duration: 100ms; transition-duration: 100ms; --fui-u-outline-style: none; outline-style: none; margin: 0", ""),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]", "--fui-u-ring-color: color-mix(in oklab, var(--fui-foreground) 5%, transparent)", "@supports (color: color-mix(in lab, red, red))"),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]:is(:not([data-size]), [data-size=\"default\"])", "max-width: 20rem", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("popover", "[data-slot=\"popover\"]", "outline: 2px solid transparent; outline-offset: 2px", "@media (forced-colors: active)"),
   ("popover", "[data-slot=\"popover\"][data-side=\"bottom\"]", "--fui-u-enter-translate-y: calc(2*var(--fui-unit)*-1)", ""),
   ("popover", "[data-slot=\"popover\"][data-side=\"start\"]", "--fui-u-enter-translate-x: calc(2*var(--fui-unit))", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("popover", "[data-slot=\"popover\"][data-side=\"end\"]", "--fui-u-enter-translate-x: calc(2*var(--fui-unit)*-1)", ""),
   ("popover", "[data-slot=\"popover\"][data-side=\"top\"]", "--fui-u-enter-translate-y: calc(2*var(--fui-unit))", ""),
   ("popover", "[data-slot=\"popover\"]:is([data-mode=\"dark\"] *)", "--fui-u-ring-color: var(--fui-foreground)", ""),
@@ -1167,3 +1175,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

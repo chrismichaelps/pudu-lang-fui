@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Editorial.Module — every part's appearance in the editorial look */
 module PuduLangFui.Theme.Looks.Editorial
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 0.5); --slider-track: color-mix(in oklab, var(--fui-input) 50%, transparent); --slider-track-radius: 0; --slider-thumb-width: calc(var(--fui-unit) * 3); --slider-thumb-height: calc(var(--fui-unit) * 3); --slider-thumb-edge: 0; --slider-thumb-radius: 0; --slider-thumb-shadow: none; --slider-thumb: var(--fui-primary)", ""),
   ("accordion-item", "[data-slot=\"accordion-item\"]:not(:last-child)", "border-bottom-style: var(--fui-u-border-style); border-bottom-width: 1px", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("empty-header", "[data-slot=\"empty-header\"]", "display: flex; max-width: 24rem; flex-direction: column; align-items: center; gap: calc(var(--fui-unit) * 2)", ""),
   ("empty-media", "[data-slot=\"empty-media\"]", "margin-bottom: calc(var(--fui-unit) * 2); display: flex; flex-shrink: 0; align-items: center; justify-content: center; display: flex; width: calc(var(--fui-unit) * 10); height: calc(var(--fui-unit) * 10); flex-shrink: 0; align-items: center; justify-content: center; border-radius: 0; background-color: var(--fui-muted); color: var(--fui-foreground)", ""),
   ("empty-media", "[data-slot=\"empty-media\"] svg", "pointer-events: none; flex-shrink: 0", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("empty-media", "[data-slot=\"empty-media\"] svg:not([class*='size-'])", "width: calc(var(--fui-unit) * 5); height: calc(var(--fui-unit) * 5)", ""),
   ("empty-title", "[data-slot=\"empty-title\"]", "font-size: 1.125rem; line-height: var(--fui-u-leading, calc(1.75 / 1.125)); --fui-u-font-weight: 600; font-weight: 600; --fui-u-tracking: var(--tracking-wider); letter-spacing: var(--tracking-wider); text-transform: uppercase", ""),
   ("empty-description", "[data-slot=\"empty-description\"]", "margin-top: calc(var(--fui-unit) * 0.5); font-size: 0.875rem; line-height: 1.625; color: var(--fui-muted-foreground)", ""),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("toggle", "[data-slot=\"toggle\"][data-variant=\"outline\"]:hover", "background-color: var(--fui-muted)", "@media (hover: hover)"),
   ("toggle", "[data-slot=\"toggle\"][data-size=\"medium\"]", "height: calc(var(--fui-unit) * 10); min-width: calc(var(--fui-unit) * 10); padding-inline: calc(var(--fui-unit) * 6)", ""),
   ("toggle", "[data-slot=\"toggle\"][data-size=\"medium\"]:has(*[data-icon=\"inline-end\"])", "padding-right: calc(var(--fui-unit) * 4)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("toggle", "[data-slot=\"toggle\"][data-size=\"medium\"]:has(*[data-icon=\"inline-start\"])", "padding-left: calc(var(--fui-unit) * 4)", ""),
   ("toggle", "[data-slot=\"toggle\"][data-size=\"small\"]", "height: calc(var(--fui-unit) * 9); min-width: calc(var(--fui-unit) * 9); padding-inline: calc(var(--fui-unit) * 4)", ""),
   ("toggle", "[data-slot=\"toggle\"][data-size=\"small\"]:has(*[data-icon=\"inline-end\"])", "padding-right: calc(var(--fui-unit) * 3)", ""),
@@ -1092,3 +1100,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)

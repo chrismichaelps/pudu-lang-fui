@@ -1,8 +1,8 @@
 /** @Fui.Theme.Looks.Soft.Module — every part's appearance in the soft look */
 module PuduLangFui.Theme.Looks.Soft
 
-/// Each rule's slot, selector, declarations, and any at-rule around it.
-export const RULES: Array[(Str, Str, Str, Str)] = [
+/// One run of the rules, short enough for a single array literal.
+const RULES_A: Array[(Str, Str, Str, Str)] = [
   ("radio", "[data-slot=\"radio\"]:not(:checked)::after", "display: none", ""),
   ("slider", "[data-slot=\"slider\"]", "--slider-track-size: calc(var(--fui-unit) * 2); --slider-track: color-mix(in oklab, var(--fui-input) 90%, transparent); --slider-track-radius: 9999px; --slider-thumb-width: calc(var(--fui-unit) * 6); --slider-thumb-height: calc(var(--fui-unit) * 4); --slider-thumb-edge: 0; --slider-thumb-radius: 9999px; --slider-thumb-shadow: 0 0 0 1px oklch(0 0 0 / 0.1), var(--fui-shadow-md); --slider-thumb: white", ""),
   ("slider", "[data-slot=\"slider\"]", "position: relative; display: flex; width: 100%; touch-action: none; align-items: center; -webkit-user-select: none; user-select: none", ""),
@@ -403,6 +403,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("accordion-trigger", ":is([data-slot=\"accordion-trigger\"] *)[data-slot=\"accordion-trigger-icon\"]", "margin-left: auto; width: calc(var(--fui-unit) * 4); height: calc(var(--fui-unit) * 4); color: var(--fui-muted-foreground)", ""),
   ("accordion-content", "[data-slot=\"accordion-content\"]", "overflow: hidden; padding-inline: calc(var(--fui-unit) * 4); font-size: 0.875rem; line-height: var(--fui-u-leading, calc(1.25 / 0.875))", ""),
   ("accordion-content", "[data-slot=\"accordion-content\"]:is([open], :popover-open)", "animation: accordion-down var(--fui-u-animation-duration,var(--fui-u-duration,.2s))var(--fui-u-ease,ease-out)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none); animation: accordion-down var(--fui-u-animation-duration,var(--fui-u-duration,.2s))var(--fui-u-ease,ease-out)var(--fui-u-animation-delay,0s)var(--fui-u-animation-iteration-count,1)var(--fui-u-animation-direction,normal)var(--fui-u-animation-fill-mode,none)", ""),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_B: Array[(Str, Str, Str, Str)] = [
   ("alert-dialog", "[data-slot=\"alert-dialog\"]::backdrop", "position: fixed; inset: 0px; isolation: isolate; z-index: 50; background-color: color-mix(in srgb, #000 30%, transparent); --fui-u-duration: 100ms; transition-duration: 100ms", ""),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]::backdrop", "background-color: color-mix(in oklab, #000 30%, transparent)", "@supports (color: color-mix(in lab, red, red))"),
   ("alert-dialog", "[data-slot=\"alert-dialog\"]::backdrop", "--fui-u-backdrop-blur: blur(8px); -webkit-backdrop-filter: var(--fui-u-backdrop-blur, ) var(--fui-u-backdrop-brightness, ) var(--fui-u-backdrop-contrast, ) var(--fui-u-backdrop-grayscale, ) var(--fui-u-backdrop-hue-rotate, ) var(--fui-u-backdrop-invert, ) var(--fui-u-backdrop-opacity, ) var(--fui-u-backdrop-saturate, ) var(--fui-u-backdrop-sepia, ); backdrop-filter: var(--fui-u-backdrop-blur, ) var(--fui-u-backdrop-brightness, ) var(--fui-u-backdrop-contrast, ) var(--fui-u-backdrop-grayscale, ) var(--fui-u-backdrop-hue-rotate, ) var(--fui-u-backdrop-invert, ) var(--fui-u-backdrop-opacity, ) var(--fui-u-backdrop-saturate, ) var(--fui-u-backdrop-sepia, )", "@supports (backdrop-filter: var(--tw))"),
@@ -803,6 +807,10 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("popover", "[data-slot=\"popover\"]:is([open], :popover-open)", "display: flex", ""),
   ("popover", "[data-slot=\"popover\"]", "z-index: 50; width: calc(var(--fui-unit) * 72); transform-origin: var(--transform-origin); flex-direction: column; gap: calc(var(--fui-unit) * 4); border-radius: calc(var(--fui-radius) * 2.2); background-color: var(--fui-popover); padding: calc(var(--fui-unit) * 4); font-size: 0.875rem; line-height: var(--fui-u-leading, calc(1.25 / 0.875)); color: var(--fui-popover-foreground); --fui-u-shadow: 0 10px 15px -3px var(--fui-u-shadow-color, rgb(0 0 0 / 0.1)), 0 4px 6px -4px var(--fui-u-shadow-color, rgb(0 0 0 / 0.1)); --fui-u-ring-shadow: var(--fui-u-ring-inset, ) 0 0 0 calc(1px + var(--fui-u-ring-offset-width)) var(--fui-u-ring-color, currentcolor); box-shadow: var(--fui-u-inset-shadow), var(--fui-u-inset-ring-shadow), var(--fui-u-ring-offset-shadow), var(--fui-u-ring-shadow), var(--fui-u-shadow); --fui-u-ring-color: var(--fui-foreground); --fui-u-outline-style: none; outline-style: none; --fui-u-duration: 100ms; transition-duration: 100ms", ""),
   ("popover", "[data-slot=\"popover\"]", "--fui-u-ring-color: color-mix(in oklab, var(--fui-foreground) 5%, transparent)", "@supports (color: color-mix(in lab, red, red))"),
+]
+
+/// One run of the rules, short enough for a single array literal.
+const RULES_C: Array[(Str, Str, Str, Str)] = [
   ("popover", "[data-slot=\"popover\"]", "outline: 2px solid transparent; outline-offset: 2px", "@media (forced-colors: active)"),
   ("popover", "[data-slot=\"popover\"][data-side=\"bottom\"]", "--fui-u-enter-translate-y: calc(2*var(--fui-unit)*-1)", ""),
   ("popover", "[data-slot=\"popover\"][data-side=\"start\"]", "--fui-u-enter-translate-x: calc(2*var(--fui-unit))", ""),
@@ -1170,3 +1178,6 @@ export const RULES: Array[(Str, Str, Str, Str)] = [
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"start\"]) > [data-slot=\"input-group-control\"]", "padding-inline-start: calc(var(--fui-unit) * 1.5)", ""),
   ("input-group-control", "[data-slot=\"input-group\"]:has(> [data-align=\"end\"]) > [data-slot=\"input-group-control\"]", "padding-inline-end: calc(var(--fui-unit) * 1.5)", "")
 ]
+
+/// Each rule's slot, selector, declarations, and any at-rule around it.
+export const RULES: Array[(Str, Str, Str, Str)] = RULES_A.concat(RULES_B).concat(RULES_C)
