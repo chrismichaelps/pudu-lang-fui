@@ -1,0 +1,12 @@
+- name: Home
+  href: index.md
+- name: Docs
+  href: guides/
+- name: Components
+  href: components/
+- name: Elements
+  href: elements/
+- name: Blocks
+  href: blocks/
+- name: GitHub
+  href: https://github.com/chrismichaelps/pudu-lang-fui

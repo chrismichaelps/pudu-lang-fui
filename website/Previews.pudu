@@ -1,0 +1,640 @@
+/** @Website.Previews.Program — one live preview and one page per item */
+module Previews
+
+import Std.Html.Build as H
+import Std.Io as Io
+import Std.Map as Map
+import Std.Option as Option
+import Std.Path as Path
+import Std.Result as Result
+import PuduLangFui.Blocks.Dashboard as Dashboard
+import PuduLangFui.Blocks.Login as Login
+import PuduLangFui.Blocks.Pricing as Pricing
+import PuduLangFui.Blocks.Settings as Settings
+import PuduLangFui.Blocks.Signup as Signup
+import PuduLangFui.Catalog.Catalog as Catalog
+import PuduLangFui.Cli.Model.Item as Item
+import PuduLangFui.Cli.Workspace.Registry as Registry
+import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
+import PuduLangFui.Components.Composites.Attachment as Attachment
+import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
+import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.CodeBlock as CodeBlock
+import PuduLangFui.Components.Composites.Combobox as Combobox
+import PuduLangFui.Components.Composites.ContextMenu as ContextMenu
+import PuduLangFui.Components.Composites.Dialog as Dialog
+import PuduLangFui.Components.Composites.Drawer as Drawer
+import PuduLangFui.Components.Composites.DropdownMenu as DropdownMenu
+import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Composites.InputGroup as InputGroup
+import PuduLangFui.Components.Composites.InputOtp as InputOtp
+import PuduLangFui.Components.Composites.Message as Message
+import PuduLangFui.Components.Composites.MessageScroller as MessageScroller
+import PuduLangFui.Components.Composites.NavigationMenu as NavigationMenu
+import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.Select as Select
+import PuduLangFui.Components.Composites.Sheet as Sheet
+import PuduLangFui.Components.Composites.Spinner as Spinner
+import PuduLangFui.Components.Composites.Toast as Toast
+import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
+import PuduLangFui.Components.Composites.Trace as Trace
+import PuduLangFui.Components.Patterns.Chart as Chart
+import PuduLangFui.Components.Patterns.Command as Command
+import PuduLangFui.Components.Patterns.DataTable as DataTable
+import PuduLangFui.Components.Patterns.DatePicker as DatePicker
+import PuduLangFui.Components.Patterns.Form as Form
+import PuduLangFui.Components.Patterns.Menubar as Menubar
+import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
+import PuduLangFui.Components.Patterns.Sidebar as Sidebar
+import PuduLangFui.Components.Primitives.Accordion as Accordion
+import PuduLangFui.Components.Primitives.Alert as Alert
+import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
+import PuduLangFui.Components.Primitives.Avatar as Avatar
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Components.Primitives.Bubble as Bubble
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.ButtonGroup as ButtonGroup
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Collapsible as Collapsible
+import PuduLangFui.Components.Primitives.Direction as Direction
+import PuduLangFui.Components.Primitives.Effects as Effects
+import PuduLangFui.Components.Primitives.Empty as Empty
+import PuduLangFui.Components.Primitives.HoverCard as HoverCard
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Item as Row
+import PuduLangFui.Components.Primitives.Kbd as Kbd
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Components.Primitives.Marker as Marker
+import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Components.Primitives.RadioGroup as RadioGroup
+import PuduLangFui.Components.Primitives.Resizable as Resizable
+import PuduLangFui.Components.Primitives.ScrollArea as ScrollArea
+import PuduLangFui.Components.Primitives.Separator as Separator
+import PuduLangFui.Components.Primitives.Skeleton as Skeleton
+import PuduLangFui.Components.Primitives.Slider as Slider
+import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Components.Primitives.Table as Table
+import PuduLangFui.Components.Primitives.Tabs as Tabs
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Components.Primitives.Toggle as Toggle
+import PuduLangFui.Components.Primitives.Tooltip as Tooltip
+import PuduLangFui.Components.Primitives.Typeset as Typeset
+import PuduLangFui.Components.Primitives.Typography as Typography
+import PuduLangFui.Core.Styling as Style
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Elements.ChainOfThought as ChainOfThought
+import PuduLangFui.Elements.Chat as Chat
+import PuduLangFui.Elements.Checkpoint as Checkpoint
+import PuduLangFui.Elements.Confirmation as Confirmation
+import PuduLangFui.Elements.Context as Context
+import PuduLangFui.Elements.FileTree as FileTree
+import PuduLangFui.Elements.InlineCitation as InlineCitation
+import PuduLangFui.Elements.ModelSelector as ModelSelector
+import PuduLangFui.Elements.Plan as Plan
+import PuduLangFui.Elements.PromptInput as PromptInput
+import PuduLangFui.Elements.Queue as Queue
+import PuduLangFui.Elements.Reasoning as Reasoning
+import PuduLangFui.Elements.Sources as Sources
+import PuduLangFui.Elements.StackTrace as StackTrace
+import PuduLangFui.Elements.Subagent as Subagent
+import PuduLangFui.Elements.Suggestion as Suggestion
+import PuduLangFui.Elements.Task as Task
+import PuduLangFui.Elements.Terminal as Terminal
+import PuduLangFui.Elements.TestResults as TestResults
+import PuduLangFui.Elements.Tool as Tool
+import PuduLangFui.Elements.Turn as Turn
+import PuduLangFui as Fui
+import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Utils.Spelling as Spelling
+
+/** @Website.Previews.Customer — a row of the example table */
+type Customer = { name: Str, plan: Str }
+
+/// Where the generated pages and previews go.
+const DOCS: Str = "website/docs"
+
+/// The docs folder each kind of item writes to.
+const FOLDERS: Map[Str, Str] = mapOf([("Component", "components"), ("Element", "elements"), ("PageBlock", "blocks")])
+
+/// A link that goes nowhere, for examples.
+fn here(_number: Int) -> Str { "#" }
+
+/// A sort link that goes nowhere, for examples.
+fn sorted(_key: Str, _descending: Bool) -> Str { "#" }
+
+/// A day link that goes nowhere, for examples.
+fn dayLink(_day: Calendar.Date) -> Str { "#" }
+
+/// A month link that goes nowhere, for examples.
+fn monthLink(_year: Int, _month: Int) -> Str { "#" }
+
+/// A column of examples with a constrained width.
+fn column(width: Str, children: Array[H.Node]) -> H.Node {
+  H.div().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-4)").css("inline-size", width).holding(children)
+}
+
+/// An example row of a menu.
+fn line(status: Trace.Status, caption: Str) -> H.Node { Trace.line(status).holding([Trace.body().holding([Trace.title().says(caption)])]) }
+
+/// Every component's demonstration.
+const DEMOS: Map[Str, fn() -> H.Node] = mapOf([
+    ("accordion", demoAccordion), ("alert", demoAlert), ("alert-dialog", demoAlertDialog), ("aspect-ratio", demoAspectRatio), ("attachment", demoAttachment), ("avatar", demoAvatar), ("badge", demoBadge),
+    ("breadcrumb", demoBreadcrumb), ("bubble", demoBubble), ("button", demoButton), ("button-group", demoButtonGroup), ("calendar", demoCalendar), ("card", demoCard), ("carousel", demoCarousel), ("chart", demoChart),
+    ("checkbox", demoCheckbox), ("code-block", demoCodeBlock), ("collapsible", demoCollapsible), ("combobox", demoCombobox), ("command", demoCommand), ("context-menu", demoContextMenu), ("data-table", demoDataTable),
+    ("date-picker", demoDatePicker), ("dialog", demoDialog), ("direction", demoDirection), ("drawer", demoDrawer), ("dropdown-menu", demoDropdownMenu), ("effects", demoEffects), ("empty", demoEmpty), ("field", demoField), ("form", demoForm),
+    ("hover-card", demoHoverCard), ("icon", demoIcon), ("input", demoInput), ("input-group", demoInputGroup), ("input-otp", demoInputOtp), ("item", demoItem), ("kbd", demoKbd), ("label", demoLabel), ("marker", demoMarker),
+    ("menubar", demoMenubar), ("message", demoMessage), ("message-scroller", demoMessageScroller), ("native-select", demoNativeSelect), ("navigation-menu", demoNavigationMenu), ("pagination", demoPagination), ("popover", demoPopover),
+    ("progress", demoProgress), ("questionnaire", demoQuestionnaire), ("radio-group", demoRadioGroup), ("resizable", demoResizable), ("scroll-area", demoScrollArea), ("select", demoSelect), ("separator", demoSeparator), ("sheet", demoSheet),
+    ("sidebar", demoSidebar), ("skeleton", demoSkeleton), ("slider", demoSlider), ("spinner", demoSpinner), ("switch", demoSwitch), ("table", demoTable), ("tabs", demoTabs), ("textarea", demoTextarea), ("toast", demoToast), ("toggle", demoToggle),
+    ("toggle-group", demoToggleGroup), ("tooltip", demoTooltip), ("trace", demoTrace), ("typeset", demoTypeset), ("typography", demoTypography),
+    ("chain-of-thought", demoChainOfThought), ("chat", demoChat), ("checkpoint", demoCheckpoint), ("confirmation", demoConfirmation), ("context", demoContext), ("file-tree", demoFileTree), ("inline-citation", demoInlineCitation), ("model-selector", demoModelSelector),
+    ("plan", demoPlan), ("prompt-input", demoPromptInput), ("queue", demoQueue), ("reasoning", demoReasoning), ("sources", demoSources), ("stack-trace", demoStackTrace), ("subagent", demoSubagent), ("suggestion", demoSuggestion),
+    ("task", demoTask), ("terminal", demoTerminal), ("test-results", demoTestResults), ("tool", demoTool), ("turn", demoTurn),
+    ("dashboard", demoDashboard), ("login", demoLogin), ("pricing", demoPricing), ("settings", demoSettings), ("signup", demoSignup)
+  ])
+
+fn demoAccordion() -> H.Node {
+  column("24rem", [Accordion.accordion().holding([
+          Accordion.item("faq", "Is it accessible?", true).holding([Accordion.content().says("Yes. It uses the platform's own disclosure element.")]),
+          Accordion.item("faq", "Does it need a script?").holding([Accordion.content().says("No. Sections sharing a name open one at a time.")]),
+          Accordion.item("faq", "Can I restyle it?").holding([Accordion.content().says("Add it to your project and edit the file.")])
+        ])])
+}
+
+fn demoAlert() -> H.Node {
+  column("28rem", [
+      Alert.alert(Alert.Neutral).holding([Icon.icon(Icon.Info), Alert.title().says("Heads up"), Alert.description().says("You can add components with the generator.")]),
+      Alert.alert(Alert.Destructive).holding([Icon.icon(Icon.ErrorCircle), Alert.title().says("Upload failed"), Alert.description().says("The file was too large.")])
+    ])
+}
+
+fn demoAlertDialog() -> H.Node {
+  H.div().holding([
+      AlertDialog.trigger("erase", Button.props().variant(Button.Outline)).says("Delete account"),
+      AlertDialog.alertDialog("erase", "Delete account").holding([
+          AlertDialog.header().holding([AlertDialog.title().says("Are you sure?"), AlertDialog.description().says("This cannot be undone.")]),
+          AlertDialog.footer().holding([AlertDialog.cancel("erase", Button.props().variant(Button.Outline)).says("Cancel"), AlertDialog.action("erase", Button.props()).says("Continue")])
+        ])
+    ])
+}
+
+fn demoAspectRatio() -> H.Node { AspectRatio.aspectRatio("16 / 9").css("inline-size", "20rem").css("background", "var(--fui-muted)").css("border-radius", "var(--fui-radius-xl)") }
+
+fn demoAttachment() -> H.Node {
+  Attachment.group().holding([Attachment.attachment(Attachment.Document, "notes.txt", "2 KB", Attachment.Ready), Attachment.attachment(Attachment.Picture, "photo.png", "1 MB", Attachment.Uploading), Attachment.attachment(Attachment.Code, "main.pudu", "4 KB", Attachment.Failed)])
+}
+
+fn demoAvatar() -> H.Node {
+  H.div().css("display", "flex").css("gap", "var(--fui-space-4)").holding([Avatar.initials("AL", "Ada", Avatar.Medium), Avatar.initials("GH", "Grace", Avatar.Large), Avatar.group().holding([Avatar.initials("A", "Ada", Avatar.Small), Avatar.initials("B", "Bob", Avatar.Small), Avatar.count("+3")])])
+}
+
+fn demoBadge() -> H.Node {
+  H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("Badge"), Badge.badge(Badge.Secondary).says("Secondary"), Badge.badge(Badge.Destructive).says("Destructive"), Badge.badge(Badge.Outline).says("Outline"), Badge.badge(Badge.Success).says("Success")])
+}
+
+fn demoBreadcrumb() -> H.Node { Breadcrumb.breadcrumb(&[Breadcrumb.crumb("Home", "#"), Breadcrumb.crumb("Components", "#"), Breadcrumb.crumb("Breadcrumb", "#")]) }
+
+fn demoBubble() -> H.Node {
+  column("24rem", [Bubble.group().holding([Bubble.bubble(Bubble.Secondary, Bubble.Start).says("Did the build pass?"), Bubble.bubble(Bubble.Primary, Bubble.End).says("All green.")])])
+}
+
+fn demoButton() -> H.Node {
+  H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([
+      Button.button(Button.props()).holding([H.words("Button"), Icon.icon(Icon.ArrowRight)]),
+      Button.button(Button.props().variant(Button.Secondary)).says("Secondary"),
+      Button.button(Button.props().variant(Button.Outline)).says("Outline"),
+      Button.button(Button.props().variant(Button.Ghost)).says("Ghost"),
+      Button.button(Button.props().variant(Button.Destructive)).says("Destructive"),
+      Button.button(Button.props().variant(Button.Plain)).says("Link")
+    ])
+}
+
+fn demoButtonGroup() -> H.Node {
+  let outline = Button.props().variant(Button.Outline)
+
+  ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Archive"), Button.button(outline).says("Report"), Button.button(outline).label("More").holding([Icon.icon(Icon.ChevronDown)])])
+}
+
+fn demoCalendar() -> H.Node { Calendar.calendar(2026, 11, dayLink, monthLink, Calendar.props().today(Calendar.date(2026, 11, 9)).selected(Calendar.date(2026, 11, 12))) }
+
+fn demoCard() -> H.Node {
+  Card.card().css("inline-size", "22rem").holding([
+      Card.header().holding([Card.title().says("Create project"), Card.description().says("Deploy your new project in one click.")]),
+      Card.content().holding([Field.field().holding([Field.label("project").says("Name"), Input.input("project", Input.props()).placeholder("Name of your project")])]),
+      Card.footer().css("justify-content", "space-between").holding([Button.button(Button.props().variant(Button.Outline)).says("Cancel"), Button.button(Button.props()).says("Deploy")])
+    ])
+}
+
+fn demoCarousel() -> H.Node {
+  column("20rem", [Carousel.carousel("featured", "Featured", [Card.card().holding([Card.content().says("Slide one")]), Card.card().holding([Card.content().says("Slide two")]), Card.card().holding([Card.content().says("Slide three")])])])
+}
+
+fn demoChart() -> H.Node { column("28rem", [Chart.labelled(Chart.Bars, "Monthly visits", ["Jan", "Feb", "Mar", "Apr"], [Chart.series("Visits", [3.0, 7.0, 4.0, 8.0])])]) }
+
+fn demoCheckbox() -> H.Node {
+  Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Checkbox.checkbox("terms", Checkbox.props().checked()), Label.label("terms").says("Accept terms and conditions")])
+}
+
+fn demoCodeBlock() -> H.Node {
+  column("28rem", [CodeBlock.codeBlock("main.pudu", &[CodeBlock.line("fn main() -> Int \{"), CodeBlock.removed("  1"), CodeBlock.added("  0"), CodeBlock.line("\}")], CodeBlock.props())])
+}
+
+fn demoCollapsible() -> H.Node {
+  Collapsible.collapsible(true).css("inline-size", "20rem").holding([Collapsible.trigger().says("Three repositories"), Collapsible.content().says("pudu-lang, pudu-lang-fui, pudu-lang-docgen")])
+}
+
+fn demoCombobox() -> H.Node { column("18rem", [Combobox.combobox("city", &["Lima", "Quito", "Santiago", "Bogotá"])]) }
+
+fn demoCommand() -> H.Node {
+  column("24rem", [Command.command().holding([
+          Command.input("find", "Type a command or search"),
+          Command.list().holding([Command.group("Suggestions").holding([Command.item().holding([Icon.icon(Icon.Calendar), H.words("Calendar")]), Command.item().holding([Icon.icon(Icon.Search), H.words("Search"), Command.shortcut().says("⌘S")])]), Command.separator(), Command.group("Settings").holding([Command.item().holding([Icon.icon(Icon.User), H.words("Profile")])]), Command.empty("No results.")])
+        ])])
+}
+
+fn demoContextMenu() -> H.Node {
+  H.div().holding([
+      ContextMenu.area("menu").css("padding", "var(--fui-space-12)").css("border", "1px dashed var(--fui-border)").css("border-radius", "var(--fui-radius-2xl)").says("Right-click here"),
+      ContextMenu.menu("menu").holding([ContextMenu.item().holding([H.words("Back"), ContextMenu.shortcut().says("⌘[")]), ContextMenu.separator(), ContextMenu.item().says("Reload")])
+    ])
+}
+
+fn demoDataTable() -> H.Node {
+  column("36rem", [DataTable.dataTable(
+        [DataTable.sortable("name", "Name", |row: &Customer| H.words(row.name)), DataTable.column("plan", "Plan", |row: &Customer| Badge.badge(Badge.Secondary).says(row.plan))],
+        [Customer{name: "Ada", plan: "Pro"}, Customer{name: "Grace", plan: "Free"}],
+        DataTable.View{sort: "name", descending: false, page: 2, lastPage: 5},
+        DataTable.Links{sortBy: sorted, pageAt: here},
+        "No customers"
+      )])
+}
+
+fn demoDatePicker() -> H.Node { DatePicker.datePicker("when", "2026-11-12", demoCalendar()) }
+
+fn demoDialog() -> H.Node {
+  H.div().holding([
+      Dialog.trigger("edit", Button.props().variant(Button.Outline)).says("Edit profile"),
+      Dialog.dialog("edit", "Edit profile").holding([
+          Dialog.header().holding([Dialog.title().says("Edit profile"), Dialog.description().says("Make changes here, then save.")]),
+          Field.field().holding([Field.label("who").says("Name"), Input.input("who", Input.props()).value("Ada Lovelace")]),
+          Dialog.footer().holding([Dialog.close("edit", Button.props().variant(Button.Outline)).says("Cancel"), Dialog.close("edit", Button.props()).says("Save changes")])
+        ])
+    ])
+}
+
+fn demoDirection() -> H.Node { Direction.direction("rtl").holding([column("20rem", [demoAlert()])]) }
+
+fn demoDrawer() -> H.Node {
+  H.div().holding([
+      Drawer.trigger("goal", Button.props().variant(Button.Outline)).says("Open drawer"),
+      Drawer.drawer("goal", "Move goal", Drawer.props().snapPoints(["40dvh"]), [
+          Drawer.header().holding([Drawer.title().says("Move goal"), Drawer.description().says("Drag down to settle, or further to dismiss.")]),
+          Drawer.footer().holding([Button.button(Button.props()).says("Submit"), Drawer.close("goal", Button.props().variant(Button.Outline)).says("Cancel")])
+        ])
+    ])
+}
+
+fn demoDropdownMenu() -> H.Node {
+  H.div().holding([
+      DropdownMenu.trigger("account", Button.props().variant(Button.Outline)).says("Open"),
+      DropdownMenu.menu("account").holding([DropdownMenu.label().says("My account"), DropdownMenu.item(false).holding([H.words("Profile"), DropdownMenu.shortcut().says("⇧⌘P")]), DropdownMenu.item(false).says("Billing"), DropdownMenu.separator(), DropdownMenu.item(true).says("Log out")])
+    ])
+}
+
+fn demoEffects() -> H.Node { Effects.shimmer().says("Thinking about it") }
+
+fn demoEmpty() -> H.Node {
+  Empty.empty().css("inline-size", "24rem").holding([Empty.media().holding([Icon.icon(Icon.Folder)]), Empty.title().says("No projects yet"), Empty.description().says("You have not created any projects."), Empty.content().holding([Button.button(Button.props()).says("Create project")])])
+}
+
+fn demoField() -> H.Node {
+  column("22rem", [Field.group().holding([
+          Field.field().holding([Field.label("email").says("Email"), Input.input("email", Input.props().kind("email")).placeholder("you@example.com"), Field.description().says("We never share it.")]),
+          Field.oriented(Field.Vertical, true).holding([Field.label("handle").says("Handle"), Input.input("handle", Input.props().invalid()), Field.error(&["That handle is taken."])])
+        ])])
+}
+
+fn demoForm() -> H.Node {
+  column("22rem", [Form.form("#").holding([Form.item(&mapOf([("user", ["Username is required."])]), "user", "Username", Input.input("user", Input.props()), "Your public name."), Button.submit(Button.props()).says("Submit")])])
+}
+
+fn demoHoverCard() -> H.Node { HoverCard.hoverCard(H.a().href("#").says("@pudu"), H.p().css("margin", "0").says("A statically typed language.")) }
+
+fn demoIcon() -> H.Node {
+  H.div().css("display", "flex").css("gap", "var(--fui-space-3)").holding([Icon.icon(Icon.Search), Icon.icon(Icon.Settings), Icon.icon(Icon.User), Icon.sized(Icon.Star, Icon.Large)])
+}
+
+fn demoInput() -> H.Node { column("18rem", [Input.input("name", Input.props()).placeholder("Name")]) }
+
+fn demoInputGroup() -> H.Node { column("20rem", [InputGroup.group().holding([InputGroup.addon(InputGroup.Start).holding([Icon.icon(Icon.Search)]), InputGroup.input("query"), InputGroup.addon(InputGroup.End).says("12 results")])]) }
+
+fn demoInputOtp() -> H.Node { InputOtp.inputOtp("code", 6) }
+
+fn demoItem() -> H.Node {
+  Row.item(Row.Outline).css("inline-size", "24rem").holding([Row.content().holding([Row.title().says("Basic item"), Row.description().says("A simple item with a title and description.")]), Row.actions().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("Action")])])
+}
+
+fn demoKbd() -> H.Node { Kbd.group().holding([Kbd.key("⌘"), Kbd.key("K")]) }
+
+fn demoLabel() -> H.Node { Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Checkbox.checkbox("agree", Checkbox.props()), Label.label("agree").says("Accept terms")]) }
+
+fn demoMarker() -> H.Node { column("24rem", [Marker.marker(Marker.Status).says("Reading files"), Marker.marker(Marker.System).says("Conversation resumed"), Marker.marker(Marker.Divider).says("Today")]) }
+
+fn demoMenubar() -> H.Node { Menubar.menubar().holding([Menubar.menu("file", "File", [DropdownMenu.item(false).says("New tab"), DropdownMenu.item(false).says("Open")]), Menubar.menu("view", "View", [DropdownMenu.item(false).says("Reload")])]) }
+
+fn demoMessage() -> H.Node { column("24rem", [Message.message(Message.Received).holding([Message.author("A", "Ada"), Message.content().says("The tests pass now.")])]) }
+
+fn demoMessageScroller() -> H.Node {
+  column("24rem", [MessageScroller.scroller("Thread").css("block-size", "12rem").holding([MessageScroller.content().holding([Bubble.bubble(Bubble.Secondary, Bubble.Start).says("First"), Bubble.bubble(Bubble.Primary, Bubble.End).says("Second"), Bubble.bubble(Bubble.Secondary, Bubble.Start).says("Third"), Bubble.bubble(Bubble.Primary, Bubble.End).says("Fourth")])])])
+}
+
+fn demoNativeSelect() -> H.Node { column("18rem", [NativeSelect.select("fruit").holding([NativeSelect.option("apple", "Apple", true), NativeSelect.option("banana", "Banana")])]) }
+
+fn demoNavigationMenu() -> H.Node {
+  NavigationMenu.navigationMenu("Site").holding([NavigationMenu.list().holding([NavigationMenu.item().holding([NavigationMenu.trigger("start", "Getting started"), NavigationMenu.panel("start").says("Install and add your first component.")]), NavigationMenu.item().holding([NavigationMenu.link("#", true).says("Docs")])])])
+}
+
+fn demoPagination() -> H.Node { Pagination.pagination(5, 9, here) }
+
+fn demoPopover() -> H.Node {
+  H.div().holding([
+      Popover.opens(Button.button(Button.props().variant(Button.Outline)), "dimensions").says("Open popover"),
+      Popover.content("dimensions", Popover.Below).holding([Popover.header().holding([Popover.title().says("Dimensions"), Popover.description().says("Set the layer's size.")])])
+    ])
+}
+
+fn demoProgress() -> H.Node { column("20rem", [Progress.progress(60, 100, "Upload")]) }
+
+fn demoQuestionnaire() -> H.Node { column("24rem", [Questionnaire.questionnaire(&[Questionnaire.question("feeling", "How did it go?", Questionnaire.Single, ["Well", "Badly"]), Questionnaire.question("more", "Anything else?", Questionnaire.Freeform, [])], 0, "#")]) }
+
+fn demoRadioGroup() -> H.Node {
+  RadioGroup.group("Density").holding([
+      Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "default", true), Label.label("density-default").says("Default")]),
+      Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "compact"), Label.label("density-compact").says("Compact")])
+    ])
+}
+
+fn demoResizable() -> H.Node { Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-size", "10rem").holding([Resizable.panel("40%").css("padding", "var(--fui-space-4)").says("Sidebar"), Resizable.panel("60%").css("padding", "var(--fui-space-4)").says("Content")]) }
+
+fn demoScrollArea() -> H.Node { ScrollArea.scrollArea("Tags").css("block-size", "10rem").css("inline-size", "14rem").holding([H.p().css("margin", "0").says("A long list that scrolls inside its region, past the edge of the box, line after line after line, until it finally reaches the end.")]) }
+
+fn demoSelect() -> H.Node { column("18rem", [Select.select("theme").holding([Select.option("light", "Light", true), Select.option("dark", "Dark"), Select.option("system", "System")])]) }
+
+fn demoSeparator() -> H.Node { column("18rem", [H.p().css("margin", "0").says("Above"), Separator.separator(Separator.Horizontal), H.p().css("margin", "0").says("Below")]) }
+
+fn demoSheet() -> H.Node {
+  H.div().holding([
+      Sheet.trigger("filters", Button.props().variant(Button.Outline)).says("Open"),
+      Sheet.sheet("filters", "Filters", Sheet.End).holding([Sheet.header().holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list.")]), Sheet.footer().holding([Sheet.close("filters", Button.props()).says("Close")])])
+    ])
+}
+
+fn demoSidebar() -> H.Node {
+  Card.card().css("inline-size", "16rem").holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
+              Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
+              Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
+            ])])])
+}
+
+fn demoSkeleton() -> H.Node { column("16rem", [Skeleton.skeleton().css("block-size", "1rem"), Skeleton.skeleton().css("block-size", "1rem").css("inline-size", "60%")]) }
+
+fn demoSlider() -> H.Node { column("18rem", [Slider.slider("volume", 40)]) }
+
+fn demoSpinner() -> H.Node { Spinner.spinner("Loading") }
+
+fn demoSwitch() -> H.Node { Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Switch.switcher("airplane", true), Label.label("airplane").says("Airplane mode")]) }
+
+fn demoTable() -> H.Node {
+  column("28rem", [Table.table([Table.header().holding([Table.row().holding([Table.head().says("Invoice"), Table.head().says("Status")])]), Table.body().holding([Table.row().holding([Table.cell().says("INV-001"), Table.cell().says("Paid")]), Table.row().holding([Table.cell().says("INV-002"), Table.cell().says("Pending")])])])])
+}
+
+fn demoTabs() -> H.Node { Tabs.tabs("billing", "month", [Tabs.tab("month", "Monthly", H.p().says("Billed each month.")), Tabs.tab("year", "Yearly", H.p().says("Billed once a year."))], Tabs.Pill) }
+
+fn demoTextarea() -> H.Node { column("20rem", [Textarea.textarea("message").placeholder("Message")]) }
+
+fn demoToast() -> H.Node {
+  Toast.toaster(Toast.props().position(Toast.BottomCenter).rich()).holding([Toast.toast("saved", Toast.notice().kind(Toast.Success).duration(0)).holding([Toast.message().says("Event created"), Toast.close("saved"), Toast.description().says("Friday at 5:57 PM")])])
+}
+
+fn demoToggle() -> H.Node { Toggle.toggle("bold", "on", true, Toggle.Outline).holding([Icon.icon(Icon.Star), H.words("Bookmark")]) }
+
+fn demoToggleGroup() -> H.Node { ToggleGroup.group("Alignment").holding([ToggleGroup.item(ToggleGroup.One, "align", "start", true).holding([H.words("Start")]), ToggleGroup.item(ToggleGroup.One, "align", "end").holding([H.words("End")])]) }
+
+fn demoTooltip() -> H.Node { Tooltip.tooltip("Add to library", Button.button(Button.props().variant(Button.Outline)).says("Hover")) }
+
+fn demoTrace() -> H.Node { column("22rem", [Trace.trace().holding([line(Trace.Done, "Read the file"), line(Trace.Running, "Run the tests"), line(Trace.Pending, "Open a pull request")])]) }
+
+fn demoTypeset() -> H.Node { Typeset.typeset(Typeset.props()).raw("<h2>Rendered document</h2><p>A paragraph with <code>code</code> and a <a href='#'>link</a>.</p><ul><li>One</li><li>Two</li></ul>") }
+
+fn demoTypography() -> H.Node { column("28rem", [Typography.text(Typography.H1).says("The heading"), Typography.text(Typography.Lead).says("A lead paragraph."), Typography.text(Typography.Paragraph).says("Body text reads at a comfortable size.")]) }
+
+fn demoChainOfThought() -> H.Node { column("24rem", [ChainOfThought.chainOfThought("Thought through 2 steps", [line(Trace.Done, "Read the file"), line(Trace.Done, "Compared the results")], true)]) }
+
+fn demoChat() -> H.Node { column("28rem", [H.div().css("block-size", "22rem").holding([Chat.chat("Conversation", [Turn.turn("Fix the failing test", [H.p().says("Fixed in the fixture.")])], PromptInput.promptInput("#", "Ask anything", PromptInput.Idle))])]) }
+
+fn demoCheckpoint() -> H.Node { column("24rem", [Checkpoint.checkpoint("Checkpoint 2", "#")]) }
+
+fn demoConfirmation() -> H.Node { column("24rem", [Confirmation.confirmation("Run this command?", "rm -rf build", "#")]) }
+
+fn demoContext() -> H.Node { column("20rem", [Context.context(32000, 200000)]) }
+
+fn demoFileTree() -> H.Node { column("20rem", [FileTree.fileTree([FileTree.folder("src", [FileTree.file("main.pudu", FileTree.Modified), FileTree.file("new.pudu", FileTree.Added)])])]) }
+
+fn demoInlineCitation() -> H.Node { H.p().holding([H.words("Fixed in the fixture"), InlineCitation.inlineCitation(1, "#", "The fixture", "Stale data caused the failure."), H.words(".")]) }
+
+fn demoModelSelector() -> H.Node { ModelSelector.modelSelector(&["fast", "deep"], &["low", "high"], "deep", "high") }
+
+fn demoPlan() -> H.Node { column("22rem", [Plan.plan("Plan", [Plan.step("Read", Trace.Done), Plan.step("Change", Trace.Running), Plan.step("Test", Trace.Pending)])]) }
+
+fn demoPromptInput() -> H.Node { column("28rem", [PromptInput.promptInput("#", "Ask anything", PromptInput.Idle)]) }
+
+fn demoQueue() -> H.Node { column("22rem", [Queue.queue([Queue.entry("Write docs"), Queue.entry("Ship", true)])]) }
+
+fn demoReasoning() -> H.Node { column("24rem", [Reasoning.reasoning(Reasoning.Thinking, H.p().says("Comparing the two approaches."))]) }
+
+fn demoSources() -> H.Node { column("22rem", [Sources.sources([Sources.source("Guide", "#"), Sources.source("Specification", "#")])]) }
+
+fn demoStackTrace() -> H.Node { column("26rem", [StackTrace.stackTrace("TypeError: expected Int", &["at one (a.pudu:1)", "at two (b.pudu:2)"])]) }
+
+fn demoSubagent() -> H.Node { column("24rem", [Trace.trace().holding([Subagent.subagent("Explore the repository", Trace.Done, [line(Trace.Done, "Listed files")], H.p().says("Found three modules."), true)])]) }
+
+fn demoSuggestion() -> H.Node { Suggestion.suggestions("#", &["Explain this", "Add a test"]) }
+
+fn demoTask() -> H.Node { column("22rem", [Task.steps("Searching", [line(Trace.Running, "Looking through files")])]) }
+
+fn demoTerminal() -> H.Node { column("26rem", [Terminal.terminal("pudu test", "12 passed")]) }
+
+fn demoTestResults() -> H.Node { column("24rem", [TestResults.testResults([TestResults.suite("Layout", TestResults.Passed), TestResults.suite("Theme", TestResults.Failed, ["contrast"])])]) }
+
+fn demoTool() -> H.Node { column("26rem", [Trace.trace().holding([Tool.tool("run_tests", Trace.Done, "suite: all", "12 passed", true)])]) }
+
+fn demoTurn() -> H.Node { column("28rem", [Turn.turn("Fix the failing test", [H.p().says("Fixed in the fixture.")])]) }
+
+fn demoDashboard() -> H.Node { H.div().css("inline-size", "100%").css("block-size", "26rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))]) }
+
+fn demoLogin() -> H.Node { column("24rem", [Login.login("#", &[])]) }
+
+fn demoPricing() -> H.Node { H.div().css("inline-size", "100%").holding([Pricing.pricing([Pricing.plan("Free", "$0", ["One project"], "#"), Pricing.plan("Pro", "$12", ["Everything"], "#", true)])]) }
+
+fn demoSettings() -> H.Node { Settings.settings("#", "Ada", "ada@example.com", true) }
+
+fn demoSignup() -> H.Node { column("24rem", [Signup.signup("#", &[])]) }
+
+/// A padded card with the given children.
+fn tile(children: Array[H.Node]) -> H.Node { Card.card().css("break-inside", "avoid").css("margin-block-end", "var(--fui-space-6)").holding(children) }
+
+/// A navigation tile.
+fn navTile(heading: Str, entries: &Array[(Icon.Glyph, Str)], active: Int) -> H.Node {
+  var rows: Array[H.Node] = []
+  var index = 0
+
+  for entry in entries {
+    rows = rows.push(Sidebar.menuItem().holding([Sidebar.menuButton("#", index == active).holding([Icon.icon(entry[0]), H.words(entry[1])])]))
+    index = index + 1
+  }
+
+  Card.card().css("flex", "1").css("padding-block", "var(--fui-space-2)").holding([Sidebar.group().holding([Sidebar.groupLabel().says(heading), Sidebar.menu().holding(rows)])])
+}
+
+/// The mosaic on the home page.
+fn demoHome() -> H.Node {
+  let outline = Button.props().variant(Button.Outline)
+  let secondary = Button.props().variant(Button.Secondary)
+
+  H.div().css("columns", "19rem").css("column-gap", "var(--fui-space-6)").css("padding", "var(--fui-space-6)").holding([
+      tile([Card.content().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-4)").holding([
+              H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([Button.button(Button.props()).holding([H.words("Button"), Icon.icon(Icon.ArrowRight)]), Button.button(secondary).says("Secondary"), Button.button(outline).says("Outline")]),
+              InputGroup.group().holding([InputGroup.input("name"), InputGroup.addon(InputGroup.End).holding([Icon.icon(Icon.Search)])]),
+              Textarea.textarea("message").placeholder("Message"),
+              H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("Badge"), Badge.badge(Badge.Secondary).says("Secondary"), Badge.badge(Badge.Outline).says("Outline"), RadioGroup.radio("r", "a", true), Checkbox.checkbox("c", Checkbox.props().checked())]),
+              H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-2)").holding([Button.button(outline).says("Alert Dialog"), ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Button Group"), Button.button(outline).label("More").holding([Icon.icon(Icon.ChevronUp)])]), Switch.switcher("s", true)])
+            ])]),
+      H.div().css("display", "flex").css("gap", "var(--fui-space-4)").css("break-inside", "avoid").css("margin-block-end", "var(--fui-space-6)").holding([
+          navTile("Workspace", &[(Icon.File, "Documents"), (Icon.Folder, "Projects"), (Icon.Calendar, "Calendar")], 9),
+          navTile("Account", &[(Icon.User, "Profile"), (Icon.Settings, "Settings"), (Icon.Star, "Favorites")], 1)
+        ]),
+      tile([Card.header().holding([Card.title().says("Build history"), Card.description().says("Last five releases")]), Card.content().holding([Chart.labelled(Chart.Bars, "Builds", ["Jul", "Aug", "Sep", "Oct", "Nov"], [Chart.series("Builds", [4.0, 8.0, 6.0, 9.0, 5.0])])]), Card.footer().holding([Button.button(Button.props()).css("inline-size", "100%").says("View full report")])]),
+      tile([Card.header().holding([Card.title().says("Plan a release"), Card.description().says("Pick a target and we will pace the work.")]), Card.content().holding([Field.group().holding([Field.field().holding([Field.label("goal").says("Release name"), Input.input("goal", Input.props()).placeholder("e.g. Spring update")]), Button.button(Button.props()).says("Create plan"), Button.button(outline).says("Cancel")])])]),
+      tile([Empty.empty().holding([Empty.media().holding([Icon.icon(Icon.Plus)]), Empty.title().says("Publish a package"), Empty.description().says("Share your first release with everyone using Pudu."), Empty.content().holding([Button.button(Button.props()).says("Create release")])])]),
+      tile([Card.header().holding([Card.title().says("Traffic"), Card.description().says("418,200 visitors"), Card.action().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("View")])]), Card.content().holding([Chart.chart(Chart.Areas, "Visits", [Chart.series("Visits", [4.0, 7.0, 5.0, 3.0, 6.0, 6.0])])])]),
+      tile([Card.header().holding([Card.title().says("Notifications"), Card.description().says("Choose what reaches you.")]), Card.content().holding([Field.group().holding([
+                  Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("n1", Checkbox.props().checked()), Field.content().holding([Field.title().says("Build alerts"), Field.description().says("Failures and recoveries.")])]),
+                  Field.oriented(Field.Horizontal, false).holding([Checkbox.checkbox("n2", Checkbox.props().checked()), Field.content().holding([Field.title().says("Security alerts"), Field.description().says("Sign-ins and account changes.")])])
+                ])])])
+    ])
+}
+
+/// Writes a file, reporting a failure on the error stream.
+fn saved(path: Str, text: Str) -> Bool {
+  let _made = Io.makeDirectory(Path.directoryOf(path))
+
+  match Io.write(path, text) {
+    case Ok(_) => true
+    case Err(problem) => {
+      let _said = Io.writeErrorLine(path + ": " + problem)
+
+      false
+    }
+  }
+}
+
+/// A standalone preview page holding one demonstration.
+fn previewPage(title: Str, body: H.Node, blocks: &Array[Css.Block]) -> Str {
+  Fui.document(&Fui.page(title, Theme.defaults(), *blocks), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
+}
+
+/// The text between a demonstration's signature and its end.
+fn sourceOf(program: &Array[Str], name: Str) -> Str {
+  let signature = "fn demo" + Spelling.pascal(name) + "() -> H.Node"
+  var collected: Array[Str] = []
+  var inside = false
+
+  for text in program {
+    if inside && text == "\}" { return collected.join("\n") }
+    if inside { collected = collected.push(text.drop(2)) }
+    if text.startsWith(signature) {
+      if text.endsWith("\}") { return text.drop(signature.length() + 3).take(text.length() - signature.length() - 5) }
+
+      inside = true
+    }
+  }
+
+  collected.join("\n")
+}
+
+/// A description as a sentence.
+fn sentence(text: Str) -> Str { text.take(1).toUpper() + text.drop(1) + "." }
+
+/// An item's name as a title: words capitalized and spaced.
+fn titled(name: Str) -> Str { name.split("-").map(|word: Str| Spelling.pascal(word)).join(" ") }
+
+/// One item's documentation page.
+fn pageOf(item: &Item.Item, source: Str, surface: &Array[Str]) -> Str {
+  let title = titled(item.name)
+
+  ["---", "title: " + title, "description: " + sentence(item.description), "---", "", "# " + title, "", sentence(item.description), "",
+    "<div class=\"fui-preview\"><a href=\"../previews/" + item.name + ".html\">Open the " + title + " preview</a></div>", "",
+    "## Installation", "", "```bash", "fui add " + item.name, "```", "",
+    "## Usage", "", "```pudu", source, "```", "",
+    "## API", "", "```pudu", surface.join("\n"), "```", ""].join("\n")
+}
+
+/// Exported signatures of a source, one declaration per line.
+fn surfaceOf(source: Str) -> Array[Str] {
+  source.split("\n").filter(|text: Str| text.startsWith("export ")).map(|text: Str| text.split(" \{ Core")[0].split(" \{ Button")[0].split(" \{ H.")[0].split(" \{ Props")[0].replace(" \{", ""))
+}
+
+/// A table of contents for one kind of item.
+fn tocOf(items: &Array[Item.Item]) -> Str {
+  var lines: Array[Str] = []
+
+  for item in items {
+    lines = lines.push("- name: " + titled(item.name)).push("  href: " + item.name + ".md")
+  }
+
+  lines.join("\n") + "\n"
+}
+
+/// Writes every preview and page; answers the number of problems.
+fn main() -> Int {
+  let registry = match Registry.load(".") {
+    case Ok(found) => found
+    case Err(problem) => panic(problem)
+  }
+  let program = Result.unwrapOr(Io.read("website/Previews.pudu"), "").split("\n")
+  let blocks = Catalog.all()
+  var failures = 0
+
+  for item in registry.items {
+    let folder = Option.unwrapOr(FOLDERS.get(show(item.kind)), "components")
+    let surface = surfaceOf(Result.unwrapOr(Io.read(item.path), ""))
+
+    match DEMOS.get(item.name) {
+      case None => {
+        let _said = Io.writeErrorLine("no demonstration for " + item.name)
+
+        failures = failures + 1
+      }
+      case Some(build) => {
+        if !saved(DOCS + "/previews/" + item.name + ".html", previewPage(item.name, build(), &blocks)) { failures = failures + 1 }
+        if !saved(DOCS + "/" + folder + "/" + item.name + ".md", pageOf(&item, sourceOf(&program, item.name), &surface)) { failures = failures + 1 }
+      }
+    }
+  }
+
+  for folder in FOLDERS.entries() {
+    let kind = folder[0]
+    let items = registry.items.filter(|item: Item.Item| show(item.kind) == kind)
+
+    if !saved(DOCS + "/" + folder[1] + "/toc.yml", tocOf(&items)) { failures = failures + 1 }
+  }
+
+  if !saved(DOCS + "/previews/home.html", previewPage("Home", demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
+
+  failures
+}

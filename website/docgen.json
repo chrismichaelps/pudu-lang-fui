@@ -1,0 +1,24 @@
+{
+  "build": {
+    "content": [{"files": ["**/*.md", "**/*.yml"], "exclude": ["previews/**"], "src": "docs"}],
+    "resource": [{"files": ["previews/**"], "src": "docs"}, {"files": ["favicon.png"], "src": "template/public"}],
+    "output": "_site",
+    "template": ["default", "template"],
+    "globalMetadata": {
+      "_appTitle": "pudu-lang-fui",
+      "_appName": "fui",
+      "_appScript": "public/main.js",
+      "_enableSearch": true,
+      "_disableContribution": true,
+      "_lang": "en",
+      "_themeColor": "#171717",
+      "_copyright": "Chris M. Perez Santiago",
+      "description": "A component system for Pudu: typed props, source you own, and a theme built from seven design aspects.",
+      "_footerLinks": [
+        {"name": "Source", "href": "https://github.com/chrismichaelps/pudu-lang-fui"},
+        {"name": "Issues", "href": "https://github.com/chrismichaelps/pudu-lang-fui/issues"},
+        {"name": "Pudu", "href": "https://www.pudu-lang.org/"}
+      ]
+    }
+  }
+}

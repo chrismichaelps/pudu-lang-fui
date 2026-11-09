@@ -1,0 +1,30 @@
+- name: Introduction
+  href: introduction.md
+- name: Installation
+  href: installation.md
+- name: Configuration
+  href: configuration.md
+- name: Module paths
+  href: module-paths.md
+- name: Theming
+  href: theming.md
+- name: Customizing
+  href: customizing.md
+- name: Dark mode
+  href: dark-mode.md
+- name: Right to left
+  href: right-to-left.md
+- name: Typeset
+  href: typeset.md
+- name: Generator
+  href: generator.md
+- name: Icons
+  href: icons.md
+- name: Forms
+  href: forms.md
+- name: Monorepos
+  href: monorepos.md
+- name: Registries
+  href: registries.md
+- name: Project context
+  href: project-context.md

@@ -1,0 +1,42 @@
+- name: Chain Of Thought
+  href: chain-of-thought.md
+- name: Chat
+  href: chat.md
+- name: Checkpoint
+  href: checkpoint.md
+- name: Confirmation
+  href: confirmation.md
+- name: Context
+  href: context.md
+- name: File Tree
+  href: file-tree.md
+- name: Inline Citation
+  href: inline-citation.md
+- name: Model Selector
+  href: model-selector.md
+- name: Plan
+  href: plan.md
+- name: Prompt Input
+  href: prompt-input.md
+- name: Queue
+  href: queue.md
+- name: Reasoning
+  href: reasoning.md
+- name: Sources
+  href: sources.md
+- name: Stack Trace
+  href: stack-trace.md
+- name: Subagent
+  href: subagent.md
+- name: Suggestion
+  href: suggestion.md
+- name: Task
+  href: task.md
+- name: Terminal
+  href: terminal.md
+- name: Test Results
+  href: test-results.md
+- name: Tool
+  href: tool.md
+- name: Turn
+  href: turn.md

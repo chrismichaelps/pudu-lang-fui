@@ -1,0 +1,10 @@
+- name: Dashboard
+  href: dashboard.md
+- name: Login
+  href: login.md
+- name: Pricing
+  href: pricing.md
+- name: Settings
+  href: settings.md
+- name: Signup
+  href: signup.md
