@@ -19,9 +19,9 @@ fui add button
 
 ```pudu
 H.div().css("display", "flex").css("flex-wrap", "wrap").css("justify-content", "center").css("gap", "var(--fui-space-2)").holding([
-    Button.button(Button.props().variant(Button.Outline)).says("Button"),
-    Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).label("Submit").holding([Icon.icon(Icon.ArrowUp)])
-  ])
+  Button.button(Button.props().variant(Button.Outline)).says("Button"),
+  Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).label("Submit").holding([Icon.icon(Icon.ArrowUp)])
+])
 ```
 
 ## API

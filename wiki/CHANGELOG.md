@@ -5,6 +5,13 @@ tags: [changelog]
 
 # Changelog
 
+## 2026-11-09 — Prerendered Create page and release readiness
+
+- The Create page is built whole: inspector, first preview, look, fonts, and data are in its HTML, and its script attaches to them without redrawing.
+- Create's pickers are a styled listbox with keyboard movement and typeahead, replacing the browser's selects.
+- Usage samples nest by two spaces, whatever the formatter's continuation depth.
+- Each look's rules are split into runs short enough for one array literal, so the package parses on the published 0.1.3 compiler.
+
 ## 2026-11-09 — Parity pass
 
 - Every component compared by slot and computed style against the design reference, open states included.

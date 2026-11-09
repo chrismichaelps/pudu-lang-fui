@@ -19,18 +19,18 @@ fui add sidebar
 
 ```pudu
 Sidebar.provider("demo-sidebar").css("margin", "calc(var(--fui-space-6) * -1)").css("inline-size", "calc(100% + var(--fui-space-12))").css("min-block-size", "100dvh").css("overflow", "hidden").holding([
-    Sidebar.sidebar().holding([
-        Sidebar.content().holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
-                    Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
-                    Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
-                  ])])])
-      ]),
-    Sidebar.inset().css("padding", "var(--fui-space-4)").holding([
-        Sidebar.trigger("demo-sidebar"),
-        H.div().css("display", "grid").css("grid-template-columns", "repeat(3, 1fr)").css("gap", "var(--fui-space-4)").css("margin-block-start", "var(--fui-space-4)").holding([Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem")]),
-        Skeleton.skeleton().css("block-size", "20rem").css("margin-block-start", "var(--fui-space-4)")
-      ])
+  Sidebar.sidebar().holding([
+    Sidebar.content().holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
+      Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
+      Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
+    ])])])
+  ]),
+  Sidebar.inset().css("padding", "var(--fui-space-4)").holding([
+    Sidebar.trigger("demo-sidebar"),
+    H.div().css("display", "grid").css("grid-template-columns", "repeat(3, 1fr)").css("gap", "var(--fui-space-4)").css("margin-block-start", "var(--fui-space-4)").holding([Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem")]),
+    Skeleton.skeleton().css("block-size", "20rem").css("margin-block-start", "var(--fui-space-4)")
   ])
+])
 ```
 
 ## API

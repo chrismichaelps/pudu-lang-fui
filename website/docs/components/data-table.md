@@ -28,16 +28,16 @@ let payments = [
 let outline = Button.props().variant(Button.Outline).size(Button.Small)
 
 column("36rem", [
-    DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), DataTable.visibility("columns", &tableColumns(), &[])]),
-    DataTable.dataTable(
-      tableColumns(),
-      payments,
-      DataTable.View{sort: "", descending: false, page: 1, lastPage: 1},
-      DataTable.Links{sortBy: sorted, pageAt: here},
-      "No results."
-    ),
-    DataTable.footer().holding([DataTable.selectedCount(5), Button.button(outline.disabled()).says("Previous"), Button.button(outline).says("Next")])
-  ])
+  DataTable.toolbar().holding([DataTable.filter("email", "", "Filter emails..."), DataTable.visibility("columns", &tableColumns(), &[])]),
+  DataTable.dataTable(
+    tableColumns(),
+    payments,
+    DataTable.View{sort: "", descending: false, page: 1, lastPage: 1},
+    DataTable.Links{sortBy: sorted, pageAt: here},
+    "No results."
+  ),
+  DataTable.footer().holding([DataTable.selectedCount(5), Button.button(outline.disabled()).says("Previous"), Button.button(outline).says("Next")])
+])
 ```
 
 ## API

@@ -19,10 +19,10 @@ fui add separator
 
 ```pudu
 column("24rem", [
-    H.div().holding([H.div().css("font-size", "var(--fui-text-sm)").css("font-weight", "500").says("pudu-lang-fui"), H.div().css("font-size", "var(--fui-text-sm)").css("color", "var(--fui-muted-foreground)").says("The foundation for your design system")]),
-    Separator.separator(Separator.Horizontal),
-    H.p().css("margin", "0").css("font-size", "var(--fui-text-sm)").says("A set of well designed components that you can customize, extend, and build on.")
-  ])
+  H.div().holding([H.div().css("font-size", "var(--fui-text-sm)").css("font-weight", "500").says("pudu-lang-fui"), H.div().css("font-size", "var(--fui-text-sm)").css("color", "var(--fui-muted-foreground)").says("The foundation for your design system")]),
+  Separator.separator(Separator.Horizontal),
+  H.p().css("margin", "0").css("font-size", "var(--fui-text-sm)").says("A set of well designed components that you can customize, extend, and build on.")
+])
 ```
 
 ## API

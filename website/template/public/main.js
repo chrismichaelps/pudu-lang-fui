@@ -109,5 +109,5 @@ document.addEventListener("click", function (event) {
 });
 
 if (document.querySelector(".fui-create")) {
-  import(new URL("create/main.js", document.currentScript.src).href);
+  import(new URL("design/main.js", document.currentScript.src).href);
 }

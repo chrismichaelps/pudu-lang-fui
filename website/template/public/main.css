@@ -109,6 +109,7 @@ a:hover { text-decoration: none; }
 .content th { font-weight: 500; text-align: start; background: none; border: 0; border-block-end: 1px solid var(--border); padding: 10px 12px; }
 .content td { border: 0; border-block-end: 1px solid var(--border); padding: 10px 12px; }
 
+.code-block pre, .api-signature pre { tab-size: 2; }
 .code-block { border: 0; border-radius: 18px; background: var(--code-bg); overflow: hidden; box-shadow: 0 0 0 1px color-mix(in oklab, var(--text) 5%, transparent); }
 .code-block pre { background: none; border: 0; padding: 20px; font-size: 13px; line-height: 1.7; }
 .code-block pre code { background: none; padding: 0; font-variant-ligatures: none; }
@@ -172,7 +173,7 @@ a:hover { text-decoration: none; }
 .fui-design-canvas { display: flex; flex-direction: column; min-inline-size: 0; background: var(--bg-subtle); }
 .fui-design-toolbar { display: flex; align-items: center; gap: 0.25rem; padding: 0.5rem 0.75rem; border-block-end: 1px solid var(--border); background: var(--bg); }
 .fui-design-spacer { flex: 1; }
-.fui-design-items { block-size: 2rem; padding-inline: 0.5rem; max-inline-size: 14rem; color: var(--text); font-size: 0.8125rem; background: transparent; border: 1px solid var(--border); border-radius: 0.5rem; }
+.fui-design-toolbar .fui-design-picker { inline-size: 11rem; }
 .fui-design-tool { display: inline-flex; align-items: center; block-size: 2rem; min-inline-size: 2rem; justify-content: center; padding-inline: 0.625rem; color: var(--text); font-size: 0.8125rem; background: transparent; border: 1px solid var(--border); border-radius: 0.5rem; cursor: pointer; }
 .fui-design-tool:hover { background: var(--bg-muted); }
 .fui-design-stage { flex: 1; min-block-size: 0; padding: 1.25rem; }
@@ -206,7 +207,15 @@ a:hover { text-decoration: none; }
 .fui-design-dot[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--brand-text); }
 .fui-design-segments { display: flex; flex-wrap: wrap; gap: 0.25rem; }
 .fui-design-segment { flex: 1 1 auto; block-size: 1.75rem; padding-inline: 0.5rem; color: var(--text); font-size: 0.75rem; background: transparent; border: 1px solid var(--border); border-radius: 0.375rem; cursor: pointer; }
-.fui-design-select { block-size: 2rem; padding-inline: 0.5rem; color: var(--text); font-size: 0.8125rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; }
+.fui-design-picker-trigger { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; inline-size: 100%; block-size: 2rem; padding-inline: 0.75rem 0.5rem; color: var(--text); font-size: 0.8125rem; white-space: nowrap; background: transparent; border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 1px 2px oklch(0 0 0 / 0.05); cursor: pointer; transition: background-color 120ms ease; }
+.fui-design-picker-trigger:hover, .fui-design-picker-trigger[aria-expanded="true"] { background: var(--bg-muted); }
+.fui-design-picker-value { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; }
+.fui-design-icon { display: inline-flex; flex: none; inline-size: 1rem; block-size: 1rem; color: var(--text-muted); }
+.fui-design-icon svg { inline-size: 100%; block-size: 100%; }
+.fui-design-picker-list { position: fixed; z-index: 50; padding: 0.25rem; overflow-y: auto; color: var(--text); font-size: 0.8125rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.5rem; box-shadow: 0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1); outline: 0; }
+.fui-design-picker-list[hidden] { display: none; }
+.fui-design-picker-option { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.375rem 0.5rem; white-space: nowrap; border-radius: 0.25rem; cursor: default; }
+.fui-design-picker-option.is-active { background: var(--bg-muted); }
 .fui-design-inspector > footer { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 1.25rem; border-block-start: 1px solid var(--border); }
 .fui-design-code-label { font-size: 0.75rem; color: var(--text-muted); }
 .fui-design-code { padding: 0.5rem 0.625rem; color: var(--text); font-family: var(--font-mono); font-size: 0.6875rem; text-align: start; background: var(--bg-muted); border: 0; border-radius: 0.5rem; cursor: copy; overflow-wrap: anywhere; }

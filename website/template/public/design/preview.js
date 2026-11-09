@@ -37,8 +37,12 @@ function applyFonts(data, state, page) {
   const query = families.map((family) => `family=${family.replaceAll(" ", "+")}:${FONT_WEIGHTS}`).join("&");
   const link = ensureElement(page, "link", "fui-fonts");
 
+  const address = `${FONT_SERVICE}?${query}&display=swap`;
+
   link.rel = "stylesheet";
-  link.href = `${FONT_SERVICE}?${query}&display=swap`;
+
+  if (link.getAttribute("href") !== address) link.href = address;
+
   page.documentElement.style.setProperty("--fui-font-sans", stackOf(data, state.font));
   page.documentElement.style.setProperty("--fui-font-heading", stackOf(data, heading));
 }
@@ -127,17 +131,35 @@ async function applyIcons(data, state, page) {
   });
 }
 
+/* The first preview carries its look inline; the file replaces it only once it has arrived. */
+function applyLook(state, page) {
+  const current = page.getElementById("fui-look");
+  const address = new URL(`looks/${state.look}.css`, PREVIEW_ROOT).href;
+
+  if (current.localName === "link") {
+    if (current.href !== address) current.href = address;
+    return;
+  }
+
+  if (current.dataset.look === state.look) return;
+
+  const link = page.createElement("link");
+
+  current.removeAttribute("id");
+  link.id = "fui-look";
+  link.rel = "stylesheet";
+  link.href = address;
+  link.addEventListener("load", () => current.remove());
+  current.before(link);
+}
+
 export function applyDesign(data, state, frame, mode) {
   const page = frame.contentDocument;
 
   if (!page || !page.head) return;
 
   page.documentElement.setAttribute("data-mode", mode);
-  const look = ensureElement(page, "link", "fui-look");
-  const lookUrl = new URL(`looks/${state.look}.css`, PREVIEW_ROOT).href;
-
-  if (look.href !== lookUrl) look.href = lookUrl;
-
+  applyLook(state, page);
   ensureElement(page, "style", "fui-menu").textContent = data.menus[state.menu] + data.menuAccents[state.accent];
   applyColors(data, state, page);
   applyRadius(data, state, page);

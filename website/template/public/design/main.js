@@ -1,8 +1,8 @@
-import { CODE_PARAMETER, DATA_URL, FIELDS, HOME_ITEM } from "./constants.js";
+import { CODE_PARAMETER, DATA_ELEMENT, FIELDS, HOME_ITEM } from "./constants.js";
 import { createGetCode, createOpenPreset } from "./dialogs.js";
 import { copied, element } from "./dom.js";
 import { decode, encode, initialState, isValid, optionsFor, shuffled, titleOf } from "./model.js";
-import { createControl } from "./picker.js";
+import { createControl, createPicker, icon } from "./picker.js";
 import { applyDesign, previewUrl } from "./preview.js";
 
 const SECTIONS = [
@@ -24,8 +24,8 @@ function start(holder, data) {
   let state = initialState(data);
   let item = HOME_ITEM;
   let mode = currentSiteMode();
-  const frame = element("iframe", { title: "Design preview", src: previewUrl(item) });
-  const stage = element("div", { class: "fui-design-stage is-loading" }, [frame]);
+  const stage = holder.querySelector(".fui-design-stage");
+  const frame = stage.querySelector("iframe");
   const controls = {};
 
   function refresh() {
@@ -62,7 +62,7 @@ function start(holder, data) {
   }
 
   SECTIONS.forEach(([, fields]) => fields.forEach(([field, label, kind]) => {
-    controls[field] = createControl({ label, kind, onPick: (value) => change({ ...state, [field]: value }) });
+    controls[field] = createControl({ label, kind, icons: data.icons, onPick: (value) => change({ ...state, [field]: value }) });
   }));
 
   const getCode = createGetCode(() => encode(state));
@@ -72,22 +72,27 @@ function start(holder, data) {
     mode = mode === "dark" ? "light" : "dark";
     refresh();
   } } });
-  const itemSelect = element("select", { class: "fui-design-items", "aria-label": "Previewed item", on: { change: (event) => {
-    item = event.target.value;
+  const itemOptions = [HOME_ITEM, ...data.items].map((name) => ({ value: name, label: titleOf(name) }));
+  const showItem = (next) => {
+    item = next;
+    itemPicker.update(itemOptions, item);
     stage.classList.add("is-loading");
+    frame.removeAttribute("srcdoc");
     frame.src = previewUrl(item);
-  } } }, [HOME_ITEM, ...data.items].map((name) => element("option", { value: name, text: titleOf(name) })));
+  };
+  const itemPicker = createPicker({ label: "Previewed item", icons: data.icons, onPick: showItem });
   const step = (by) => {
-    const count = itemSelect.options.length;
+    const count = itemOptions.length;
 
-    itemSelect.selectedIndex = (itemSelect.selectedIndex + by + count) % count;
-    itemSelect.dispatchEvent(new Event("change"));
+    showItem(itemOptions[(itemOptions.findIndex((option) => option.value === item) + by + count) % count].value);
   };
 
+  itemPicker.update(itemOptions, item);
+
   const toolbar = element("nav", { class: "fui-design-toolbar", "aria-label": "Preview" }, [
-    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Previous item", text: "‹", on: { click: () => step(-1) } }),
-    itemSelect,
-    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Next item", text: "›", on: { click: () => step(1) } }),
+    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Previous item", on: { click: () => step(-1) } }, [icon(data.icons.left)]),
+    itemPicker.node,
+    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Next item", on: { click: () => step(1) } }, [icon(data.icons.right)]),
     element("span", { class: "fui-design-spacer" }),
     modeButton,
   ]);
@@ -113,12 +118,9 @@ function start(holder, data) {
     ]),
   ]);
 
-  holder.replaceChildren(
-    element("div", { class: "fui-design-canvas" }, [toolbar, stage]),
-    inspector,
-    getCode.node,
-    openPreset.node,
-  );
+  holder.querySelector(".fui-design-toolbar").replaceWith(toolbar);
+  holder.querySelector(".fui-design-inspector").replaceWith(inspector);
+  holder.append(getCode.node, openPreset.node);
 
   frame.addEventListener("load", () => {
     applyDesign(data, state, frame, mode);
@@ -133,7 +135,7 @@ function start(holder, data) {
     refresh();
   });
   document.addEventListener("keydown", (event) => {
-    if (event.target.matches("input, textarea, select") || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.target.matches("input, textarea, [role=listbox]") || event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.key === "r") change(shuffled(data));
     if (event.key === "d") modeButton.click();
   });
@@ -142,9 +144,4 @@ function start(holder, data) {
 
 const holder = document.querySelector(".fui-create");
 
-if (holder) {
-  fetch(DATA_URL)
-    .then((answer) => answer.json())
-    .then((data) => start(holder, data))
-    .catch(() => { holder.textContent = "The design data could not be loaded."; });
-}
+if (holder) start(holder, JSON.parse(document.getElementById(DATA_ELEMENT).textContent));

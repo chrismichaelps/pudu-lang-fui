@@ -19,9 +19,9 @@ fui add item
 
 ```pudu
 column("28rem", [
-    Row.item(Row.Outline).holding([Row.content().holding([Row.title().says("Basic Item"), Row.description().says("A simple item with title and description.")]), Row.actions().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("Action")])]),
-    Row.small(Row.Outline).holding([Row.media().holding([Icon.icon(Icon.BadgeCheck)]), Row.content().holding([Row.title().says("Your profile has been verified.")]), Row.actions().holding([Icon.sized(Icon.ChevronRight, Icon.Small)])])
-  ])
+  Row.item(Row.Outline).holding([Row.content().holding([Row.title().says("Basic Item"), Row.description().says("A simple item with title and description.")]), Row.actions().holding([Button.button(Button.props().variant(Button.Outline).size(Button.Small)).says("Action")])]),
+  Row.small(Row.Outline).holding([Row.media().holding([Icon.icon(Icon.BadgeCheck)]), Row.content().holding([Row.title().says("Your profile has been verified.")]), Row.actions().holding([Icon.sized(Icon.ChevronRight, Icon.Small)])])
+])
 ```
 
 ## API

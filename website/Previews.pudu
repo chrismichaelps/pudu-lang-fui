@@ -784,6 +784,38 @@ fn previewPage(title: Str, look: Str, body: H.Node, blocks: &Array[Css.Block]) -
   Fui.document(&Fui.page(title, Theme.defaults().look([]), *blocks).inHead([lookLink(look), H.script().raw(DEMO_SCRIPT)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
 }
 
+/// The spaces that open a line.
+fn indentOf(text: Str) -> Int {
+  var spaces = 0
+
+  while text.drop(spaces).startsWith(" ") { spaces = spaces + 1 }
+
+  spaces
+}
+
+/// Lines with every level of nesting two spaces deep; a closing bracket sits with its opener.
+fn evenlyIndented(lines: &Array[Str]) -> Array[Str] {
+  var levels: Array[(Int, Int)] = [(0, 0)]
+  var out: Array[Str] = []
+
+  for text in lines {
+    let spaces = indentOf(text)
+
+    while levels[levels.length() - 1][0] > spaces { levels = levels.slice(0, levels.length() - 1) }
+
+    let top = levels[levels.length() - 1]
+    let closes = setOf([")", "]", "\}"]).contains(text.drop(spaces).take(1))
+    let deeper = spaces > top[0] && !closes
+    let depth = if deeper { top[1] + 2 } else { top[1] }
+
+    if deeper { levels = levels.push((spaces, depth)) }
+
+    out = out.push(if text.trim().isEmpty() { "" } else { " ".repeat(depth) + text.drop(spaces) })
+  }
+
+  out
+}
+
 /// The text between a demonstration's signature and its end.
 fn sourceOf(program: &Array[Str], name: Str) -> Str {
   let signature = "fn demo" + Spelling.pascal(name) + "() -> H.Node"
@@ -791,7 +823,7 @@ fn sourceOf(program: &Array[Str], name: Str) -> Str {
   var inside = false
 
   for text in program {
-    if inside && text == "\}" { return collected.join("\n") }
+    if inside && text == "\}" { return evenlyIndented(&collected).join("\n") }
     if inside { collected = collected.push(text.drop(2)) }
     if text.startsWith(signature) {
       if text.endsWith("\}") { return text.drop(signature.length() + 3).take(text.length() - signature.length() - 5) }
@@ -854,7 +886,7 @@ const STATIC_PREVIEWS: Str = "website/.cache/previews"
 
 /// A preview page with only the look rules it uses inside it.
 fn staticPage(title: Str, look: Str, body: H.Node, blocks: &Array[Css.Block]) -> Str {
-  Fui.document(&Fui.page(title, Theme.defaults().look(Option.unwrapOr(Looks.named(look), [])), *blocks).inHead([H.script().raw(DEMO_SCRIPT)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
+  Fui.document(&Fui.page(title, Theme.defaults().look(Option.unwrapOr(Looks.named(look), [])), *blocks).inHead([H.script().raw(MODE_SCRIPT), H.script().raw(DEMO_SCRIPT)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
 }
 
 /// The stylesheet link of a look.
@@ -882,12 +914,125 @@ fn swatchJson(name: Str) -> (Str, Json.Json) {
   (name, Json.list(&rows.map(|row: (Str, Str, Str)| textList(&[row[0], row[1], row[2]]))))
 }
 
+/// The Create page's look samples.
+const LOOK_MARKS: Map[Str, Str] = mapOf([("gentle", "border-radius: 0.5rem"), ("soft", "border-radius: 0.375rem"), ("sharp", "border-radius: 0"), ("round", "border-radius: 9999px"), ("compact", "border-radius: 0.125rem; block-size: 0.75rem"), ("classic", "border-radius: 0.25rem"), ("editorial", "border-radius: 0; border-inline-width: 0"), ("standard", "border-radius: 0.3125rem")])
+
+/// The Create page's icons.
+const CREATE_ICONS: Array[(Str, Str)] = [("down", "<path d=\"m6 9 6 6 6-6\"/>"), ("left", "<path d=\"m15 18-6-6 6-6\"/>"), ("right", "<path d=\"m9 18 6-6-6-6\"/>"), ("check", "<path d=\"M20 6 9 17l-5-5\"/>")]
+
+/// The address of the fonts stylesheet for one family.
+const FONT_ADDRESS: Str = "https://fonts.googleapis.com/css2?family="
+
+/// What every font request asks for after the family.
+const FONT_REQUEST: Str = ":wght@400;500;600;700&display=swap"
+
+/// The text a preview replaces to fill its frame edge to edge.
+const CENTERED_PREVIEW: Str = "min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)"
+
+/// The site's color mode, set before a frame's first paint.
+const MODE_SCRIPT: Str = "var c = parent.document.documentElement.getAttribute('data-theme'); document.documentElement.setAttribute('data-mode', c === 'dark' || c === 'light' ? c : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');"
+
+/// An icon's markup.
+fn svgOf(name: Str) -> Str {
+  let paths = CREATE_ICONS.filter(|entry: (Str, Str)| entry[0] == name)
+
+  "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">" + paths[0][1] + "</svg>"
+}
+
+/// An icon as the Create page shows it.
+fn shellIcon(name: Str) -> Str { "<span class=\"fui-design-icon\" aria-hidden=\"true\">" + svgOf(name) + "</span>" }
+
+/// One choice of a list.
+fn shellChoice(kind: Str, value: Str, label: Str, chosen: Str, inner: Str) -> Str {
+  "<button type=\"button\" class=\"fui-design-" + kind + "\" title=\"" + label + "\" aria-label=\"" + label + "\" aria-pressed=\"" + (if value == chosen { "true" } else { "false" }) + "\" value=\"" + value + "\">" + inner + "</button>"
+}
+
+/// A labeled control, with its current value beside the label when given.
+fn shellField(label: Str, shown: Str, control: Str) -> Str {
+  "<div class=\"fui-design-field\"><div class=\"fui-design-field-head\"><span>" + label + "</span>" + (if shown.isEmpty() { "" } else { "<span class=\"fui-design-value\">" + shown + "</span>" }) + "</div>" + control + "</div>"
+}
+
+/// A group of choices.
+fn shellGroup(kind: Str, label: Str, choices: &Array[Str]) -> Str {
+  "<div class=\"fui-design-" + kind + "\" role=\"group\" aria-label=\"" + label + "\">" + choices.join("") + "</div>"
+}
+
+/// A closed picker.
+fn shellPicker(label: Str, shown: Str) -> Str {
+  "<div class=\"fui-design-picker\"><button type=\"button\" class=\"fui-design-picker-trigger\" aria-haspopup=\"listbox\" aria-expanded=\"false\" aria-label=\"" + label + "\"><span class=\"fui-design-picker-value\">" + shown + "</span>" + shellIcon("down") + "</button></div>"
+}
+
+/// A row of worded choices.
+fn shellSegments(label: Str, names: &Array[Str], chosen: Str) -> Str {
+  shellField(label, titled(chosen), shellGroup("segments", label, &names.map(|name: Str| shellChoice("segment", name, titled(name), chosen, "<span>" + titled(name) + "</span>"))))
+}
+
+/// A color's sample, in a palette's light and dark values.
+fn shellDot(name: Str, token: Str, chosen: Str) -> Str {
+  let rows = Option.unwrapOr(Swatches.SWATCHES.get(name), []).filter(|row: (Str, Str, Str)| row[0] == token)
+  let light = if rows.isEmpty() { "transparent" } else { rows[0][1] }
+  let dark = if rows.isEmpty() { "transparent" } else { rows[0][2] }
+
+  shellChoice("dot", name, titled(name), chosen, "<span style=\"--swatch-light: " + light + "; --swatch-dark: " + dark + "\" aria-hidden=\"true\"></span>")
+}
+
+/// A row of color samples.
+fn shellSwatches(label: Str, names: &Array[Str], token: Str, chosen: Str) -> Str {
+  shellField(label, titled(chosen), shellGroup("swatches", label, &names.map(|name: Str| shellDot(name, token, chosen))))
+}
+
+/// A heading with its controls.
+fn shellSection(heading: Str, fields: &Array[Str]) -> Str { "<section><h3>" + heading + "</h3>" + fields.join("") + "</section>" }
+
+/// The label a table of choices gives a value.
+fn labelIn(table: &Array[(Str, Str, Str)], value: Str) -> Str {
+  let found = table.filter(|row: (Str, Str, Str)| row[0] == value)
+
+  if found.isEmpty() { titled(value) } else { found[0][1] }
+}
+
+/// The home preview, filling its frame.
+fn homeOf(page: Str) -> Str { page.replace(CENTERED_PREVIEW, "display: block") }
+
+/// The first preview: its look, fonts, and color mode are inside it, so it paints once.
+fn createFirstPreview(look: Str, family: Str, blocks: &Array[Css.Block]) -> Str {
+  let sheet = Css.renderLook(&Option.unwrapOr(Looks.named(look), []), &setOf([]), true)
+  let stack = "'" + family + "', sans-serif"
+  let inlined = "<style id=\"fui-look\" data-look=\"" + look + "\">" + sheet + "</style><link rel=\"stylesheet\" id=\"fui-fonts\" href=\"" + FONT_ADDRESS + family.replace(" ", "+") + FONT_REQUEST + "\" /><style>:root \{ --fui-font-sans: " + stack + "; --fui-font-heading: " + stack + "; \}</style><script>" + MODE_SCRIPT + "</script>"
+
+  homeOf(previewPage("Home", look, demoHome(), blocks)).replace("<link rel=\"stylesheet\" id=\"fui-look\" href=\"looks/" + look + ".css\" />", inlined)
+}
+
+/// The Create page as it first paints, with the data its script takes over from.
+fn createShell(items: &Array[Str], blocks: &Array[Css.Block]) -> Str {
+  let chosen = Design.encode(&Design.initial()).split(".")
+  let tool = |text: Str| "<button type=\"button\" class=\"fui-design-tool\">" + text + "</button>"
+  let action = |extra: Str, text: Str| "<button type=\"button\" class=\"fui-design-action" + extra + "\">" + text + "</button>"
+  let hues = [chosen[1]].concat(Options.ACCENT_COLORS)
+  let tiles = Looks.names().map(|name: Str| shellChoice("tile", name, titled(name), chosen[0], "<span class=\"fui-design-tile-mark\" style=\"" + Option.unwrapOr(LOOK_MARKS.get(name), "") + "\" aria-hidden=\"true\"></span><span>" + titled(name) + "</span>"))
+  let radii = Options.RADII.map(|radius: (Str, Str)| radius[0])
+  let sections = [
+    shellSection("Foundation", &[shellField("Look", titled(chosen[0]), shellGroup("tiles", "Look", &tiles)), shellSegments("Corners", &radii, chosen[7])]),
+    shellSection("Color", &[shellSwatches("Neutral", &Options.BASE_COLORS, "muted-foreground", chosen[1]), shellSwatches("Accent", &hues, "primary", chosen[2]), shellSwatches("Charts", &hues, "primary", chosen[3])]),
+    shellSection("Type", &[shellField("Headings", "", shellPicker("Headings", labelIn(&Options.FONTS, chosen[6]))), shellField("Body", "", shellPicker("Body", labelIn(&Options.FONTS, chosen[5]))), shellField("Icons", "", shellPicker("Icons", labelIn(&Options.ICON_LIBRARIES, chosen[4])))]),
+    shellSection("Menus", &[shellSegments("Surface", &Options.MENU_COLORS, chosen[8]), shellSegments("Highlight", &Options.MENU_ACCENTS, chosen[9])])
+  ]
+  let preview = createFirstPreview(chosen[0], labelIn(&Options.FONTS, chosen[5]), blocks)
+  let toolbar = "<nav class=\"fui-design-toolbar\" aria-label=\"Preview\">" + "<button type=\"button\" class=\"fui-design-tool\" aria-label=\"Previous item\">" + shellIcon("left") + "</button>" + shellPicker("Previewed item", "Home") + "<button type=\"button\" class=\"fui-design-tool\" aria-label=\"Next item\">" + shellIcon("right") + "</button><span class=\"fui-design-spacer\"></span>" + tool("Light / Dark") + "</nav>"
+  let header = "<header><div><h2>Your design</h2><p>Every change shows at once.</p></div><div class=\"fui-design-header-actions\">" + tool("Surprise me") + tool("Start over") + "</div></header>"
+  let footer = "<footer><label class=\"fui-design-code-label\">Design code</label><button type=\"button\" class=\"fui-design-code\" title=\"Copy design code\">" + chosen.join(".") + "</button><div class=\"fui-design-footer-actions\">" + action("", "Paste a code") + action(" fui-design-action-primary", "Use this design") + "</div></footer>"
+
+  "<div class=\"fui-design-canvas\">" + toolbar + "<div class=\"fui-design-stage\"><iframe title=\"Design preview\" srcdoc=\"" + preview.replace("&", "&amp;").replace("\"", "&quot;") + "\"></iframe></div></div><aside class=\"fui-design-inspector\" aria-label=\"Design choices\">" + header + "<div class=\"fui-design-sections\">" + sections.join("") + "</div>" + footer + "</aside><script type=\"application/json\" id=\"fui-create-data\">" + createData(items).replace("</", "<\\/") + "</script>"
+}
+
 /// Everything the Create page offers.
 fn createData(items: &Array[Str]) -> Str {
   let colors = Options.BASE_COLORS.concat(Options.ACCENT_COLORS)
 
-  Json.encodePretty(&Json.object(&[
+  Json.encode(&Json.object(&[
         ("code", Json.Text(Design.encode(&Design.initial()))),
+        ("lookMarks", Json.object(&LOOK_MARKS.entries().map(|entry: (Str, Str)| (entry[0], Json.Text(entry[1]))))),
+        ("icons", Json.object(&CREATE_ICONS.map(|entry: (Str, Str)| (entry[0], Json.Text(svgOf(entry[0])))))),
         ("looks", textList(&Looks.names())),
         ("bases", textList(&Options.BASE_COLORS)),
         ("accents", textList(&Options.ACCENT_COLORS)),
@@ -900,11 +1045,11 @@ fn createData(items: &Array[Str]) -> Str {
         ("iconNames", Json.object(&Options.ICON_NAMES.map(|entry: (Str, Array[Str])| (entry[0], textList(&entry[1]))))),
         ("iconService", Json.Text(Constant.ICON_SERVICE)),
         ("items", textList(items))
-      ])) + "\n"
+      ]))
 }
 
-/// Writes each look's stylesheet and the Create page's data; answers how many failed.
-fn writeCreateAssets(items: &Array[Str]) -> Int {
+/// Writes each look's stylesheet and the prerendered Create page; answers how many failed.
+fn writeCreateAssets(items: &Array[Str], blocks: &Array[Css.Block]) -> Int {
   var failures = 0
 
   for name in Looks.names() {
@@ -913,7 +1058,7 @@ fn writeCreateAssets(items: &Array[Str]) -> Int {
     if !saved(DOCS + "/previews/looks/" + name + ".css", Css.renderLook(&rules, &setOf([]), true) + "\n") { failures = failures + 1 }
   }
 
-  if !saved(DOCS + "/previews/create.json", createData(items)) { failures = failures + 1 }
+  if !saved(STATIC_PREVIEWS + "/create.html", createShell(items, blocks)) { failures = failures + 1 }
 
   failures
 }
@@ -953,11 +1098,11 @@ fn main() -> Int {
     if !saved(DOCS + "/" + folder[1] + "/toc.yml", tocOf(&items)) { failures = failures + 1 }
   }
 
-  failures = failures + writeCreateAssets(&registry.items.map(|item: Item.Item| item.name))
+  failures = failures + writeCreateAssets(&registry.items.map(|item: Item.Item| item.name), &blocks)
 
-  if !saved(STATIC_PREVIEWS + "/home.html", staticPage("Home", Looks.DEFAULT, demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
+  if !saved(STATIC_PREVIEWS + "/home.html", homeOf(staticPage("Home", Looks.DEFAULT, demoHome(), &blocks))) { failures = failures + 1 }
 
-  if !saved(DOCS + "/previews/home.html", previewPage("Home", Looks.DEFAULT, demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
+  if !saved(DOCS + "/previews/home.html", homeOf(previewPage("Home", Looks.DEFAULT, demoHome(), &blocks))) { failures = failures + 1 }
 
   failures
 }

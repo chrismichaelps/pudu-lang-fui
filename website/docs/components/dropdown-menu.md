@@ -19,9 +19,9 @@ fui add dropdown-menu
 
 ```pudu
 H.div().holding([
-    DropdownMenu.trigger("account", Button.props().variant(Button.Outline)).says("Open"),
-    DropdownMenu.menu("account").holding([DropdownMenu.label().says("My Account"), DropdownMenu.item(false).holding([H.words("Profile"), DropdownMenu.shortcut().says("⇧⌘P")]), DropdownMenu.item(false).holding([H.words("Billing"), DropdownMenu.shortcut().says("⌘B")]), DropdownMenu.item(false).holding([H.words("Settings"), DropdownMenu.shortcut().says("⌘S")]), DropdownMenu.separator(), DropdownMenu.item(false).says("Team"), DropdownMenu.item(false).says("Support"), DropdownMenu.separator(), DropdownMenu.item(true).holding([H.words("Log out"), DropdownMenu.shortcut().says("⇧⌘Q")])])
-  ])
+  DropdownMenu.trigger("account", Button.props().variant(Button.Outline)).says("Open"),
+  DropdownMenu.menu("account").holding([DropdownMenu.label().says("My Account"), DropdownMenu.item(false).holding([H.words("Profile"), DropdownMenu.shortcut().says("⇧⌘P")]), DropdownMenu.item(false).holding([H.words("Billing"), DropdownMenu.shortcut().says("⌘B")]), DropdownMenu.item(false).holding([H.words("Settings"), DropdownMenu.shortcut().says("⌘S")]), DropdownMenu.separator(), DropdownMenu.item(false).says("Team"), DropdownMenu.item(false).says("Support"), DropdownMenu.separator(), DropdownMenu.item(true).holding([H.words("Log out"), DropdownMenu.shortcut().says("⇧⌘Q")])])
+])
 ```
 
 ## API

@@ -19,14 +19,14 @@ fui add command
 
 ```pudu
 column("24rem", [Command.command().css("border", "1px solid var(--fui-border)").css("border-radius", "var(--fui-radius-lg)").holding([
-        Command.input("find", "Type a command or search..."),
-        Command.list().holding([
-            Command.group("Suggestions").holding([Command.item().holding([Icon.icon(Icon.Calendar), H.words("Calendar")]), Command.item().holding([Icon.icon(Icon.Smile), H.words("Search Emoji")]), Command.item().flag("disabled").holding([Icon.icon(Icon.Calculator), H.words("Calculator")])]),
-            Command.separator(),
-            Command.group("Settings").holding([Command.item().holding([Icon.icon(Icon.User), H.words("Profile"), Command.shortcut().says("⌘P")]), Command.item().holding([Icon.icon(Icon.CreditCard), H.words("Billing"), Command.shortcut().says("⌘B")]), Command.item().holding([Icon.icon(Icon.Settings), H.words("Settings"), Command.shortcut().says("⌘S")])]),
-            Command.empty("No results found.")
-          ])
-      ])])
+  Command.input("find", "Type a command or search..."),
+  Command.list().holding([
+    Command.group("Suggestions").holding([Command.item().holding([Icon.icon(Icon.Calendar), H.words("Calendar")]), Command.item().holding([Icon.icon(Icon.Smile), H.words("Search Emoji")]), Command.item().flag("disabled").holding([Icon.icon(Icon.Calculator), H.words("Calculator")])]),
+    Command.separator(),
+    Command.group("Settings").holding([Command.item().holding([Icon.icon(Icon.User), H.words("Profile"), Command.shortcut().says("⌘P")]), Command.item().holding([Icon.icon(Icon.CreditCard), H.words("Billing"), Command.shortcut().says("⌘B")]), Command.item().holding([Icon.icon(Icon.Settings), H.words("Settings"), Command.shortcut().says("⌘S")])]),
+    Command.empty("No results found.")
+  ])
+])])
 ```
 
 ## API

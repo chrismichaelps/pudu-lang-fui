@@ -29,6 +29,12 @@ const CANVASES: Set[Str] = setOf(["dashboard", "sidebar"])
 /// The caching rules of the assets that rarely change.
 const HEADERS: Str = "/_assets/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/public/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/previews/looks/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/favicon.png\n  Cache-Control: public, max-age=86400\n/logo.png\n  Cache-Control: public, max-age=86400\n"
 
+/// The stylesheets and scripts every page loads.
+const ASSETS: Array[Str] = ["_assets/site.css", "public/main.css", "_assets/site.js", "public/main.js"]
+
+/// The placeholder of the Create page.
+const CREATE_HOLDER: Str = "<div class=\"fui-create\">Loading the design tools.</div>"
+
 /// How the generator's script reveals the current page in the tree, which also scrolls the page.
 const TREE_REVEAL: Str = "active.scrollIntoView(\{ block: \"center\" \});"
 
@@ -125,17 +131,27 @@ fn embedded(page: Str, holder: Str, attributes: Str) -> Str {
   out.join("")
 }
 
-/// A page with its samples colored and its previews in place.
-fn finished(page: Str) -> Str {
+/// A version drawn from the assets' sizes, so a changed asset gets a new address.
+fn assetVersion() -> Str {
+  var total = 0
+
+  for asset in ASSETS { total = total + Result.unwrapOr(Io.read(SITE + "/" + asset), "").length() }
+
+  show(total)
+}
+
+/// A page with its samples colored, its previews in place, and its assets versioned.
+fn finished(page: Str, version: Str) -> Str {
   var done = paintedCode(page)
 
   for (holder, attributes) in HOLDERS { done = embedded(done, holder, attributes) }
+  for asset in ASSETS { done = done.replace(asset + "\"", asset + "?v=" + version + "\"") }
 
   done
 }
 
 /// Finishes every page of a folder; answers how many could not be written.
-fn finishFolder(folder: Str) -> Int {
+fn finishFolder(folder: Str, version: Str) -> Int {
   let directory = SITE + folder
   var failures = 0
 
@@ -143,7 +159,7 @@ fn finishFolder(folder: Str) -> Int {
     if name.endsWith(".html") {
       let path = directory + "/" + name
 
-      match Io.write(path, finished(Result.unwrapOr(Io.read(path), ""))) {
+      match Io.write(path, finished(Result.unwrapOr(Io.read(path), ""), version)) {
         case Ok(_) => {}
         case Err(problem) => {
           let _said = Io.writeErrorLine(path + ": " + problem)
@@ -161,11 +177,21 @@ fn finishFolder(folder: Str) -> Int {
 fn main() -> Int {
   var failures = 0
 
-  for folder in FOLDERS { failures = failures + finishFolder(folder) }
-
   let script = SITE + "/_assets/site.js"
 
   match Io.write(script, Result.unwrapOr(Io.read(script), "").replace(TREE_REVEAL, TREE_SCROLL)) {
+    case Ok(_) => {}
+    case Err(_) => { failures = failures + 1 }
+  }
+
+  let version = assetVersion()
+
+  for folder in FOLDERS { failures = failures + finishFolder(folder, version) }
+
+  let create = SITE + "/create.html"
+  let tools = "<div class=\"fui-create\">" + Result.unwrapOr(Io.read(STATIC_PREVIEWS + "/create.html"), "") + "</div>"
+
+  match Io.write(create, Result.unwrapOr(Io.read(create), "").replace(CREATE_HOLDER, tools)) {
     case Ok(_) => {}
     case Err(_) => { failures = failures + 1 }
   }

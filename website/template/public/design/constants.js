@@ -1,4 +1,3 @@
-export const DATA_URL = new URL("../../previews/create.json", import.meta.url);
 export const PREVIEW_ROOT = new URL("../../previews/", import.meta.url);
 export const FONT_SERVICE = "https://fonts.googleapis.com/css2";
 export const FONT_WEIGHTS = "wght@400;500;600;700";
@@ -6,6 +5,5 @@ export const CODE_SEPARATOR = ".";
 export const CODE_PARAMETER = "design";
 export const HOME_ITEM = "home";
 export const INHERIT = "inherit";
+export const DATA_ELEMENT = "fui-create-data";
 export const FIELDS = ["look", "base", "theme", "chart", "icons", "font", "heading", "radius", "menu", "accent"];
-export const LOOK_TITLES = { gentle: "Gentle", soft: "Soft", sharp: "Sharp", round: "Round", compact: "Compact", classic: "Classic", editorial: "Editorial", standard: "Standard" };
-export const LOOK_MARKS = { gentle: "border-radius: 0.5rem", soft: "border-radius: 0.375rem", sharp: "border-radius: 0", round: "border-radius: 9999px", compact: "border-radius: 0.125rem; block-size: 0.75rem", classic: "border-radius: 0.25rem", editorial: "border-radius: 0; border-inline-width: 0", standard: "border-radius: 0.3125rem" };

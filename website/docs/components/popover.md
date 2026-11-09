@@ -19,9 +19,9 @@ fui add popover
 
 ```pudu
 H.div().holding([
-    Popover.opens(Button.button(Button.props().variant(Button.Outline)), "dimensions").says("Open popover"),
-    Popover.content("dimensions", Popover.Below).holding([Popover.header().holding([Popover.title().says("Dimensions"), Popover.description().says("Set the dimensions for the layer.")]), Field.group().css("gap", "var(--fui-space-3)").holding([sizeField("width", "Width", "100%"), sizeField("max-width", "Max. width", "300px"), sizeField("height", "Height", "25px"), sizeField("max-height", "Max. height", "none")])])
-  ])
+  Popover.opens(Button.button(Button.props().variant(Button.Outline)), "dimensions").says("Open popover"),
+  Popover.content("dimensions", Popover.Below).holding([Popover.header().holding([Popover.title().says("Dimensions"), Popover.description().says("Set the dimensions for the layer.")]), Field.group().css("gap", "var(--fui-space-3)").holding([sizeField("width", "Width", "100%"), sizeField("max-width", "Max. width", "300px"), sizeField("height", "Height", "25px"), sizeField("max-height", "Max. height", "none")])])
+])
 ```
 
 ## API

@@ -22,10 +22,10 @@ let outline = Button.props().variant(Button.Outline)
 let square = outline.size(Button.IconMedium)
 
 H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([
-    ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(square).label("Go back").holding([Icon.icon(Icon.ArrowLeft)])]),
-    ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Archive"), Button.button(outline).says("Report")]),
-    ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Snooze"), Button.button(square).label("More options").holding([Icon.icon(Icon.More)])])
-  ])
+  ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(square).label("Go back").holding([Icon.icon(Icon.ArrowLeft)])]),
+  ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Archive"), Button.button(outline).says("Report")]),
+  ButtonGroup.group(ButtonGroup.Horizontal).holding([Button.button(outline).says("Snooze"), Button.button(square).label("More options").holding([Icon.icon(Icon.More)])])
+])
 ```
 
 ## API
