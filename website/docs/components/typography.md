@@ -24,7 +24,12 @@ column("28rem", [Typography.text(Typography.H1).says("The heading"), Typography.
 ## API
 
 ```pudu
+/// The role a piece of text plays.
 export type Kind = H1 | H2 | H3 | H4 | Paragraph | Blockquote | InlineCode | Lead | Large | Small | Muted
+
+/// Text in the given role.
 export fn text(kind: Kind) -> H.Node
+
+/// The styles of text.
 export fn style() -> Css.Block
 ```

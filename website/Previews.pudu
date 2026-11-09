@@ -859,9 +859,37 @@ fn signatureOf(text: Str) -> Str {
   if text.endsWith(" \{") { text.take(text.length() - 2) } else { text }
 }
 
-/// Exported signatures of a source, one declaration per line.
+/// A declaration's comment as one documentation line; a tagged comment keeps only its description.
+fn commentOf(text: Str) -> Option[Str] {
+  if text.startsWith("///") { return Some(text) }
+  if !text.startsWith("/**") { return None }
+
+  let parts = text.replace("/**", "").replace("*/", "").trim().split(" — ")
+
+  Some("/// " + sentence(parts[parts.length() - 1]))
+}
+
+/// Exported declarations of a source, each under its comment and apart from the next.
 fn surfaceOf(source: Str) -> Array[Str] {
-  source.split("\n").filter(|text: Str| text.startsWith("export ")).map(|text: Str| signatureOf(text))
+  var out: Array[Str] = []
+  var previous = ""
+
+  for text in source.split("\n") {
+    if text.startsWith("export ") {
+      if !out.isEmpty() { out = out.push("") }
+
+      match commentOf(previous) {
+        case Some(comment) => { out = out.push(comment) }
+        case None => {}
+      }
+
+      out = out.push(signatureOf(text))
+    }
+
+    previous = text
+  }
+
+  out
 }
 
 /// A table of contents for one kind of item.

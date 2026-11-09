@@ -24,6 +24,9 @@ Turn.turn("Why does image optimization rerun on every deploy?", [Trace.trace().h
 ## API
 
 ```pudu
+/// A run named `title` holding its steps and its result.
 export fn subagent(title: Str, status: Trace.Status, steps: Array[H.Node], result: H.Node, open: Bool = false) -> H.Node
+
+/// The styles of a subagent.
 export fn style() -> Css.Block
 ```

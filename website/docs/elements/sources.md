@@ -24,8 +24,15 @@ Turn.turn("How do I start a project with pudu?", [H.p().css("margin", "0").says(
 ## API
 
 ```pudu
+/// One link used.
 export type Source = { title: Str, target: Str }
+
+/// A link used.
 export fn source(title: Str, target: Str) -> Source
+
+/// The links under a count, or nothing when there are none.
 export fn sources(all: Array[Source], open: Bool = false) -> H.Node
+
+/// The styles of sources.
 export fn style() -> Css.Block
 ```

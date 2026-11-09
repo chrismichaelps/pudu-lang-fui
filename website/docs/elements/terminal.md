@@ -24,6 +24,9 @@ Turn.turn("Run the checks, then build the app.", [Trace.trace().holding([Trace.s
 ## API
 
 ```pudu
+/// A command and what it printed.
 export fn terminal(command: Str, output: Str) -> H.Node
+
+/// The styles of a terminal.
 export fn style() -> Css.Block
 ```

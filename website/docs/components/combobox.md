@@ -24,6 +24,9 @@ column("14rem", [Combobox.combobox("framework", &["Next.js", "SvelteKit", "Nuxt.
 ## API
 
 ```pudu
+/// A field named `name` that filters the given values, showing `hint` while empty.
 export fn combobox(name: Str, suggestions: &Array[Str], hint: Str = "") -> H.Node
+
+/// The styles of a combobox.
 export fn style() -> Css.Block
 ```

@@ -111,3 +111,60 @@ document.addEventListener("click", function (event) {
 if (document.querySelector(".fui-create")) {
   import(new URL("design/main.js", document.currentScript.src).href);
 }
+
+/* The selection route works where the clipboard permission is refused. */
+function copyBySelection(text) {
+  var field = document.createElement("textarea");
+
+  field.value = text;
+  field.readOnly = true;
+  field.style.position = "fixed";
+  field.style.opacity = "0";
+  document.body.appendChild(field);
+  field.select();
+
+  var copied = document.execCommand("copy");
+
+  field.remove();
+
+  return copied ? Promise.resolve() : Promise.reject(new Error("copy refused"));
+}
+
+window.fuiCopyText = function (text) {
+  if (!navigator.clipboard) return copyBySelection(text);
+
+  return navigator.clipboard.writeText(text).catch(function () { return copyBySelection(text); });
+};
+
+var COPY_LABEL = "Copy";
+var COPY_SHOWN_FOR = 1600;
+var COPY_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+function showCopyResult(button, worked) {
+  clearTimeout(button.fuiCopyTimer);
+  button.classList.toggle("is-copied", worked);
+  button.classList.toggle("is-refused", !worked);
+  button.innerHTML = worked ? COPY_CHECK + "Copied" : "Copy failed";
+  button.setAttribute("aria-label", worked ? "Copied" : "Copy failed");
+  button.fuiCopyTimer = setTimeout(function () {
+    button.classList.remove("is-copied", "is-refused");
+    button.textContent = COPY_LABEL;
+    button.setAttribute("aria-label", "Copy code");
+  }, COPY_SHOWN_FOR);
+}
+
+/* Runs ahead of the generator's handler, which gives no result when the clipboard refuses. */
+document.addEventListener("click", function (event) {
+  var button = event.target.closest(".code-block .copy");
+
+  if (!button) return;
+
+  event.stopImmediatePropagation();
+
+  var code = button.closest(".code-block").querySelector("code");
+
+  window.fuiCopyText(code ? code.textContent : "").then(
+    function () { showCopyResult(button, true); },
+    function () { showCopyResult(button, false); }
+  );
+}, true);

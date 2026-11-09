@@ -24,6 +24,9 @@ Turn.turn("Why is the checkout deploy so slow?", [ChainOfThought.chainOfThought(
 ## API
 
 ```pudu
+/// A summary that opens to reveal the given steps.
 export fn chainOfThought(summary: Str, steps: Array[H.Node], open: Bool = false) -> H.Node
+
+/// The styles of a chain of thought.
 export fn style() -> Css.Block
 ```

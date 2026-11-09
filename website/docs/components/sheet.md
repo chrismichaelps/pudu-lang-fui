@@ -27,13 +27,30 @@ H.div().holding([
 ## API
 
 ```pudu
+/// Which edge a sheet comes from.
 export type Side = Start | End | Top | Bottom
+
+/// A button that opens the sheet `id`.
 export fn trigger(id: Str, given: Button.Props) -> H.Node
+
+/// A button that closes the sheet `id`.
 export fn close(id: Str, given: Button.Props) -> H.Node
+
+/// A panel named for assistive software.
 export fn sheet(id: Str, name: Str, side: Side) -> H.Node
+
+/// The sheet's headline.
 export fn title() -> H.Node
+
+/// What the sheet is about.
 export fn description() -> H.Node
+
+/// The sheet's closing row.
 export fn footer() -> H.Node
+
+/// The sheet's opening.
 export fn header() -> H.Node
+
+/// The styles of a sheet.
 export fn style() -> Css.Block
 ```

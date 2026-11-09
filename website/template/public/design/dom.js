@@ -15,7 +15,6 @@ export function element(tag, attributes = {}, children = []) {
 export async function copied(button, text) {
   const before = button.textContent;
 
-  await navigator.clipboard.writeText(text);
-  button.textContent = "Copied";
+  button.textContent = await window.fuiCopyText(text).then(() => "Copied", () => "Copy failed");
   setTimeout(() => { button.textContent = before; }, 1200);
 }

@@ -24,6 +24,9 @@ column("30rem", [Suggestion.suggestions("#", &["Add a dark mode toggle", "Fix th
 ## API
 
 ```pudu
+/// Suggestions in a row, posted as `prompt` to `action`.
 export fn suggestions(action: Str, prompts: &Array[Str]) -> H.Node
+
+/// The styles of suggestions.
 export fn style() -> Css.Block
 ```

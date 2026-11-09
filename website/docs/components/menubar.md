@@ -24,7 +24,12 @@ Menubar.menubar().css("inline-size", "18rem").holding([Menubar.menu("file", "Fil
 ## API
 
 ```pudu
+/// A row of menus, each placed with `menu`.
 export fn menubar() -> H.Node
+
+/// A menu in the row: its trigger and its already-built entries.
 export fn menu(id: Str, caption: Str, entries: Array[H.Node]) -> H.Node
+
+/// The styles of a menubar.
 export fn style() -> Css.Block
 ```

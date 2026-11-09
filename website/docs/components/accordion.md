@@ -28,8 +28,15 @@ column("24rem", [Accordion.accordion().holding([
 ## API
 
 ```pudu
+/// Sections stacked together.
 export fn accordion() -> H.Node
+
+/// A section with a heading; sections sharing a non-empty `group` open one at a time.
 export fn item(group: Str, heading: Str, open: Bool = false) -> H.Node
+
+/// The section's body.
 export fn content() -> H.Node
+
+/// The styles of an accordion.
 export fn style() -> Css.Block
 ```

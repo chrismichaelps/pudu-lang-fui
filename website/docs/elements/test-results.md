@@ -24,9 +24,18 @@ Turn.turn("Run the checkout tests.", [TestResults.testResults([TestResults.suite
 ## API
 
 ```pudu
+/// How a suite ended.
 export type Outcome = Passed | Failed | Skipped
+
+/// One suite's result.
 export type Suite = { name: Str, outcome: Outcome, failures: Array[Str] }
+
+/// A suite's result.
 export fn suite(name: Str, outcome: Outcome, failures: Array[Str] = []) -> Suite
+
+/// A count of what ran, opening to a row per suite.
 export fn testResults(suites: Array[Suite]) -> H.Node
+
+/// The styles of test results.
 export fn style() -> Css.Block
 ```

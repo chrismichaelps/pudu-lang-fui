@@ -24,8 +24,15 @@ Turn.turn("Migrate the dialog components.", [Plan.plan("Plan: migrate the dialog
 ## API
 
 ```pudu
+/// One planned step.
 export type Step = { title: Str, status: Trace.Status }
+
+/// A planned step.
 export fn step(title: Str, status: Trace.Status) -> Step
+
+/// The plan under a heading counting its finished steps.
 export fn plan(title: Str, steps: Array[Step]) -> H.Node
+
+/// The styles of a plan.
 export fn style() -> Css.Block
 ```

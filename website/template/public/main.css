@@ -127,7 +127,13 @@ a:hover { text-decoration: none; }
 .tok-label { color: var(--tok-label); }
 .tok-operator { color: var(--tok-operator); }
 .code-header { background: none; border: 0; }
-.copy { border-radius: 999px; }
+.copy { display: inline-flex; align-items: center; gap: 0.25rem; border-radius: 999px; transition: color 150ms ease, background-color 150ms ease; }
+.copy svg { inline-size: 0.875rem; block-size: 0.875rem; stroke-dasharray: 26; animation: fui-copy-draw 260ms ease-out; }
+.copy.is-copied, .copy.is-copied:hover { color: var(--brand-text); background: var(--brand-soft); animation: fui-copy-pop 220ms ease-out; }
+.copy.is-refused, .copy.is-refused:hover { color: oklch(0.577 0.245 27.325); }
+@keyframes fui-copy-draw { from { stroke-dashoffset: 26; } to { stroke-dashoffset: 0; } }
+@keyframes fui-copy-pop { 0% { transform: scale(0.94); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .copy svg, .copy.is-copied, .copy.is-copied:hover { animation: none; } }
 
 .affix { border: 0; font-size: 13px; }
 .affix-title { font-size: 13px; font-weight: 500; }

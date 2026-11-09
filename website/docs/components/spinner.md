@@ -24,6 +24,9 @@ column("20rem", [Row.small(Row.Muted).holding([Row.media().holding([Spinner.spin
 ## API
 
 ```pudu
+/// An indicator announcing the given caption.
 export fn spinner(caption: Str = "Loading") -> H.Node
+
+/// The styles of an indicator.
 export fn style() -> Css.Block
 ```

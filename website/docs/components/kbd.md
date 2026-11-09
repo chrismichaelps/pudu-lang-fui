@@ -27,7 +27,12 @@ H.div().css("display", "flex").css("flex-direction", "column").css("align-items"
 ## API
 
 ```pudu
+/// One key with the given caption.
 export fn key(caption: Str) -> H.Node
+
+/// Keys pressed together.
 export fn group() -> H.Node
+
+/// The styles of a key.
 export fn style() -> Css.Block
 ```

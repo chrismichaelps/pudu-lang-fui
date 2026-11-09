@@ -31,9 +31,18 @@ H.div().css("display", "flex").css("gap", "var(--fui-space-2)").holding([
 ## API
 
 ```pudu
+/// Which axis buttons join along.
 export type Orientation = Horizontal | Vertical
+
+/// Buttons joined along an axis.
 export fn group(orientation: Orientation) -> H.Node
+
+/// Plain text sitting inside a group.
 export fn text() -> H.Node
+
+/// A line between members of a group.
 export fn separator() -> H.Node
+
+/// The styles of a button group.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ Turn.turn("Add a settings page.", [H.p().css("margin", "0").says("Added the page
 ## API
 
 ```pudu
+/// A marked point with a form that restores it.
 export fn checkpoint(caption: Str, action: Str) -> H.Node
+
+/// The styles of a checkpoint.
 export fn style() -> Css.Block
 ```

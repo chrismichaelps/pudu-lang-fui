@@ -24,8 +24,15 @@ NativeSelect.select("status").css("inline-size", "fit-content").holding([NativeS
 ## API
 
 ```pudu
+/// A select with the given name, identified by that name.
 export fn select(name: Str, disabled: Bool = false) -> H.Node
+
+/// One choice.
 export fn option(value: Str, caption: Str, selected: Bool = false) -> H.Node
+
+/// Choices under a heading.
 export fn group(heading: Str) -> H.Node
+
+/// The styles of a select.
 export fn style() -> Css.Block
 ```

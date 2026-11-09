@@ -24,6 +24,9 @@ column("24rem", [Signup.signup("#", &[])])
 ## API
 
 ```pudu
+/// A form creating an account, posting to `action`.
 export fn signup(action: Str, errors: &Array[Str]) -> H.Node
+
+/// The styles of a signup section.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ column("30rem", [Turn.turn("How do I add a settings dialog?", [H.p().css("margin
 ## API
 
 ```pudu
+/// The person's message and the agent's reply, which holds its steps and text.
 export fn turn(asked: Str, reply: Array[H.Node]) -> H.Node
+
+/// The styles of a turn.
 export fn style() -> Css.Block
 ```

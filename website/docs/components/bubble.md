@@ -24,11 +24,24 @@ column("24rem", [Bubble.group().holding([Bubble.bubble(Bubble.Secondary, Bubble.
 ## API
 
 ```pudu
+/// How strongly a bubble is drawn.
 export type Variant = Primary | Secondary | Muted | Outline | Destructive | Tinted | Ghost
+
+/// Which side of the thread it sits on.
 export type Align = Start | End
+
+/// A bubble.
 export fn bubble(variant: Variant, align: Align) -> H.Node
+
+/// Bubbles from one speaker, set close together.
 export fn group() -> H.Node
+
+/// A reaction attached to a bubble.
 export fn reaction() -> H.Node
+
+/// Reactions under a bubble.
 export fn reactions() -> H.Node
+
+/// The styles of a bubble.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ Settings.settings("#", "Ada", "ada@example.com", true)
 ## API
 
 ```pudu
+/// A settings form posting to `action`.
 export fn settings(action: Str, displayName: Str, email: Str, notifications: Bool) -> H.Node
+
+/// The styles of a settings form.
 export fn style() -> Css.Block
 ```

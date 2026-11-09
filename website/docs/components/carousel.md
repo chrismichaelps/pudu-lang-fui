@@ -24,6 +24,9 @@ H.div().css("inline-size", "12rem").holding([Carousel.carousel("featured", "Feat
 ## API
 
 ```pudu
+/// Slides moved one view at a time, by arrow, scroll, or swipe.
 export fn carousel(id: Str, caption: Str, slides: Array[H.Node]) -> H.Node
+
+/// The styles of a carousel.
 export fn style() -> Css.Block
 ```

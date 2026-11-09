@@ -30,14 +30,33 @@ H.div().holding([
 ## API
 
 ```pudu
+/// A button that opens the alert dialog `id`.
 export fn trigger(id: Str, given: Button.Props) -> H.Node
+
+/// A control that dismisses the decision.
 export fn cancel(id: Str, given: Button.Props) -> H.Node
+
+/// A modal that closes only through its controls.
 export fn alertDialog(id: Str, name: Str) -> H.Node
+
+/// The dialog's headline.
 export fn title() -> H.Node
+
+/// What the decision means.
 export fn description() -> H.Node
+
+/// The dialog's closing row of controls.
 export fn footer() -> H.Node
+
+/// A control carrying out the decision, inside a form or wired by the caller.
 export fn action(id: Str, given: Button.Props) -> H.Node
+
+/// The dialog's opening.
 export fn header() -> H.Node
+
+/// An icon or image over the headline.
 export fn media() -> H.Node
+
+/// The styles of an alert dialog.
 export fn style() -> Css.Block
 ```

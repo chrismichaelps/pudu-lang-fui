@@ -24,8 +24,15 @@ Turn.turn("Add dark mode to the settings page.", [Queue.queue([Queue.entry("Add 
 ## API
 
 ```pudu
+/// One thing to do.
 export type Entry = { title: Str, done: Bool }
+
+/// One thing to do.
 export fn entry(title: Str, done: Bool = false) -> Entry
+
+/// The entries split into what is left and what is done.
 export fn queue(entries: Array[Entry]) -> H.Node
+
+/// The styles of a queue.
 export fn style() -> Css.Block
 ```

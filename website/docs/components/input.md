@@ -24,9 +24,18 @@ column("20rem", [Field.field().holding([Field.label("api-key").says("API Key"), 
 ## API
 
 ```pudu
+/// What a field can be told.
 export type Props = { kind: Str, invalid: Bool, disabled: Bool, required: Bool }
+
+/// A text field.
 export fn props() -> Props
+
+/// One method per prop.
 export trait Configuring
+
+/// A field with the given name, identified by that name.
 export fn input(name: Str, given: Props) -> H.Node
+
+/// The styles of a field.
 export fn style() -> Css.Block
 ```

@@ -24,7 +24,12 @@ column("24rem", [Marker.marker(Marker.Status).says("Reading files"), Marker.mark
 ## API
 
 ```pudu
+/// Which sort of note a marker is.
 export type Kind = Status | System | Row | Divider
+
+/// A note of the given kind.
 export fn marker(kind: Kind) -> H.Node
+
+/// The styles of a marker.
 export fn style() -> Css.Block
 ```

@@ -28,11 +28,24 @@ NavigationMenu.navigationMenu("Site").holding([NavigationMenu.list().holding([
 ## API
 
 ```pudu
+/// Site navigation named for assistive software.
 export fn navigationMenu(caption: Str) -> H.Node
+
+/// The row of entries.
 export fn list() -> H.Node
+
+/// An entry.
 export fn item() -> H.Node
+
+/// A link; `current` marks the page being viewed.
 export fn link(target: Str, current: Bool = false) -> H.Node
+
+/// A control opening the panel `id`.
 export fn trigger(id: Str, caption: Str) -> H.Node
+
+/// The panel for the id its control names.
 export fn panel(id: Str) -> H.Node
+
+/// The styles of navigation.
 export fn style() -> Css.Block
 ```

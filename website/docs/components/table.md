@@ -31,13 +31,30 @@ column("30rem", [Table.table([
 ## API
 
 ```pudu
+/// A table inside its scrolling frame, holding the given rows and groups.
 export fn table(rows: Array[H.Node]) -> H.Node
+
+/// A caption under the table.
 export fn caption() -> H.Node
+
+/// The heading rows.
 export fn header() -> H.Node
+
+/// The body rows.
 export fn body() -> H.Node
+
+/// The summary rows.
 export fn footer() -> H.Node
+
+/// One row.
 export fn row() -> H.Node
+
+/// A heading cell.
 export fn head() -> H.Node
+
+/// A data cell.
 export fn cell() -> H.Node
+
+/// The styles of a table.
 export fn style() -> Css.Block
 ```

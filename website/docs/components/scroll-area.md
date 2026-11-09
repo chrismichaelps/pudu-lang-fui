@@ -26,6 +26,9 @@ ScrollArea.scrollArea("Tags").css("block-size", "18rem").css("inline-size", "12r
 ## API
 
 ```pudu
+/// A scrolling region, named for assistive software and reachable by keyboard.
 export fn scrollArea(caption: Str) -> H.Node
+
+/// The styles of a region.
 export fn style() -> Css.Block
 ```

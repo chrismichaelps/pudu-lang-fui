@@ -24,6 +24,9 @@ InputOtp.inputOtp("code", 6, "123456")
 ## API
 
 ```pudu
+/// A code field of the given length, reading digits; one field carries the value.
 export fn inputOtp(name: Str, length: Int = 6, value: Str = "") -> H.Node
+
+/// The styles of a code field.
 export fn style() -> Css.Block
 ```

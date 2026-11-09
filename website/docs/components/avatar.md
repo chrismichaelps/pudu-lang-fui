@@ -28,11 +28,24 @@ H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fu
 ## API
 
 ```pudu
+/// How large an avatar sits.
 export type Size = Small | Medium | Large
+
+/// An avatar showing the image over the initials; a broken image reveals them.
 export fn avatar(source: Str, description: Str, letters: Str, size: Size) -> H.Node
+
+/// An avatar with initials alone, named for assistive software.
 export fn initials(text: Str, description: Str, size: Size) -> H.Node
+
+/// Avatars overlapping in a row.
 export fn group() -> H.Node
+
+/// A small status mark at the avatar's corner.
 export fn badge() -> H.Node
+
+/// A count of avatars not shown.
 export fn count(text: Str) -> H.Node
+
+/// The styles of an avatar.
 export fn style() -> Css.Block
 ```

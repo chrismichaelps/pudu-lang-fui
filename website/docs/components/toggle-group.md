@@ -24,10 +24,21 @@ ToggleGroup.styled("Text formatting", ToggleGroup.Outline).css("gap", "var(--fui
 ## API
 
 ```pudu
+/// How many may be pressed.
 export type Kind = One | Many
+
+/// How the group's toggles are drawn.
 export type Variant = Plain | Outline
+
+/// Toggles pressed together.
 export fn group(caption: Str) -> H.Node
+
+/// Toggles pressed together, drawn the given way.
 export fn styled(caption: Str, variant: Variant) -> H.Node
+
+/// A toggle of the group `name`.
 export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node
+
+/// The styles of a toggle group.
 export fn style() -> Css.Block
 ```

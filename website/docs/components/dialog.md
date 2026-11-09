@@ -31,13 +31,30 @@ H.div().holding([
 ## API
 
 ```pudu
+/// A button that opens the dialog `id`.
 export fn trigger(id: Str, given: Button.Props) -> H.Node
+
+/// A button that closes the dialog `id`.
 export fn close(id: Str, given: Button.Props) -> H.Node
+
+/// A modal named for assistive software.
 export fn dialog(id: Str, name: Str) -> H.Node
+
+/// A modal without its close icon.
 export fn plain(id: Str, name: Str) -> H.Node
+
+/// The dialog's opening.
 export fn header() -> H.Node
+
+/// The dialog's headline.
 export fn title() -> H.Node
+
+/// What the dialog is about.
 export fn description() -> H.Node
+
+/// The dialog's closing row of controls.
 export fn footer() -> H.Node
+
+/// The styles of a dialog.
 export fn style() -> Css.Block
 ```

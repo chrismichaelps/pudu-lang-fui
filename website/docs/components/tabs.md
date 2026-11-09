@@ -31,9 +31,18 @@ column("24rem", [Tabs.tabs("report", "overview", [
 ## API
 
 ```pudu
+/// How the row of choices is drawn.
 export type Variant = Pill | Line
+
+/// One choice and its panel.
 export type Tab = { value: Str, caption: Str, panel: H.Node }
+
+/// A choice and its panel.
 export fn tab(value: Str, caption: Str, panel: H.Node) -> Tab
+
+/// Panels switched by choices; `selected` is the value shown first.
 export fn tabs(name: Str, selected: Str, items: Array[Tab], variant: Variant) -> H.Node
+
+/// The styles of tabs, with one rule per position that shows a panel.
 export fn style() -> Css.Block
 ```

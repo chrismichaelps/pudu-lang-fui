@@ -27,17 +27,42 @@ H.div().holding([
 ## API
 
 ```pudu
+/// A button that opens the menu `id`.
 export fn trigger(id: Str, given: Button.Props) -> H.Node
+
+/// The menu for the id its trigger names.
 export fn menu(id: Str) -> H.Node
+
+/// A menu entry that runs an action.
 export fn item(destructive: Bool = false) -> H.Node
+
+/// A menu entry that navigates.
 export fn link(target: Str) -> H.Node
+
+/// A menu entry holding a checkbox.
 export fn checkboxItem(name: Str, value: Str, caption: Str, checked: Bool = false) -> H.Node
+
+/// A menu entry holding a radio.
 export fn radioItem(name: Str, value: Str, caption: Str, checked: Bool = false) -> H.Node
+
+/// A caption over a run of entries.
 export fn label() -> H.Node
+
+/// A line between runs of entries.
 export fn separator() -> H.Node
+
+/// A key hint at the end of an entry.
 export fn shortcut() -> H.Node
+
+/// An entry opening the nested menu `id`.
 export fn subTrigger(id: Str, caption: Str) -> H.Node
+
+/// The nested menu for the id its entry names.
 export fn subMenu(id: Str) -> H.Node
+
+/// A run of related entries.
 export fn group() -> H.Node
+
+/// The styles of a menu.
 export fn style() -> Css.Block
 ```

@@ -28,8 +28,15 @@ column("24rem", [
 ## API
 
 ```pudu
+/// Which way a divider runs.
 export type Orientation = Horizontal | Vertical
+
+/// A divider that separates content.
 export fn separator(orientation: Orientation) -> H.Node
+
+/// A divider with no meaning of its own.
 export fn decorative(orientation: Orientation) -> H.Node
+
+/// The styles of a separator.
 export fn style() -> Css.Block
 ```

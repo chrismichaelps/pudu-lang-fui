@@ -24,6 +24,9 @@ column("24rem", [Login.login("#", &[])])
 ## API
 
 ```pudu
+/// A sign-in form posting to `action`, showing any refusal messages.
 export fn login(action: Str, errors: &Array[Str]) -> H.Node
+
+/// The styles of a login section.
 export fn style() -> Css.Block
 ```

@@ -38,17 +38,42 @@ column("28rem", [Field.group().holding([
 ## API
 
 ```pudu
+/// How a label and control sit.
 export type Orientation = Vertical | Horizontal | Responsive
+
+/// A field with its label above its control.
 export fn field() -> H.Node
+
+/// A field in the given orientation; `invalid` tints its label.
 export fn oriented(orientation: Orientation, invalid: Bool) -> H.Node
+
+/// The field's caption for the control with the given id.
 export fn label(control: Str) -> H.Node
+
+/// Text and description stacked together.
 export fn content() -> H.Node
+
+/// Supporting text.
 export fn description() -> H.Node
+
+/// Nothing for no messages, one line for one, a list for several.
 export fn error(messages: &Array[Str]) -> H.Node
+
+/// Fields stacked together.
 export fn group() -> H.Node
+
+/// A set of related fields.
 export fn set() -> H.Node
+
+/// A set's caption.
 export fn legend() -> H.Node
+
+/// A heading for a field whose control is not a labelled input.
 export fn title() -> H.Node
+
+/// A line between fields, with optional text on it.
 export fn separator(caption: Str) -> H.Node
+
+/// The styles of a field.
 export fn style() -> Css.Block
 ```

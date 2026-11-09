@@ -24,6 +24,9 @@ Turn.turn("Which package managers are installed?", [Trace.trace().holding([Tool.
 ## API
 
 ```pudu
+/// A call to the tool `name`; `output` is empty while it runs.
 export fn tool(name: Str, status: Trace.Status, input: Str, output: Str, open: Bool = false) -> H.Node
+
+/// The styles of a tool.
 export fn style() -> Css.Block
 ```

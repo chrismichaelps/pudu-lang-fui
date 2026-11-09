@@ -28,7 +28,12 @@ RadioGroup.group("Density").css("inline-size", "fit-content").holding([
 ## API
 
 ```pudu
+/// A group of radios, named for assistive software.
 export fn group(caption: Str) -> H.Node
+
+/// A radio of the group `name`, identified by `name` and `value` together.
 export fn radio(name: Str, value: Str, checked: Bool = false) -> H.Node
+
+/// The styles of a radio group.
 export fn style() -> Css.Block
 ```

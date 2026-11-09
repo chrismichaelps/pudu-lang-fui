@@ -24,7 +24,12 @@ H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-sp
 ## API
 
 ```pudu
+/// What a badge says about itself.
 export type Variant = Primary | Secondary | Outline | Ghost | Link | Destructive | Success | Warning | Info
+
+/// A small label.
 export fn badge(variant: Variant) -> H.Node
+
+/// The styles of a badge.
 export fn style() -> Css.Block
 ```

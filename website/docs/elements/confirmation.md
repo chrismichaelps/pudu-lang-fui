@@ -24,6 +24,9 @@ Turn.turn("Clean the build folder.", [Confirmation.confirmation("Run this comman
 ## API
 
 ```pudu
+/// A request posted to `action` with a `decision` of `approve` or `deny`.
 export fn confirmation(title: Str, detail: Str, action: Str) -> H.Node
+
+/// The styles of a confirmation.
 export fn style() -> Css.Block
 ```

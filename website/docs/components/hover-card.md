@@ -24,6 +24,9 @@ HoverCard.hoverCard(Button.link("#", Button.props().variant(Button.Plain)).says(
 ## API
 
 ```pudu
+/// A link with a card revealed on hover or keyboard focus.
 export fn hoverCard(link: H.Node, card: H.Node) -> H.Node
+
+/// The styles of a hover card.
 export fn style() -> Css.Block
 ```

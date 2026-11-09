@@ -27,6 +27,9 @@ column("30rem", [
 ## API
 
 ```pudu
+/// A short named link whose card shows the source's title and summary.
 export fn inlineCitation(label: Str, target: Str, title: Str, summary: Str) -> H.Node
+
+/// The styles of a citation.
 export fn style() -> Css.Block
 ```

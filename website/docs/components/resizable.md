@@ -30,9 +30,18 @@ Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-siz
 ## API
 
 ```pudu
+/// The axis panels divide along.
 export type Orientation = Horizontal | Vertical
+
+/// Panels dividing a space along an axis.
 export fn group(orientation: Orientation) -> H.Node
+
+/// A panel starting at the given share of the space, such as `30%`.
 export fn panel(share: Str) -> H.Node
+
+/// The line between two panels of a group along `orientation`, with a grip when `grip` holds.
 export fn handle(orientation: Orientation, grip: Bool = false) -> H.Node
+
+/// The styles of resizable panels.
 export fn style() -> Css.Block
 ```

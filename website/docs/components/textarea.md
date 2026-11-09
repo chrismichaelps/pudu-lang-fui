@@ -24,6 +24,9 @@ column("20rem", [Textarea.textarea("message").placeholder("Type your message her
 ## API
 
 ```pudu
+/// A text area with the given name, identified by that name.
 export fn textarea(name: Str, invalid: Bool = false) -> H.Node
+
+/// The styles of a text area.
 export fn style() -> Css.Block
 ```

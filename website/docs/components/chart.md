@@ -27,10 +27,21 @@ Card.card().css("inline-size", "36rem").css("--fui-chart-2", "oklch(0.623 0.214 
 ## API
 
 ```pudu
+/// How values are drawn.
 export type Kind = Bars | Lines | Areas | Donut | Pie
+
+/// One named run of values.
 export type Series = { name: Str, values: Array[Float64] }
+
+/// A named run of values.
 export fn series(name: Str, values: Array[Float64]) -> Series
+
+/// A chart with labels along its axis, or naming the slices of a circle.
 export fn labelled(kind: Kind, caption: Str, labels: Array[Str], all: Array[Series]) -> H.Node
+
+/// A chart of the series, named for assistive software.
 export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node
+
+/// The styles of a chart.
 export fn style() -> Css.Block
 ```

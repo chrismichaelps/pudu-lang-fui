@@ -24,6 +24,9 @@ Tooltip.tooltip("Add to library", Button.button(Button.props().variant(Button.Ou
 ## API
 
 ```pudu
+/// The control with a hint revealed on hover or keyboard focus.
 export fn tooltip(hint: Str, control: H.Node) -> H.Node
+
+/// The styles of a tooltip.
 export fn style() -> Css.Block
 ```

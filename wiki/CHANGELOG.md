@@ -7,6 +7,9 @@ tags: [changelog]
 
 ## 2026-11-09 — Prerendered Create page and release readiness
 
+- API sections list each declaration under its source comment.
+- Code block copy falls back to the selection when the clipboard is refused, and shows an animated result.
+- Browser tabs carry the product name.
 - The Create page is built whole: inspector, first preview, look, fonts, and data are in its HTML, and its script attaches to them without redrawing.
 - Create's pickers are a styled listbox with keyboard movement and typeahead, replacing the browser's selects.
 - Usage samples nest by two spaces, whatever the formatter's continuation depth.

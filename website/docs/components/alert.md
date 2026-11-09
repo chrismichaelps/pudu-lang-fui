@@ -27,10 +27,21 @@ column("28rem", [
 ## API
 
 ```pudu
+/// What kind of news an alert carries.
 export type Variant = Neutral | Destructive | Success | Warning | Info
+
+/// A callout.
 export fn alert(variant: Variant) -> H.Node
+
+/// The callout's headline.
 export fn title() -> H.Node
+
+/// The callout's detail.
 export fn description() -> H.Node
+
+/// A control placed at the end of the callout.
 export fn action() -> H.Node
+
+/// The styles of an alert.
 export fn style() -> Css.Block
 ```

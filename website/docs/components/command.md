@@ -32,15 +32,36 @@ column("24rem", [Command.command().css("border", "1px solid var(--fui-border)").
 ## API
 
 ```pudu
+/// Items whose text holds the query, for filtering on the server.
 export fn matching(items: &Array[Str], query: Str) -> Array[Str]
+
+/// A command menu.
 export fn command() -> H.Node
+
+/// The search field, with the given name.
 export fn input(name: Str, hint: Str) -> H.Node
+
+/// The scrolling list.
 export fn list() -> H.Node
+
+/// A titled run of items.
 export fn group(heading: Str) -> H.Node
+
+/// One item as a button.
 export fn item() -> H.Node
+
+/// One item built on the given element, such as a link.
 export fn of(element: H.Node) -> H.Node
+
+/// What shows when nothing matches; hidden until the filter runs.
 export fn empty(message: Str) -> H.Node
+
+/// A key hint at the end of an item.
 export fn shortcut() -> H.Node
+
+/// A line between groups.
 export fn separator() -> H.Node
+
+/// The styles of a command menu.
 export fn style() -> Css.Block
 ```

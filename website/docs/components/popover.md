@@ -27,11 +27,24 @@ H.div().holding([
 ## API
 
 ```pudu
+/// Which side of the trigger it opens on.
 export type Side = Above | Below | Start | End
+
+/// Marks a control as what opens the popover `id`.
 export fn opens(control: H.Node, id: Str) -> H.Node
+
+/// The floating content for the id its trigger names.
 export fn content(id: Str, side: Side) -> H.Node
+
+/// The popover's opening.
 export fn header() -> H.Node
+
+/// The popover's headline.
 export fn title() -> H.Node
+
+/// What the popover is about.
 export fn description() -> H.Node
+
+/// The styles of a popover.
 export fn style() -> Css.Block
 ```

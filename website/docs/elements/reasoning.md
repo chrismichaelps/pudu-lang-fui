@@ -24,7 +24,12 @@ Turn.turn("Why is the checkout deploy so slow?", [Reasoning.reasoning(Reasoning.
 ## API
 
 ```pudu
+/// Whether thinking is under way.
 export type State = Thinking | Finished
+
+/// The thinking under a caption; `duration` follows it when given, and it starts open while under way or when `open` holds.
 export fn reasoning(state: State, thought: H.Node, duration: Str = "", open: Bool = false) -> H.Node
+
+/// The styles of reasoning.
 export fn style() -> Css.Block
 ```

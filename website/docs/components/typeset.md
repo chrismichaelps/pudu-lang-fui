@@ -24,9 +24,18 @@ Typeset.typeset(Typeset.props()).raw("<h2>Rendered document</h2><p>A paragraph w
 ## API
 
 ```pudu
+/// The three controls of a document's rhythm.
 export type Props = { size: Str, leading: Str, flow: Str }
+
+/// Fifteen-pixel text, relaxed leading, even flow.
 export fn props() -> Props
+
+/// One method per prop.
 export trait Configuring
+
+/// A container whose contents read as a document.
 export fn typeset(given: Props) -> H.Node
+
+/// The styles of a document.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fu
 ## API
 
 ```pudu
+/// A label for the control with the given id.
 export fn label(control: Str) -> H.Node
+
+/// The styles of a label.
 export fn style() -> Css.Block
 ```

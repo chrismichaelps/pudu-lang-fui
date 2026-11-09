@@ -30,7 +30,12 @@ H.div().css("inline-size", "34rem").css("block-size", "26rem").css("border", "1p
 ## API
 
 ```pudu
+/// A thread of the given turns with the field under it.
 export fn chat(caption: Str, turns: Array[H.Node], prompt: H.Node) -> H.Node
+
+/// A bar over the thread naming it, with anything placed at its end.
 export fn header(title: Str, note: Str, actions: Array[H.Node] = []) -> H.Node
+
+/// The styles of a chat.
 export fn style() -> Css.Block
 ```

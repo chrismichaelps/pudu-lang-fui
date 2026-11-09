@@ -28,11 +28,24 @@ Empty.empty().css("inline-size", "26rem").holding([
 ## API
 
 ```pudu
+/// An empty state.
 export fn empty() -> H.Node
+
+/// The icon or image of an empty state.
 export fn media() -> H.Node
+
+/// The empty state's headline.
 export fn title() -> H.Node
+
+/// What the empty state explains.
 export fn description() -> H.Node
+
+/// What a reader can do next.
 export fn content() -> H.Node
+
+/// Title and description together.
 export fn header() -> H.Node
+
+/// The styles of an empty state.
 export fn style() -> Css.Block
 ```

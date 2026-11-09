@@ -24,8 +24,15 @@ H.div().css("inline-size", "100%").holding([Pricing.pricing([Pricing.plan("Free"
 ## API
 
 ```pudu
+/// One plan on offer.
 export type Plan = { name: Str, price: Str, features: Array[Str], target: Str, featured: Bool }
+
+/// A plan on offer.
 export fn plan(name: Str, price: Str, features: Array[Str], target: Str, featured: Bool = false) -> Plan
+
+/// The plans in a grid.
 export fn pricing(plans: Array[Plan]) -> H.Node
+
+/// The styles of pricing.
 export fn style() -> Css.Block
 ```

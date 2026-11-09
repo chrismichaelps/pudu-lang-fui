@@ -27,8 +27,15 @@ Collapsible.collapsible(true).css("inline-size", "22rem").holding([
 ## API
 
 ```pudu
+/// Content that opens and closes.
 export fn collapsible(open: Bool = false) -> H.Node
+
+/// The always-visible control.
 export fn trigger() -> H.Node
+
+/// The content that opens.
 export fn content() -> H.Node
+
+/// The styles of a collapsible.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ column("30rem", [PromptInput.promptInput("#", "Ask the agent to change your code
 ## API
 
 ```pudu
+/// Two menus for the model and how hard it works.
 export fn modelSelector(models: &Array[Str], efforts: &Array[Str], model: Str, effort: Str) -> H.Node
+
+/// The styles of a selector.
 export fn style() -> Css.Block
 ```

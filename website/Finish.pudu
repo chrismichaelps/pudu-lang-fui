@@ -32,6 +32,9 @@ const HEADERS: Str = "/_assets/*\n  Cache-Control: public, max-age=300, stale-wh
 /// The stylesheets and scripts every page loads.
 const ASSETS: Array[Str] = ["_assets/site.css", "public/main.css", "_assets/site.js", "public/main.js"]
 
+/// The home page's title as the generator writes it, and as a browser tab should show it.
+const HOME_TITLE: (Str, Str) = ("<title>Foundation UI | Foundation UI</title>", "<title>Foundation UI</title>")
+
 /// The placeholder of the Create page.
 const CREATE_HOLDER: Str = "<div class=\"fui-create\">Loading the design tools.</div>"
 
@@ -147,7 +150,7 @@ fn finished(page: Str, version: Str) -> Str {
   for (holder, attributes) in HOLDERS { done = embedded(done, holder, attributes) }
   for asset in ASSETS { done = done.replace(asset + "\"", asset + "?v=" + version + "\"") }
 
-  done
+  done.replace(HOME_TITLE[0], HOME_TITLE[1])
 }
 
 /// Finishes every page of a folder; answers how many could not be written.

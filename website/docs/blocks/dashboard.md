@@ -24,11 +24,24 @@ H.div().css("margin", "calc(var(--fui-space-6) * -1)").css("inline-size", "calc(
 ## API
 
 ```pudu
+/// One headline figure.
 export type Stat = { caption: Str, figure: Str }
+
+/// One navigation entry.
 export type Link = { caption: Str, target: Str, active: Bool, icon: Option[Icon.Glyph] }
+
+/// A headline figure.
 export fn stat(caption: Str, figure: Str) -> Stat
+
+/// A navigation entry.
 export fn link(caption: Str, target: Str, active: Bool = false) -> Link
+
+/// A navigation entry led by an icon.
 export fn linked(glyph: Icon.Glyph, caption: Str, target: Str, active: Bool = false) -> Link
+
+/// A shell with navigation, figures, and a chart over the given content.
 export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: Array[Chart.Series], content: H.Node) -> H.Node
+
+/// The styles of a dashboard.
 export fn style() -> Css.Block
 ```

@@ -27,15 +27,36 @@ H.div().holding([
 ## API
 
 ```pudu
+/// The region that opens the menu `id` on the secondary button.
 export fn area(id: Str) -> H.Node
+
+/// The menu for the id its area names.
 export fn menu(id: Str) -> H.Node
+
+/// A menu entry.
 export fn item() -> H.Node
+
+/// A line between runs of entries.
 export fn separator() -> H.Node
+
+/// A caption over a run of entries.
 export fn label() -> H.Node
+
+/// A key hint at the end of an entry.
 export fn shortcut() -> H.Node
+
+/// An entry holding a checkbox.
 export fn checkboxItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node
+
+/// An entry holding a radio.
 export fn radioItem(name: Str, value: Str, caption: Str, checked: Bool) -> H.Node
+
+/// An entry opening the nested menu `id`.
 export fn subTrigger(id: Str, caption: Str) -> H.Node
+
+/// The nested menu for the id its entry names.
 export fn subMenu(id: Str) -> H.Node
+
+/// The styles of a context menu.
 export fn style() -> Css.Block
 ```

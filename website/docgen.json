@@ -33,7 +33,7 @@
       "template"
     ],
     "globalMetadata": {
-      "_appTitle": "pudu-lang-fui",
+      "_appTitle": "Foundation UI",
       "_appName": "Foundation UI",
       "_appScript": "public/main.js",
       "_enableSearch": true,

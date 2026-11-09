@@ -43,17 +43,42 @@ column("36rem", [
 ## API
 
 ```pudu
+/// One column of a row type.
 export type Column[T] = { key: Str, header: Str, sortable: Bool, cell: fn(&T) -> H.Node }
+
+/// The sort and page a table shows.
 export type View = { sort: Str, descending: Bool, page: Int, lastPage: Int }
+
+/// How a table links to another view.
 export type Links = { sortBy: fn(Str, Bool) -> Str, pageAt: fn(Int) -> Str }
+
+/// A column that does not sort.
 export fn column[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T]
+
+/// A column whose header links to a sort.
 export fn sortable[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T]
+
+/// A table of the rows, or the empty message when there are none.
 export fn dataTable[T](columns: Array[Column[T]], rows: Array[T], view: View, links: Links, emptyMessage: Str) -> H.Node
+
+/// A column of checkboxes selecting rows by the key a row answers.
 export fn selection[T](name: Str, keyOf: fn(&T) -> Str) -> Column[T]
+
+/// A form filtering the table by the text in `name`, posting to the current page.
 export fn filter(name: Str, value: Str, hint: Str) -> H.Node
+
+/// A menu of checkboxes choosing visible columns, submitted as `hide` values.
 export fn visibility[T](id: Str, columns: &Array[Column[T]], hidden: &Array[Str]) -> H.Node
+
+/// The bar above a table.
 export fn toolbar() -> H.Node
+
+/// The bar below a table.
 export fn footer() -> H.Node
+
+/// How many rows are selected, which the selection column keeps current.
 export fn selectedCount(total: Int) -> H.Node
+
+/// The styles of a data table.
 export fn style() -> Css.Block
 ```

@@ -24,6 +24,9 @@ Direction.direction("rtl").holding([loginCard(["تسجيل الدخول إلى �
 ## API
 
 ```pudu
+/// A region laid out in the given direction, `ltr` or `rtl`.
 export fn direction(value: Str) -> H.Node
+
+/// The styles of a region.
 export fn style() -> Css.Block
 ```

@@ -24,7 +24,12 @@ Effects.shimmer().says("Thinking about it")
 ## API
 
 ```pudu
+/// Text with a moving highlight, for activity in progress.
 export fn shimmer() -> H.Node
+
+/// A scroller whose edges fade while more content lies beyond them.
 export fn scrollFade() -> H.Node
+
+/// The styles of the effects.
 export fn style() -> Css.Block
 ```

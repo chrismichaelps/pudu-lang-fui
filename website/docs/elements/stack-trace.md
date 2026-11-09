@@ -24,6 +24,9 @@ Turn.turn("Reset the database and seed it.", [Trace.trace().holding([Trace.step(
 ## API
 
 ```pudu
+/// The failure's message, opening to its frames.
 export fn stackTrace(message: Str, frames: &Array[Str]) -> H.Node
+
+/// The styles of a stack trace.
 export fn style() -> Css.Block
 ```

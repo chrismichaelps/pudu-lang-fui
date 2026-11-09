@@ -24,9 +24,18 @@ column("22rem", [Form.form("#").holding([Form.item(&mapOf([("user", ["Username i
 ## API
 
 ```pudu
+/// Refusal messages by field name.
 export type Problems = Map[Str, Array[Str]]
+
+/// A form with no problems yet.
 export fn clean() -> Problems
+
+/// A form posting to `action`.
 export fn form(action: Str) -> H.Node
+
+/// One field: its label, the control, a description, and whatever was refused.
 export fn item(problems: &Problems, name: Str, caption: Str, control: H.Node, hint: Str) -> H.Node
+
+/// The styles of a form.
 export fn style() -> Css.Block
 ```

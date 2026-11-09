@@ -27,18 +27,45 @@ column("28rem", [
 ## API
 
 ```pudu
+/// How a row is drawn.
 export type Variant = Plain | Outline | Muted
+
+/// A row as a `div`.
 export fn item(variant: Variant) -> H.Node
+
+/// A row with tighter padding.
 export fn small(variant: Variant) -> H.Node
+
+/// A row built on the given element, such as a link.
 export fn of(element: H.Node, variant: Variant) -> H.Node
+
+/// The row's leading icon or image.
 export fn media() -> H.Node
+
+/// The row's text.
 export fn content() -> H.Node
+
+/// The row's headline.
 export fn title() -> H.Node
+
+/// The row's supporting text.
 export fn description() -> H.Node
+
+/// The row's trailing controls.
 export fn actions() -> H.Node
+
+/// Rows stacked together.
 export fn group() -> H.Node
+
+/// The row's top line, across its full width.
 export fn header() -> H.Node
+
+/// The row's bottom line, across its full width.
 export fn footer() -> H.Node
+
+/// A line between rows.
 export fn separator() -> H.Node
+
+/// The styles of a row.
 export fn style() -> Css.Block
 ```
