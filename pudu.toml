@@ -1,0 +1,9 @@
+[package]
+name = "@chrismichaelps/pudu-lang-fui"
+version = "0.1.0"
+description = "A component system for Pudu: typed props, one owned file per component, seven-aspect theming, and a generator that puts the source in your project"
+license = "Apache-2.0"
+keywords = ["ui", "components", "design-system", "html", "theme"]
+language = ">=0.1.3 <0.2.0"
+source = "src"
+root = "PuduLangFui"

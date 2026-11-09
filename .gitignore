@@ -1,0 +1,13 @@
+.pudu/
+deps/
+*.o
+
+.DS_Store
+*.swp
+
+# Local governance input; never committed.
+fmcf.md
+.probe/
+website/_site/
+website/.cache/
+website/docs/previews/
