@@ -18,7 +18,7 @@ fui add carousel
 ## Usage
 
 ```pudu
-column("20rem", [Carousel.carousel("featured", "Featured", [Card.card().holding([Card.content().says("Slide one")]), Card.card().holding([Card.content().says("Slide two")]), Card.card().holding([Card.content().says("Slide three")])])])
+H.div().css("inline-size", "12rem").holding([Carousel.carousel("featured", "Featured", ["1", "2", "3", "4", "5"].map(|number: Str| Card.card().holding([Card.content().css("display", "flex").css("aspect-ratio", "1").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").css("font-size", "1.875rem").css("font-weight", "600").says(number)])))])
 ```
 
 ## API

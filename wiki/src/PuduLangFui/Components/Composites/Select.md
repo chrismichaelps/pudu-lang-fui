@@ -26,6 +26,8 @@ export fn select(name: Str, disabled: Bool = false) -> H.Node
 
 export fn option(value: Str, caption: Str, selected: Bool = false) -> H.Node
 
+export fn placeholder(caption: Str) -> H.Node
+
 export fn group(heading: Str) -> H.Node
 
 export fn separator() -> H.Node

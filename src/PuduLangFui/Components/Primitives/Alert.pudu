@@ -35,7 +35,7 @@ export fn style() -> Css.Block {
       Css.variant("variant", "success", "color: $success"),
       Css.variant("variant", "warning", "color: $warning"),
       Css.variant("variant", "info", "color: $info"),
-      Css.slot("alert-title", "grid-column: 2; font-weight: $weight-medium; line-height: $leading-tight"),
+      Css.slot("alert-title", "grid-column: 2"),
       Css.slot("alert-description", "grid-column: 2; color: $muted-foreground"),
       Css.slot("alert-action", "position: absolute; inset-block-start: $space-2; inset-inline-end: $space-2")
     ])

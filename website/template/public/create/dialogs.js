@@ -1,20 +1,20 @@
 import { copied, element } from "./dom.js";
 
 function closing(dialog) {
-  return element("button", { type: "button", class: "fui-create-button", text: "Close", on: { click: () => dialog.close() } });
+  return element("button", { type: "button", class: "fui-design-action", text: "Close", on: { click: () => dialog.close() } });
 }
 
 export function createGetCode(codeOf) {
   const init = element("code");
   const apply = element("code");
-  const dialog = element("dialog", { class: "fui-create-dialog", closedby: "any" });
-  const line = (code) => element("div", { class: "fui-create-command" }, [
+  const dialog = element("dialog", { class: "fui-design-dialog", closedby: "any" });
+  const line = (code) => element("div", { class: "fui-design-command" }, [
     code,
-    element("button", { type: "button", class: "fui-create-button", text: "Copy", on: { click: (event) => copied(event.currentTarget, code.textContent) } }),
+    element("button", { type: "button", class: "fui-design-action", text: "Copy", on: { click: (event) => copied(event.currentTarget, code.textContent) } }),
   ]);
 
   dialog.append(
-    element("h2", { text: "Get code" }),
+    element("h2", { text: "Use this design" }),
     element("p", { text: "Start a project with this design, or apply it to one you already have." }),
     line(init),
     line(apply),
@@ -32,19 +32,19 @@ export function createGetCode(codeOf) {
 }
 
 export function createOpenPreset(onOpen) {
-  const input = element("input", { class: "fui-create-input", "aria-label": "Design code", placeholder: "Paste a design code", spellcheck: "false" });
-  const problem = element("p", { class: "fui-create-problem", role: "alert" });
-  const dialog = element("dialog", { class: "fui-create-dialog", closedby: "any" });
+  const input = element("input", { class: "fui-design-input", "aria-label": "Design code", placeholder: "Paste a design code", spellcheck: "false" });
+  const problem = element("p", { class: "fui-design-problem", role: "alert" });
+  const dialog = element("dialog", { class: "fui-design-dialog", closedby: "any" });
   const form = element("form", { on: { submit: (event) => {
     event.preventDefault();
 
     if (onOpen(input.value.trim())) dialog.close();
     else problem.textContent = "That is not a design code.";
   } } }, [
-    element("h2", { text: "Open preset" }),
+    element("h2", { text: "Paste a code" }),
     input,
     problem,
-    element("footer", {}, [closing(dialog), element("button", { type: "submit", class: "fui-create-button fui-create-primary", text: "Open" })]),
+    element("footer", {}, [closing(dialog), element("button", { type: "submit", class: "fui-design-action fui-design-action-primary", text: "Open" })]),
   ]);
 
   dialog.append(form);

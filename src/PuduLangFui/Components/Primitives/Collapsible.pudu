@@ -23,6 +23,6 @@ export fn style() -> Css.Block {
       Css.slot("collapsible-trigger", "cursor: pointer; list-style: none"),
       Css.slotWhen("collapsible-trigger", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
       Css.slotWhen("collapsible-trigger", "::-webkit-details-marker", "display: none"),
-      Css.slot("collapsible-content", "padding-block-start: $space-2")
+      Css.slot("collapsible-content", "display: flex; flex-direction: column; gap: $space-2")
     ])
 }

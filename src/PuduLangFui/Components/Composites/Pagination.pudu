@@ -10,44 +10,64 @@ import PuduLangFui.Domain.Css as Css
 /// How many numbers show each side of the current page.
 const WINDOW: Int = 1
 
-/// A link to one page; the current page takes no link target of its own.
-fn number(page: Int, current: Int, linkTo: fn(Int) -> Str) -> H.Node {
-  let treatment = if page == current { Button.Outline } else { Button.Ghost }
-  let linked = Button.link(linkTo(page), Button.props().variant(treatment).size(Button.IconMedium)).says(show(page))
-
-  H.li().holding([linked.atIf(page == current, "aria-current", "page")])
-}
+/// A numbered entry; the current page takes no link target of its own.
+fn number(index: Int, current: Int, linkTo: fn(Int) -> Str) -> H.Node { H.li().holding([page(index, linkTo(index), index == current)]) }
 
 /// The numbered entries, with gaps where pages are skipped.
 fn numbers(current: Int, last: Int, linkTo: fn(Int) -> Str) -> Array[H.Node] {
   var entries: Array[H.Node] = []
-  var page = 1
+  var index = 1
 
-  while page <= last {
-    let nearby = page >= current - WINDOW && page <= current + WINDOW
+  while index <= last {
+    let nearby = index >= current - WINDOW && index <= current + WINDOW
 
-    if page == 1 || page == last || nearby {
-      entries = entries.push(number(page, current, linkTo))
-    } else if page == current - WINDOW - 1 || page == current + WINDOW + 1 {
-      entries = entries.push(H.li().holding([Core.inline("pagination-gap").at("aria-hidden", "true").says("…")]))
+    if index == 1 || index == last || nearby {
+      entries = entries.push(number(index, current, linkTo))
+    } else if index == current - WINDOW - 1 || index == current + WINDOW + 1 {
+      entries = entries.push(H.li().holding([ellipsis()]))
     }
 
-    page = page + 1
+    index = index + 1
   }
 
   entries
+}
+
+/// The arrow-and-word link back a page.
+export fn previous(target: Str, disabled: Bool = false) -> H.Node {
+  let ghost = Button.props().variant(Button.Ghost)
+
+  Button.link(target, if disabled { ghost.disabled() } else { ghost }).label("Previous page").holding([Icon.icon(Icon.ChevronLeft), H.span().says("Previous")])
+}
+
+/// The word-and-arrow link forward a page.
+export fn next(target: Str, disabled: Bool = false) -> H.Node {
+  let ghost = Button.props().variant(Button.Ghost)
+
+  Button.link(target, if disabled { ghost.disabled() } else { ghost }).label("Next page").holding([H.span().says("Next"), Icon.icon(Icon.ChevronRight)])
+}
+
+/// A link to one page.
+export fn page(index: Int, target: Str, current: Bool = false) -> H.Node {
+  let treatment = if current { Button.Outline } else { Button.Ghost }
+
+  Button.link(target, Button.props().variant(treatment).size(Button.IconMedium)).says(show(index)).atIf(current, "aria-current", "page")
+}
+
+/// A mark standing for skipped pages.
+export fn ellipsis() -> H.Node { Core.inline("pagination-gap").at("aria-hidden", "true").holding([Icon.sized(Icon.More, Icon.Small)]) }
+
+/// Links placed by hand, in a row.
+export fn row(entries: Array[H.Node]) -> H.Node {
+  H.nav().slot("pagination").label("Pagination").holding([H.ul().slot("pagination-list").holding(entries.map(|entry: H.Node| H.li().holding([entry])))])
 }
 
 /// Links for moving between `last` pages, or nothing for a single page.
 export fn pagination(current: Int, last: Int, linkTo: fn(Int) -> Str) -> H.Node {
   if last <= 1 { return H.nothing() }
 
-  let ghost = Button.props().variant(Button.Ghost).size(Button.IconMedium)
-  let previous = Button.link(linkTo(current - 1), if current <= 1 { ghost.disabled() } else { ghost }).label("Previous page").holding([Icon.icon(Icon.ChevronLeft)])
-  let next = Button.link(linkTo(current + 1), if current >= last { ghost.disabled() } else { ghost }).label("Next page").holding([Icon.icon(Icon.ChevronRight)])
-
   H.nav().slot("pagination").label("Pagination").holding([
-      H.ul().slot("pagination-list").holding([H.li().holding([previous])].concat(numbers(current, last, linkTo)).concat([H.li().holding([next])]))
+      H.ul().slot("pagination-list").holding([H.li().holding([previous(linkTo(current - 1), current <= 1)])].concat(numbers(current, last, linkTo)).concat([H.li().holding([next(linkTo(current + 1), current >= last)])]))
     ])
 }
 
@@ -55,8 +75,8 @@ export fn pagination(current: Int, last: Int, linkTo: fn(Int) -> Str) -> H.Node 
 export fn style() -> Css.Block {
   Css.block("pagination", [
       Css.base("display: flex; justify-content: center"),
-      Css.slot("pagination-list", "display: flex; align-items: center; gap: $space-1; margin: 0; padding: 0; list-style: none"),
-      Css.slot("pagination-gap", "display: inline-flex; justify-content: center; inline-size: $control-md; color: $muted-foreground"),
+      Css.slot("pagination-list", "display: flex; align-items: center; margin: 0; padding: 0; list-style: none"),
+      Css.slot("pagination-gap", "display: inline-flex; align-items: center; justify-content: center"),
       Css.rule(":dir(rtl) [data-slot=\"pagination\"] [data-slot=\"icon\"]", "scale: -1 1")
     ])
 }

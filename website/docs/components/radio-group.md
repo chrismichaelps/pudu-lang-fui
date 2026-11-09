@@ -18,8 +18,9 @@ fui add radio-group
 ## Usage
 
 ```pudu
-RadioGroup.group("Density").holding([
-    Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "default", true), Label.label("density-default").says("Default")]),
+RadioGroup.group("Density").css("inline-size", "fit-content").holding([
+    Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "default"), Label.label("density-default").says("Default")]),
+    Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "comfortable", true), Label.label("density-comfortable").says("Comfortable")]),
     Field.oriented(Field.Horizontal, false).holding([RadioGroup.radio("density", "compact"), Label.label("density-compact").says("Compact")])
   ])
 ```

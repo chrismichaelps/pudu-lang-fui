@@ -2,27 +2,39 @@
 module PuduLangFui.Components.Primitives.Resizable
 
 import Std.Html.Build as H
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Resizable.Orientation — the axis panels divide along */
 export type Orientation = Horizontal | Vertical
 
+/// The axis a handle's line runs along, which crosses its group's axis.
+const LINE_AXES: Map[Str, Str] = mapOf([("horizontal", "vertical"), ("vertical", "horizontal")])
+
 /// Panels dividing a space along an axis.
 export fn group(orientation: Orientation) -> H.Node {
-  Core.part("resizable").data("orientation", Core.spelled(orientation))
+  Core.part("resizable").data("orientation", Core.spelled(orientation)).at("aria-orientation", Core.spelled(orientation))
 }
 
 /// A panel starting at the given share of the space, such as `30%`.
-export fn panel(share: Str) -> H.Node { Core.part("resizable-panel").css("flex-basis", share) }
+export fn panel(share: Str) -> H.Node { Core.part("resizable-panel").css("flex-grow", share.replace("%", "")) }
+
+/// The line between two panels of a group along `orientation`, with a grip when `grip` holds.
+export fn handle(orientation: Orientation, grip: Bool = false) -> H.Node {
+  let line = Core.part("resizable-handle").role("separator").at("tabindex", "0").at("aria-orientation", Core.picked(&LINE_AXES, orientation, "vertical"))
+
+  if grip { line.holding([Core.part("resizable-handle-icon")]) } else { line }
+}
 
 /// The styles of resizable panels.
 export fn style() -> Css.Block {
   Css.block("resizable", [
-      Css.base("display: flex; inline-size: 100%; border: $border-width solid $border; border-radius: $radius-lg; overflow: hidden"),
+      Css.base("display: flex; inline-size: 100%; overflow: hidden"),
       Css.variant("orientation", "vertical", "flex-direction: column"),
-      Css.slot("resizable-panel", "overflow: auto; flex-shrink: 0; min-inline-size: 3rem; min-block-size: 3rem; resize: horizontal; border-inline-end: $border-width solid $border"),
-      Css.slotWhen("resizable-panel", ":last-child", "flex: 1; resize: none; border: 0"),
-      Css.rule("[data-slot=\"resizable\"][data-orientation=\"vertical\"] > [data-slot=\"resizable-panel\"]", "resize: vertical; border-inline-end: 0; border-block-end: $border-width solid $border")
+      Css.slot("resizable-panel", "flex-basis: 0; flex-shrink: 1; min-inline-size: 0; min-block-size: 0; overflow: auto"),
+      Css.slot("resizable-handle", "flex-shrink: 0; touch-action: none; cursor: col-resize; outline: none"),
+      Css.slotWhen("resizable-handle", "[aria-orientation=\"horizontal\"]", "cursor: row-resize"),
+      Css.behavior(Script.RESIZABLE)
     ])
 }

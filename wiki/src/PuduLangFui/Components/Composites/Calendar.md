@@ -24,19 +24,11 @@ A month as a grid of links.
 ```pudu
 export type Date = { year: Int, month: Int, day: Int }
 
-export type Props = { today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str] }
+export type Props = { today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str], dropdowns: Bool }
 
 export fn props() -> Props
 
 export trait Configuring {
-  fn today(self: &Self, value: Date) -> Self
-
-  fn selected(self: &Self, value: Date) -> Self
-
-  fn names(self: &Self, months: Array[Str], weekdays: Array[Str]) -> Self
-}
-
-impl Configuring for Props
 
 export fn date(year: Int, month: Int, day: Int) -> Date
 
@@ -53,12 +45,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/Calendar]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/Calendar]] · [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. From the year and month compute the first weekday by days since the epoch, then lay out weeks
-2. each day links through the caller's function.
+1. A month fills out with the days of its neighbors; the caption is a title or lists of months and years.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -67,7 +58,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Leap years come from the rule, not a table.
+- A day linking to `#` moves the selection in place.
 
 ## Depth
 

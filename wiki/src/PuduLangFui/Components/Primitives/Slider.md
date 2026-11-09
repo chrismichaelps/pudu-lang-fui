@@ -29,12 +29,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A native range styled through vendor pseudo-elements
-2. the track fill follows an inline percentage.
+1. A native range whose fill follows an inline percentage that a small script keeps current while the thumb moves; a look sets the track and thumb through variables.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -42,7 +41,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- A fill that was set on the server does not follow dragging, and the thumb remains accurate.
+- A dragged thumb and its fill always agree, in either direction.
 
 ## Depth
 

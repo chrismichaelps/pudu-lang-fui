@@ -18,7 +18,7 @@ fui add badge
 ## Usage
 
 ```pudu
-H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("Badge"), Badge.badge(Badge.Secondary).says("Secondary"), Badge.badge(Badge.Destructive).says("Destructive"), Badge.badge(Badge.Outline).says("Outline"), Badge.badge(Badge.Success).says("Success")])
+H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([Badge.badge(Badge.Primary).says("Badge"), Badge.badge(Badge.Secondary).says("Secondary"), Badge.badge(Badge.Destructive).says("Destructive"), Badge.badge(Badge.Outline).says("Outline")])
 ```
 
 ## API

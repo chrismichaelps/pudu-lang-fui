@@ -18,7 +18,13 @@ fui add resizable
 ## Usage
 
 ```pudu
-Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-size", "10rem").holding([Resizable.panel("40%").css("padding", "var(--fui-space-4)").says("Sidebar"), Resizable.panel("60%").css("padding", "var(--fui-space-4)").says("Content")])
+let centered = |name: Str| H.div().css("display", "flex").css("block-size", "100%").css("align-items", "center").css("justify-content", "center").css("font-weight", "600").css("font-size", "var(--fui-text-sm)").says(name)
+
+Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-size", "15rem").css("border", "1px solid var(--fui-border)").css("border-radius", "var(--fui-radius)").holding([
+    Resizable.panel("50%").holding([centered("One")]),
+    Resizable.handle(Resizable.Horizontal, true),
+    Resizable.panel("50%").holding([Resizable.group(Resizable.Vertical).css("block-size", "100%").holding([Resizable.panel("25%").holding([centered("Two")]), Resizable.handle(Resizable.Vertical, true), Resizable.panel("75%").holding([centered("Three")])])])
+  ])
 ```
 
 ## API
@@ -27,5 +33,6 @@ Resizable.group(Resizable.Horizontal).css("inline-size", "24rem").css("block-siz
 export type Orientation = Horizontal | Vertical
 export fn group(orientation: Orientation) -> H.Node
 export fn panel(share: Str) -> H.Node
+export fn handle(orientation: Orientation, grip: Bool = false) -> H.Node
 export fn style() -> Css.Block
 ```

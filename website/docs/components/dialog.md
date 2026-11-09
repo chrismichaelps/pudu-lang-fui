@@ -19,10 +19,10 @@ fui add dialog
 
 ```pudu
 H.div().holding([
-    Dialog.trigger("edit", Button.props().variant(Button.Outline)).says("Edit profile"),
+    Dialog.trigger("edit", Button.props().variant(Button.Outline)).says("Open Dialog"),
     Dialog.dialog("edit", "Edit profile").holding([
-        Dialog.header().holding([Dialog.title().says("Edit profile"), Dialog.description().says("Make changes here, then save.")]),
-        Field.field().holding([Field.label("who").says("Name"), Input.input("who", Input.props()).value("Ada Lovelace")]),
+        Dialog.header().holding([Dialog.title().says("Edit profile"), Dialog.description().says("Make changes to your profile here. Click save when you're done.")]),
+        Field.group().holding([Field.field().holding([Field.label("who").says("Name"), Input.input("who", Input.props()).value("Pedro Duarte")]), Field.field().holding([Field.label("handle-name").says("Username"), Input.input("handle-name", Input.props()).value("@peduarte")])]),
         Dialog.footer().holding([Dialog.close("edit", Button.props().variant(Button.Outline)).says("Cancel"), Dialog.close("edit", Button.props()).says("Save changes")])
       ])
   ])

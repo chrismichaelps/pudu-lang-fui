@@ -8,5 +8,4 @@ export const HOME_ITEM = "home";
 export const INHERIT = "inherit";
 export const FIELDS = ["look", "base", "theme", "chart", "icons", "font", "heading", "radius", "menu", "accent"];
 export const LOOK_TITLES = { gentle: "Gentle", soft: "Soft", sharp: "Sharp", round: "Round", compact: "Compact", classic: "Classic", editorial: "Editorial", standard: "Standard" };
-export const PANEL_GAP = 8;
-export const SCREEN_MARGIN = 12;
+export const LOOK_MARKS = { gentle: "border-radius: 0.5rem", soft: "border-radius: 0.375rem", sharp: "border-radius: 0", round: "border-radius: 9999px", compact: "border-radius: 0.125rem; block-size: 0.75rem", classic: "border-radius: 0.25rem", editorial: "border-radius: 0; border-inline-width: 0", standard: "border-radius: 0.3125rem" };

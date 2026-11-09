@@ -9,13 +9,18 @@ import PuduLangFui.Domain.Css as Css
 /// A select with the given name, identified by that name.
 export fn select(name: Str, disabled: Bool = false) -> H.Node {
   H.select().slot("select").id(name).name(name).flagIf(disabled, "disabled").holding([
-      H.button().slot("select-trigger").holding([H.tag("selectedcontent"), Icon.sized(Icon.ChevronDown, Icon.Small)])
+      H.button().slot("select-trigger").holding([H.tag("selectedcontent"), Core.inline("select-trigger-icon").holding([Icon.sized(Icon.ChevronDown, Icon.Small)])])
     ])
 }
 
 /// One choice.
 export fn option(value: Str, caption: Str, selected: Bool = false) -> H.Node {
   H.option().slot("select-option").value(value).flagIf(selected, "selected").says(caption)
+}
+
+/// A first choice shown as a hint until a real one is picked.
+export fn placeholder(caption: Str) -> H.Node {
+  H.option().slot("select-option").value("").flag("selected").flag("disabled").flag("hidden").says(caption)
 }
 
 /// Choices under a heading.
@@ -27,12 +32,14 @@ export fn separator() -> H.Node { H.hr().slot("select-separator") }
 /// The styles of a select.
 export fn style() -> Css.Block {
   Css.block("select", [
-      Css.base("appearance: base-select; display: inline-flex; inline-size: 100%; block-size: $control-md; padding: 0; background: color-mix(in oklab, $input 50%, transparent); border: $border-width solid transparent; color: $foreground; border-radius: $radius-3xl; font: inherit; font-size: $text-sm; outline: none"),
+      Css.base("appearance: base-select; display: inline-flex; inline-size: 100%; padding: 0; color: $foreground; font: inherit; font-size: $text-sm; outline: none"),
       Css.when(":focus-visible", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
       Css.disabled("opacity: 0.5; cursor: not-allowed"),
       Css.when("::picker(select)", "appearance: base-select; margin-block: $space-1; min-inline-size: 9rem; padding: calc($unit * 1.5); background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg"),
       Css.when("::picker-icon", "display: none"),
-      Css.slot("select-trigger", "appearance: none; display: flex; flex: 1; align-items: center; justify-content: space-between; gap: $space-2; padding-inline: $space-3; background: transparent; color: inherit; border: 0; font: inherit"),
+      Css.slot("select-trigger", "appearance: none; display: flex; flex: 1; align-items: center; justify-content: space-between; gap: $space-2; padding: 0; background: transparent; color: inherit; border: 0; font: inherit"),
+      Css.slot("select-trigger-icon", "display: inline-flex; color: $muted-foreground"),
+      Css.when(":has(option[value=\"\"]:checked) [data-slot=\"select-trigger\"]", "color: $muted-foreground"),
       Css.slot("select-option", "display: flex; align-items: center; gap: calc($unit * 2.5); padding: $space-2 $space-3; border-radius: $radius-2xl; font-size: $text-sm; font-weight: $weight-medium; cursor: default"),
       Css.slotWhen("select-option", ":is(:hover, :focus)", "background: $accent; color: $accent-foreground; outline: none"),
       Css.slotWhen("select-option", "::checkmark", "order: 1; margin-inline-start: auto"),

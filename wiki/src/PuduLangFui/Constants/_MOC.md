@@ -19,6 +19,7 @@ tags: [moc]
 - [[src/PuduLangFui/Constants/Swatches]] — The palettes a design can start from, each token with its light and dark value.
 - [[src/PuduLangFui/Constants/Templates]] — The source text the generator writes for a new project and a new component.
 - [[src/PuduLangFui/Constants/ToastScript]] — The behavior of a toast region, as lines of script.
+- [[src/PuduLangFui/Constants/WidgetScripts]] — The optional behavior of interactive parts, one script per part.
 
 ## Referenced by
 

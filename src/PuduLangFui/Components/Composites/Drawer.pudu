@@ -242,7 +242,7 @@ export fn style() -> Css.Block {
       Css.rule(":dir(rtl)[data-slot=\"drawer\"][data-direction=\"start\"]", "--drawer-from: 100% 0"),
       Css.slot("drawer-overlay", "position: absolute; inset: 0; inline-size: 100%; block-size: 100%; padding: 0; background: oklch(0 0 0 / 0.3); border: 0; outline: none; cursor: default"),
       Css.rule("[data-slot=\"drawer\"][data-modal=\"false\"] > [data-slot=\"drawer-overlay\"]", "display: none"),
-      Css.slot("drawer-panel", "position: absolute; display: flex; flex-direction: column; gap: $space-3; box-sizing: border-box; padding: $space-4; background: $popover; color: $popover-foreground; border-radius: $radius-4xl; box-shadow: $shadow-xl; font-size: $text-sm; pointer-events: auto; touch-action: none; overflow: auto; animation: fui-drawer-enter 500ms cubic-bezier(0.32, 0.72, 0, 1)"),
+      Css.slot("drawer-panel", "position: absolute; display: flex; flex-direction: column; box-sizing: border-box; pointer-events: auto; touch-action: none; overflow: auto; animation: fui-drawer-enter 500ms cubic-bezier(0.32, 0.72, 0, 1)"),
       Css.rule("[data-slot=\"drawer\"][data-direction=\"bottom\"] > [data-slot=\"drawer-panel\"]", "inset-block-end: $space-2; inset-inline: $space-2; max-block-size: calc(100dvh - $space-12)"),
       Css.rule("[data-slot=\"drawer\"][data-direction=\"top\"] > [data-slot=\"drawer-panel\"]", "inset-block-start: $space-2; inset-inline: $space-2; max-block-size: calc(100dvh - $space-12)"),
       Css.rule("[data-slot=\"drawer\"][data-direction=\"end\"] > [data-slot=\"drawer-panel\"]", "inset-block: $space-2; inset-inline-end: $space-2; inline-size: min(24rem, 85vw)"),

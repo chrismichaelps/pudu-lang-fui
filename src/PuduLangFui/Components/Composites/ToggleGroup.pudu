@@ -11,8 +11,14 @@ export type Kind = One | Many
 /// The input type each kind uses.
 const INPUTS: Map[Str, Str] = mapOf([("one", "radio"), ("many", "checkbox")])
 
+/** @Fui.ToggleGroup.Variant — how the group's toggles are drawn */
+export type Variant = Plain | Outline
+
 /// Toggles pressed together.
-export fn group(caption: Str) -> H.Node { Core.part("toggle-group").role("group").label(caption) }
+export fn group(caption: Str) -> H.Node { styled(caption, Plain) }
+
+/// Toggles pressed together, drawn the given way.
+export fn styled(caption: Str, variant: Variant) -> H.Node { Core.part("toggle-group").role("group").label(caption).data("variant", Core.spelled(variant)) }
 
 /// A toggle of the group `name`.
 export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node {
@@ -24,10 +30,12 @@ export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.No
 /// The styles of a toggle group.
 export fn style() -> Css.Block {
   Css.block("toggle-group", [
-      Css.base("display: inline-flex; gap: 1px; padding: $space-1; background: $muted; border-radius: $radius-4xl"),
-      Css.slot("toggle-group-item", "display: inline-flex; align-items: center; justify-content: center; gap: $space-2; block-size: calc($control-md - $space-2); min-inline-size: calc($control-md - $space-2); padding-inline: $space-3; border-radius: $radius-4xl; font-size: $text-sm; font-weight: $weight-medium; cursor: pointer; user-select: none"),
+      Css.base("display: inline-flex; align-items: center; gap: $space-1"),
+      Css.slot("toggle-group-item", "display: inline-flex; align-items: center; justify-content: center; gap: $space-2; block-size: $control-md; min-inline-size: $control-md; padding-inline: $space-2; border: $border-width solid transparent; border-radius: $radius-lg; font-size: $text-sm; font-weight: $weight-medium; cursor: pointer; user-select: none; transition: background $duration-fast $ease-standard"),
+      Css.rule("[data-slot=\"toggle-group\"][data-variant=\"outline\"] > [data-slot=\"toggle-group-item\"]", "border-color: $input"),
       Css.rule("[data-slot=\"toggle-group-item\"] > input", "position: absolute; opacity: 0; pointer-events: none"),
-      Css.slotWhen("toggle-group-item", ":has(> input:checked)", "background: $background; box-shadow: $shadow-sm"),
+      Css.slotWhen("toggle-group-item", ":hover", "background: $muted"),
+      Css.slotWhen("toggle-group-item", ":has(> input:checked)", "background: $muted"),
       Css.slotWhen("toggle-group-item", ":has(> input:focus-visible)", "outline: 2px solid $ring; outline-offset: 1px")
     ])
 }

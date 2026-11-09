@@ -18,7 +18,10 @@ fui add skeleton
 ## Usage
 
 ```pudu
-column("16rem", [Skeleton.skeleton().css("block-size", "1rem"), Skeleton.skeleton().css("block-size", "1rem").css("inline-size", "60%")])
+H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-4)").holding([
+    Skeleton.skeleton().css("inline-size", "3rem").css("block-size", "3rem").css("border-radius", "9999px"),
+    H.div().css("display", "flex").css("flex-direction", "column").css("gap", "var(--fui-space-2)").holding([Skeleton.skeleton().css("block-size", "1rem").css("inline-size", "15.625rem"), Skeleton.skeleton().css("block-size", "1rem").css("inline-size", "12.5rem")])
+  ])
 ```
 
 ## API

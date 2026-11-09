@@ -39,6 +39,12 @@ const DONUT_RADIUS: Float64 = 58.0
 /// The tangent scale that keeps a curve between its points.
 const CURVE_TENSION: Float64 = 3.0
 
+/// The identifier of the mask circular drawings are uncovered through.
+const SWEEP_MASK: Str = "fui-chart-sweep"
+
+/// The most columns shaded one by one; a longer run reads better in a single color.
+const SHADED_LIMIT: Int = 12
+
 /// The renderer each kind uses.
 const RENDERERS: Map[Str, fn(&Drawing) -> H.Node] = mapOf([
     ("bars", bars),
@@ -104,12 +110,12 @@ fn barColumn(drawing: &Drawing, item: &Series, index: Int, peak: Float64) -> H.N
   let value = item.values[index]
   let percent = Numbers.fixed(value / peak * 100.0) + "%"
   let count = item.values.length()
-  let shade = if count > 1 { index * (SERIES_COLORS - 1) / (count - 1) } else { 0 }
+  let shade = if count > SHADED_LIMIT { 1 } else if count > 1 { index * (SERIES_COLORS - 1) / (count - 1) } else { 0 }
   let label = labelAt(&drawing.labels, index)
 
   Core.part("chart-bar-column").holding([
       Core.part("chart-bar").css("height", percent).css("background", colorOf(shade)),
-      if label.isEmpty() { H.nothing() } else { Core.inline("chart-bar-label").says(label) },
+      if drawing.labels.isEmpty() { H.nothing() } else { Core.inline("chart-bar-label").says(label) },
       tooltip(&drawing.labels, &drawing.series, index)
     ])
 }
@@ -128,7 +134,7 @@ fn bars(drawing: &Drawing) -> H.Node {
         index = index + 1
       }
 
-      Core.part("chart-bars").role("img").label(drawing.caption).holding(columns)
+      Core.part("chart-bars").role("img").label(drawing.caption).atIf(item.values.length() > SHADED_LIMIT, "data-dense", "true").holding(columns)
     }
   }
 }
@@ -236,7 +242,7 @@ fn axisLabels(labels: &Array[Str]) -> H.Node {
 fn lineFrame(drawing: &Drawing, shapes: Array[H.Node]) -> H.Node {
   Core.part("chart-frame").holding([
       Core.part("chart-plot").holding([
-          H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 100 86").at("preserveAspectRatio", "none").role("img").label(drawing.caption).holding(grid().concat(shapes)),
+          H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 100 86").at("preserveAspectRatio", "none").role("img").label(drawing.caption).holding(grid().concat([H.tag("g").slot("chart-reveal").holding(shapes)])),
           hoverColumns(drawing)
         ]),
       axisLabels(&drawing.labels)
@@ -307,6 +313,11 @@ fn segments(start: Float64, end: Float64, inner: Float64) -> Str {
   segment(0.0, 0.5, inner) + " " + segment(0.5, 1.0, inner)
 }
 
+/// The mask that uncovers a circular drawing clockwise from the top; every drawing shares its shape.
+fn sweepMask() -> H.Node {
+  H.tag("mask").id(SWEEP_MASK).holding([H.tag("circle").slot("chart-sweep").at("cx", "100").at("cy", "100").at("r", "50").at("pathLength", "1").at("transform", "rotate(-90 100 100)")])
+}
+
 /// The segments of a circular drawing with the given inner radius.
 fn circular(drawing: &Drawing, inner: Float64) -> H.Node {
   match List.first(&drawing.series) {
@@ -333,7 +344,7 @@ fn circular(drawing: &Drawing, inner: Float64) -> H.Node {
         index = index + 1
       }
 
-      Core.part("chart-circle").holding([H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 200 200").role("img").label(drawing.caption).holding(shapes)])
+      Core.part("chart-circle").holding([H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 200 200").role("img").label(drawing.caption).holding([sweepMask(), H.tag("g").at("mask", "url(#" + SWEEP_MASK + ")").holding(shapes)])])
     }
   }
 }
@@ -376,12 +387,20 @@ export fn style() -> Css.Block {
   Css.block("chart", [
       Css.base("display: flex; flex-direction: column; gap: $space-3; inline-size: 100%; font-size: $text-xs"),
       Css.slot("chart-bars", "display: flex; align-items: flex-end; gap: $space-3; inline-size: 100%; block-size: 200px"),
+      Css.rule("[data-slot=\"chart-bars\"][data-dense]", "gap: 0.25rem"),
+      Css.rule("[data-slot=\"chart-bars\"][data-dense] [data-slot=\"chart-bar\"]", "border-radius: 4px 4px 0 0"),
       Css.slot("chart-bar-column", "position: relative; display: flex; flex: 1; flex-direction: column; justify-content: flex-end; gap: $space-2; block-size: 100%; min-inline-size: 0"),
-      Css.slot("chart-bar", "min-block-size: $space-2; border-radius: $radius-lg; transition: opacity $duration-fast $ease-standard"),
-      Css.slot("chart-bar-label", "text-align: center; color: $muted-foreground"),
+      Css.slot("chart-bar", "min-block-size: 0; border-radius: $radius-lg; animation: chart-grow 400ms ease both; transition: opacity $duration-fast $ease-standard"),
+      Css.slot("chart-bar-label", "min-block-size: 1lh; text-align: center; white-space: nowrap; color: $muted-foreground"),
       Css.slot("chart-frame", "display: flex; flex-direction: column; gap: $space-2"),
       Css.slot("chart-plot", "position: relative; aspect-ratio: 1 / 0.35"),
       Css.slot("chart-canvas", "display: block; inline-size: 100%; block-size: 100%"),
+      Css.slot("chart-reveal", "animation: chart-reveal 1500ms ease both"),
+      Css.slot("chart-sweep", "fill: none; stroke: white; stroke-width: 100; stroke-dasharray: 1; animation: chart-sweep 1500ms ease 400ms both"),
+      Css.keyframes("chart-grow", [("from", "block-size: 0")]),
+      Css.keyframes("chart-reveal", [("from", "clip-path: inset(-10% 100% -10% -10%)"), ("to", "clip-path: inset(-10% -10% -10% -10%)")]),
+      Css.keyframes("chart-sweep", [("from", "stroke-dashoffset: 1"), ("to", "stroke-dashoffset: 0")]),
+      Css.within("@media (prefers-reduced-motion: reduce)", ":is([data-slot=\"chart-bar\"], [data-slot=\"chart-reveal\"], [data-slot=\"chart-sweep\"])", "animation: none"),
       Css.slot("chart-grid", "stroke: color-mix(in oklab, $border 50%, transparent); stroke-width: 1"),
       Css.slot("chart-line", "fill: none; stroke-width: 1.5"),
       Css.slot("chart-area", "opacity: 0.28; stroke: none"),

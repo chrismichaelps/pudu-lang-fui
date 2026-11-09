@@ -18,13 +18,13 @@ fui add date-picker
 ## Usage
 
 ```pudu
-DatePicker.datePicker("when", "2026-11-12", demoCalendar())
+DatePicker.datePicker("when", "", Calendar.calendar(2026, 11, dayLink, monthLink, Calendar.props().today(Calendar.date(2026, 11, 6)).withDropdowns()))
 ```
 
 ## API
 
 ```pudu
-export fn datePicker(name: Str, value: Str, calendar: H.Node) -> H.Node
+export fn datePicker(name: Str, value: Str, calendar: H.Node, hint: Str = "Pick a date") -> H.Node
 export fn range(startName: Str, endName: Str, startValue: Str, endValue: Str) -> H.Node
 export fn presets() -> H.Node
 export fn isoOf(day: &Calendar.Date) -> Str

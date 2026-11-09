@@ -18,7 +18,7 @@ fui add input-group
 ## Usage
 
 ```pudu
-column("20rem", [InputGroup.group().holding([InputGroup.addon(InputGroup.Start).holding([Icon.icon(Icon.Search)]), InputGroup.input("query"), InputGroup.addon(InputGroup.End).says("12 results")])])
+column("20rem", [InputGroup.group().holding([InputGroup.addon(InputGroup.Start).holding([Icon.icon(Icon.Search)]), InputGroup.input("query").placeholder("Search..."), InputGroup.addon(InputGroup.End).says("12 results")])])
 ```
 
 ## API

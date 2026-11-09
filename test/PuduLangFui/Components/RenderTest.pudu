@@ -5,9 +5,12 @@ import Std.Html.Build as H
 import Std.Io as Io
 import Std.Test as Test
 import PuduLangFui.Components.Composites.Calendar as Calendar
+import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.Combobox as Combobox
 import PuduLangFui.Components.Composites.Dialog as Dialog
 import PuduLangFui.Components.Composites.Drawer as Drawer
 import PuduLangFui.Components.Composites.Field as Field
+import PuduLangFui.Components.Composites.InputOtp as InputOtp
 import PuduLangFui.Components.Composites.Pagination as Pagination
 import PuduLangFui.Components.Composites.Toast as Toast
 import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
@@ -17,12 +20,21 @@ import PuduLangFui.Components.Patterns.Command as Command
 import PuduLangFui.Components.Primitives.Alert as Alert
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Resizable as Resizable
+import PuduLangFui.Components.Primitives.Slider as Slider
 import PuduLangFui.Components.Primitives.Typography as Typography
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
 import PuduLangFui.Elements.Reasoning as Reasoning
 import PuduLangFui.Elements.Sources as Sources
 
 /// A link builder for the pagination checks.
+fn dayTarget(_day: Calendar.Date) -> Str { "#" }
+
+/// A link for any month.
+fn monthTarget(_year: Int, _month: Int) -> Str { "#" }
+
+/// A link for any page.
 fn pageLink(number: Int) -> Str { "/p/" + show(number) }
 
 /// Rendered text of a node.
@@ -55,7 +67,16 @@ fn main() -> Int {
       Test.that("several errors are a list", text(Field.error(&["a", "b"])).contains("<ul>")),
       Test.equals("one page renders nothing", &text(Pagination.pagination(1, 1, pageLink)), &""),
       Test.that("the current page is marked", paged.contains("aria-current=\"page\"")),
-      Test.that("skipped pages leave a gap", paged.contains("…")),
+      Test.that("a slider starts its fill at its value", text(Slider.slider("v", 25)).contains("--slider-fill: 25%")),
+      Test.that("a code field draws one cell per digit", text(InputOtp.inputOtp("c", 4)).split("data-slot=\"input-otp-slot\"").length() == 5),
+      Test.that("a code field carries its value in one input", text(InputOtp.inputOtp("c", 4, "12")).contains("value=\"12\"")),
+      Test.that("a combobox lists each choice", text(Combobox.combobox("f", &["a", "b"])).split("data-slot=\"combobox-item\"").length() == 3),
+      Test.that("a carousel has both arrows", text(Carousel.carousel("k", "K", [H.div()])).contains("carousel-previous") && text(Carousel.carousel("k", "K", [H.div()])).contains("carousel-next")),
+      Test.that("a handle crosses its group", text(Resizable.handle(Resizable.Horizontal)).contains("aria-orientation=\"vertical\"")),
+      Test.that("placed pagination keeps its words", text(Pagination.row([Pagination.previous("#"), Pagination.next("#")])).contains("Previous")),
+      Test.that("a month is filled out with outside days", text(Calendar.calendar(2026, 11, dayTarget, monthTarget, Calendar.props())).contains("data-outside")),
+      Test.that("every chart motion yields to reduced motion", Css.render(&[Chart.style()]).contains("prefers-reduced-motion")),
+      Test.that("skipped pages leave a gap", paged.contains("pagination-gap")),
       Test.that("the first and last pages show", paged.contains("/p/1\"") && paged.contains("/p/9\"")),
       Test.equals("January 2026 starts on a Thursday", &Calendar.weekdayOf(2026, 1, 1), &4),
       Test.equals("the epoch is a Thursday", &Calendar.weekdayOf(1970, 1, 1), &4),

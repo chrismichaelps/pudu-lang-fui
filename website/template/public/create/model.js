@@ -1,4 +1,4 @@
-import { CODE_PARAMETER, CODE_SEPARATOR, FIELDS, INHERIT, LOOK_TITLES } from "./constants.js";
+import { CODE_PARAMETER, CODE_SEPARATOR, FIELDS, INHERIT, LOOK_MARKS, LOOK_TITLES } from "./constants.js";
 
 export function titleOf(value) {
   return value.split("-").map((word) => word[0].toUpperCase() + word.slice(1)).join(" ");
@@ -26,7 +26,7 @@ export function optionsFor(data, state) {
   const hues = colored(data, [state.base, ...data.accents]);
 
   return {
-    look: data.looks.map((value) => ({ value, label: LOOK_TITLES[value] || titleOf(value) })),
+    look: data.looks.map((value) => ({ value, label: LOOK_TITLES[value] || titleOf(value), mark: LOOK_MARKS[value] || "" })),
     base: colored(data, data.bases),
     theme: hues,
     chart: hues,

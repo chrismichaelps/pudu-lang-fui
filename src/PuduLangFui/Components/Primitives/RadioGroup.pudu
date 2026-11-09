@@ -16,7 +16,7 @@ export fn radio(name: Str, value: Str, checked: Bool = false) -> H.Node {
 /// The styles of a radio group.
 export fn style() -> Css.Block {
   Css.block("radio-group", [
-      Css.base("display: grid; gap: $space-3"),
+      Css.base("display: grid; inline-size: fit-content; gap: $space-3"),
       Css.slot("radio", "appearance: none; display: inline-grid; place-content: center; flex-shrink: 0; inline-size: 1rem; block-size: 1rem; margin: 0; background: color-mix(in oklab, $input 90%, transparent); border: $border-width solid transparent; border-radius: $radius-full; cursor: pointer; outline: none"),
       Css.slotWhen("radio", "::after", "content: ''; inline-size: 0.5rem; block-size: 0.5rem; background: $primary-foreground; border-radius: $radius-full; scale: 0; transition: scale $duration-fast $ease-enter"),
       Css.slotWhen("radio", ":checked", "background: $primary; border-color: $primary"),

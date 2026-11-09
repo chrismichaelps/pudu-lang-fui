@@ -8,17 +8,22 @@ import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Components.Primitives.Input as Input
 import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
 import PuduLangFui.Components.Primitives.Popover as Popover
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
-/// A native date field beside a popover holding the given calendar.
-export fn datePicker(name: Str, value: Str, calendar: H.Node) -> H.Node {
+/// A button naming the chosen day, or `hint` before one is chosen, opening the given calendar.
+export fn datePicker(name: Str, value: Str, calendar: H.Node, hint: Str = "Pick a date") -> H.Node {
   let popover = name + "-calendar"
+  let trigger = Button.button(Button.props().variant(Button.Outline)).data("part", "date-picker-trigger").css("inline-size", "13rem").css("justify-content", "space-between").atIf(value.isEmpty(), "data-empty", "true").holding([
+      H.span().says(if value.isEmpty() { hint } else { value }),
+      Icon.sized(Icon.ChevronDown, Icon.Small)
+    ])
 
   Core.part("date-picker").holding([
-      Input.input(name, Input.props().kind("date")).value(value),
-      Popover.opens(Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).label("Open calendar").holding([Icon.icon(Icon.Calendar)]), popover),
-      Popover.content(popover, Popover.Below).css("inline-size", "auto").holding([calendar])
+      H.input().kind("hidden").id(name).name(name).value(value),
+      Popover.opens(trigger, popover),
+      Popover.content(popover, Popover.Below).css("inline-size", "auto").css("padding", "0").css("overflow", "hidden").holding([calendar.css("background", "transparent")])
     ])
 }
 
@@ -56,6 +61,9 @@ export fn dropdowns(name: Str, years: &Array[Int], names: &Array[Str]) -> H.Node
 export fn style() -> Css.Block {
   Css.block("date-picker", [
       Css.base("display: flex; align-items: center; gap: $space-2"),
-      Css.slot("date-picker-presets", "display: flex; flex-wrap: wrap; gap: $space-1")
+      Css.rule("[data-part=\"date-picker-trigger\"]", "font-weight: $weight-normal"),
+      Css.rule("[data-part=\"date-picker-trigger\"][data-empty]", "color: $muted-foreground"),
+      Css.slot("date-picker-presets", "display: flex; flex-wrap: wrap; gap: $space-1"),
+      Css.behavior(Script.DATE_PICKER)
     ])
 }

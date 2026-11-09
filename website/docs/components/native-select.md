@@ -18,7 +18,7 @@ fui add native-select
 ## Usage
 
 ```pudu
-column("18rem", [NativeSelect.select("fruit").holding([NativeSelect.option("apple", "Apple", true), NativeSelect.option("banana", "Banana")])])
+NativeSelect.select("status").css("inline-size", "fit-content").holding([NativeSelect.option("", "Select status", true), NativeSelect.option("todo", "Todo"), NativeSelect.option("progress", "In Progress"), NativeSelect.option("done", "Done"), NativeSelect.option("cancelled", "Cancelled")])
 ```
 
 ## API

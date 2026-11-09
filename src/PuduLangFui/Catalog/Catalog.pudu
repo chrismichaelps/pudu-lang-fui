@@ -6,6 +6,7 @@ import PuduLangFui.Blocks.Login as Login
 import PuduLangFui.Blocks.Pricing as Pricing
 import PuduLangFui.Blocks.Settings as Settings
 import PuduLangFui.Blocks.Signup as Signup
+import PuduLangFui.Components.Composites.Accordion as Accordion
 import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
 import PuduLangFui.Components.Composites.Attachment as Attachment
 import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
@@ -38,7 +39,6 @@ import PuduLangFui.Components.Patterns.Form as Form
 import PuduLangFui.Components.Patterns.Menubar as Menubar
 import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
 import PuduLangFui.Components.Patterns.Sidebar as Sidebar
-import PuduLangFui.Components.Primitives.Accordion as Accordion
 import PuduLangFui.Components.Primitives.Alert as Alert
 import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
 import PuduLangFui.Components.Primitives.Avatar as Avatar

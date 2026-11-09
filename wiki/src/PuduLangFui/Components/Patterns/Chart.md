@@ -41,10 +41,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. Bars are shaded columns
-2. lines and areas are smooth curves whose tangents flatten at turning points
-3. donuts and pies are real ring segments separated by the surface color
-4. each point carries a hover card.
+1. Columns grow from the baseline, lines and areas reveal from the start edge, and circles sweep clockwise, each once as the page loads.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -52,7 +49,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- All-zero data draws nothing rather than dividing by zero.
+- Under reduced motion every drawing appears at rest.
 
 ## Depth
 

@@ -26,6 +26,8 @@ export type Crumb = { caption: Str, target: Str }
 
 export fn crumb(caption: Str, target: Str) -> Crumb
 
+export fn collapsed() -> Crumb
+
 export fn breadcrumb(trail: &Array[Crumb]) -> H.Node
 
 export fn ellipsis() -> H.Node

@@ -28,16 +28,18 @@ export fn group(orientation: Orientation) -> H.Node
 
 export fn panel(share: Str) -> H.Node
 
+export fn handle(orientation: Orientation, grip: Bool = false) -> H.Node
+
 export fn style() -> Css.Block
 ```
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. Each panel uses CSS `resize` along the group's axis.
+1. Panels divide a group by flex shares; a handle moves the line between its two neighbors by pointer or arrow key.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -45,7 +47,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- The last panel takes the remaining room.
+- Nested groups each keep their own handles.
 
 ## Depth
 

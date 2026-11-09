@@ -18,7 +18,7 @@ fui add progress
 ## Usage
 
 ```pudu
-column("20rem", [Progress.progress(60, 100, "Upload")])
+column("20rem", [Progress.progress(66, 100, "Upload")])
 ```
 
 ## API

@@ -18,7 +18,7 @@ fui add textarea
 ## Usage
 
 ```pudu
-column("20rem", [Textarea.textarea("message").placeholder("Message")])
+column("20rem", [Textarea.textarea("message").placeholder("Type your message here.")])
 ```
 
 ## API

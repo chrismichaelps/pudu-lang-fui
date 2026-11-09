@@ -2,6 +2,7 @@
 module PuduLangFui.Components.Composites.ContextMenu
 
 import Std.Html.Build as H
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -48,9 +49,10 @@ export fn subMenu(id: Str) -> H.Node { menu(id).anchoredTo(id).css("position-are
 export fn style() -> Css.Block {
   Css.block("context-menu", [
       Css.behavior(OPEN_AT_POINTER),
+      Css.behavior(Script.MENU_KEYS),
       Css.base("min-inline-size: 12rem; padding: calc($unit * 1.5); background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg"),
       Css.slot("context-menu-area", "display: block"),
-      Css.slot("context-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-align: start; text-decoration: none; cursor: default; user-select: none"),
+      Css.slot("context-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; text-align: start; text-decoration: none; cursor: default; user-select: none"),
       Css.slotWhen("context-menu-item", ":is(:hover, :focus-visible)", "background: $accent; color: $accent-foreground; outline: none"),
       Css.slot("context-menu-separator", "block-size: $border-width; margin-block: calc($unit * 1.5); margin-inline: calc($unit * -1.5); background: color-mix(in oklab, $border 50%, transparent)"),
       Css.slot("context-menu-label", "padding: $space-1 $space-2; font-size: $text-xs; font-weight: $weight-medium; color: $muted-foreground"),

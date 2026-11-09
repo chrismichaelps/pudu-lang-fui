@@ -20,7 +20,7 @@ fui add sheet
 ```pudu
 H.div().holding([
     Sheet.trigger("filters", Button.props().variant(Button.Outline)).says("Open"),
-    Sheet.sheet("filters", "Filters", Sheet.End).holding([Sheet.header().holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list.")]), Sheet.footer().holding([Sheet.close("filters", Button.props()).says("Close")])])
+    Sheet.sheet("filters", "Edit profile", Sheet.End).holding([Sheet.header().holding([Sheet.title().says("Edit profile"), Sheet.description().says("Make changes to your profile here. Click save when you're done.")]), Field.group().css("padding-inline", "var(--fui-space-4)").holding([Field.field().holding([Field.label("sheet-name").says("Name"), Input.input("sheet-name", Input.props()).value("Pedro Duarte")]), Field.field().holding([Field.label("sheet-user").says("Username"), Input.input("sheet-user", Input.props()).value("@peduarte")])]), Sheet.footer().holding([Sheet.close("filters", Button.props()).says("Save changes"), Sheet.close("filters", Button.props().variant(Button.Outline)).says("Close")])])
   ])
 ```
 

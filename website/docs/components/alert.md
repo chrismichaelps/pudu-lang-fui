@@ -19,8 +19,8 @@ fui add alert
 
 ```pudu
 column("28rem", [
-    Alert.alert(Alert.Neutral).holding([Icon.icon(Icon.Info), Alert.title().says("Heads up"), Alert.description().says("You can add components with the generator.")]),
-    Alert.alert(Alert.Destructive).holding([Icon.icon(Icon.ErrorCircle), Alert.title().says("Upload failed"), Alert.description().says("The file was too large.")])
+    Alert.alert(Alert.Neutral).holding([Icon.icon(Icon.Success), Alert.title().says("Payment successful"), Alert.description().says("Your payment of $29.99 has been processed. A receipt has been sent to your email address.")]),
+    Alert.alert(Alert.Neutral).holding([Icon.icon(Icon.Info), Alert.title().says("New feature available"), Alert.description().says("We've added dark mode support. You can enable it in your account settings.")])
   ])
 ```
 

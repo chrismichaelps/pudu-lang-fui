@@ -22,7 +22,7 @@ A date field with a calendar.
 ### Signatures
 
 ```pudu
-export fn datePicker(name: Str, value: Str, calendar: H.Node) -> H.Node
+export fn datePicker(name: Str, value: Str, calendar: H.Node, hint: Str = "Pick a date") -> H.Node
 
 export fn range(startName: Str, endName: Str, startValue: Str, endValue: Str) -> H.Node
 
@@ -39,11 +39,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Components/Primitives/NativeSelect]] · [[src/PuduLangFui/Components/Primitives/Popover]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Components/Primitives/NativeSelect]] · [[src/PuduLangFui/Components/Primitives/Popover]] · [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A native date input beside a popover holding a Calendar whose days link back.
+1. A button names the chosen day and opens a calendar; picking a day fills a hidden field and the button.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -51,7 +51,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Range is two fields.
+- An empty value shows the hint.
 
 ## Depth
 

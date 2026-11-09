@@ -22,6 +22,16 @@ Links between pages of results.
 ### Signatures
 
 ```pudu
+export fn previous(target: Str, disabled: Bool = false) -> H.Node
+
+export fn next(target: Str, disabled: Bool = false) -> H.Node
+
+export fn page(index: Int, target: Str, current: Bool = false) -> H.Node
+
+export fn ellipsis() -> H.Node
+
+export fn row(entries: Array[H.Node]) -> H.Node
+
 export fn pagination(current: Int, last: Int, linkTo: fn(Int) -> Str) -> H.Node
 
 export fn style() -> Css.Block
@@ -33,7 +43,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. Given current, last, and a link builder, write previous, a window of numbers with gaps, and next.
+1. Links are built from a page count, or placed by hand through the exported parts.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -41,7 +51,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- One page answers nothing.
+- A single page renders nothing.
 
 ## Depth
 

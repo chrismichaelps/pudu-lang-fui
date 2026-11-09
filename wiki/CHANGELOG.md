@@ -5,6 +5,14 @@ tags: [changelog]
 
 # Changelog
 
+## 2026-11-09 — Parity pass
+
+- Every component compared by slot and computed style against the design reference, open states included.
+- Rebuilt carousel, combobox, code field, resizable panels, calendar caption, date picker, pagination parts, and toggle group. Menus and the command list move by keyboard.
+- Sliders keep their fill on the thumb in both directions. Charts animate as they appear, and respect reduced motion.
+- Base styles carry structure only; each look carries appearance, and the shared base layer resets boxes.
+- The Create page is an inspector of its own design, on the site's theme.
+
 ## 2026-11-09 — Initial system
 
 - The vault, [[architecture/SPECIFICATION]], [[grammar/pudu]], the domain glossary, the seams, and the

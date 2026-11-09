@@ -23,11 +23,6 @@ A built-in icon set drawn in `currentColor` with the theme's stroke.
 
 ```pudu
 export type Glyph
-  = Alert | ArrowDown | ArrowLeft | ArrowRight | ArrowUp | Book | Bot | Calendar | Check | ChevronDown
-  | ChevronLeft | ChevronRight | ChevronUp | Circle | Clock | CodeBrackets | Copy | Edit | ErrorCircle
-  | External | File | Flag | Folder | Globe | Grip | Image | Info | Link | List | Menu | Minus | Moon
-  | More | Paperclip | Plus | Search | Send | Settings | Spark | SpinnerArc | Star | Stop | Success | Sun
-  | Terminal | Trash | User | Wrench | X
 
 export type Size = Small | Medium | Large
 
@@ -68,4 +63,4 @@ DEPTH 0.89 (DEEP). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Blocks/Pricing]] · [[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/Attachment]] · [[src/PuduLangFui/Components/Composites/Breadcrumb]] · [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/CodeBlock]] · [[src/PuduLangFui/Components/Composites/Dialog]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/MessageScroller]] · [[src/PuduLangFui/Components/Composites/NavigationMenu]] · [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Composites/Select]] · [[src/PuduLangFui/Components/Composites/Sheet]] · [[src/PuduLangFui/Components/Composites/Spinner]] · [[src/PuduLangFui/Components/Composites/Toast]] · [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Components/Patterns/Command]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Patterns/Sidebar]] · [[src/PuduLangFui/Components/Primitives/_MOC]] · [[src/PuduLangFui/Elements/Checkpoint]] · [[src/PuduLangFui/Elements/FileTree]] · [[src/PuduLangFui/Elements/PromptInput]] · [[src/PuduLangFui/Elements/Sources]]
+[[src/PuduLangFui/Blocks/Pricing]] · [[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/Attachment]] · [[src/PuduLangFui/Components/Composites/Breadcrumb]] · [[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/CodeBlock]] · [[src/PuduLangFui/Components/Composites/Dialog]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/MessageScroller]] · [[src/PuduLangFui/Components/Composites/NavigationMenu]] · [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Composites/Select]] · [[src/PuduLangFui/Components/Composites/Sheet]] · [[src/PuduLangFui/Components/Composites/Spinner]] · [[src/PuduLangFui/Components/Composites/Toast]] · [[src/PuduLangFui/Components/Composites/Trace]] · [[src/PuduLangFui/Components/Patterns/Command]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Patterns/Sidebar]] · [[src/PuduLangFui/Components/Primitives/_MOC]] · [[src/PuduLangFui/Elements/Checkpoint]] · [[src/PuduLangFui/Elements/FileTree]] · [[src/PuduLangFui/Elements/PromptInput]] · [[src/PuduLangFui/Elements/Sources]] · [[src/PuduLangFui/Components/Composites/Accordion]] · [[src/PuduLangFui/Components/Composites/Carousel]] · [[src/PuduLangFui/Components/Composites/Combobox]]

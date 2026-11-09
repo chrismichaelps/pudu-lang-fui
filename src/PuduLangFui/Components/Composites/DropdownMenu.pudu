@@ -4,6 +4,7 @@ module PuduLangFui.Components.Composites.DropdownMenu
 import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -67,12 +68,13 @@ export fn style() -> Css.Block {
   Css.block("dropdown-menu", [
       Css.base("margin: 0; margin-block: $space-1; min-inline-size: 12rem; padding: calc($unit * 1.5); background: $popover; color: $popover-foreground; border: 0; border-radius: $radius-3xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; position-area: block-end span-inline-end; position-try-fallbacks: flip-block, flip-inline"),
       Css.variant("side", "end", "position-area: inline-end span-block-end; margin-block: 0; margin-inline: $space-1"),
-      Css.slot("dropdown-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; font-weight: $weight-medium; text-align: start; text-decoration: none; cursor: default; user-select: none"),
+      Css.slot("dropdown-menu-item", "display: flex; align-items: center; gap: calc($unit * 2.5); inline-size: 100%; padding: $space-2 $space-3; background: transparent; color: inherit; border: 0; border-radius: $radius-2xl; font: inherit; font-size: $text-sm; text-align: start; text-decoration: none; cursor: default; user-select: none"),
       Css.slotWhen("dropdown-menu-item", ":is(:hover, :focus-visible)", "background: $accent; color: $accent-foreground; outline: none"),
       Css.slotWhen("dropdown-menu-item", "[data-variant=\"destructive\"]", "color: $destructive"),
       Css.slot("dropdown-menu-label", "padding: calc($unit * 2.5) $space-3; font-size: $text-xs; color: $muted-foreground"),
       Css.slot("dropdown-menu-separator", "block-size: $border-width; margin-block: calc($unit * 1.5); margin-inline: calc($unit * -1.5); background: color-mix(in oklab, $border 50%, transparent)"),
       Css.slot("dropdown-menu-shortcut", "margin-inline-start: auto; font-size: $text-xs; color: $muted-foreground; letter-spacing: 0.1em"),
-      Css.slot("dropdown-menu-group", "display: flex; flex-direction: column")
+      Css.slot("dropdown-menu-group", "display: flex; flex-direction: column"),
+      Css.behavior(Script.MENU_KEYS)
     ])
 }

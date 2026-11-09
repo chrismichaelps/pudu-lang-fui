@@ -18,7 +18,7 @@ fui add spinner
 ## Usage
 
 ```pudu
-Spinner.spinner("Loading")
+column("20rem", [Row.small(Row.Muted).holding([Row.media().holding([Spinner.spinner("Loading")]), Row.content().holding([Row.title().says("Processing payment...")]), Row.content().css("flex", "none").css("justify-content", "flex-end").holding([H.span().css("font-size", "var(--fui-text-sm)").says("$100.00")])])])
 ```
 
 ## API

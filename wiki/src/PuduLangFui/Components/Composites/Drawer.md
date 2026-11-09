@@ -25,64 +25,10 @@ A panel from any edge, dragged on native scrolling with stops and an optional sh
 export type Direction = Bottom | Top | Start | End
 
 export type Props = {
-  direction: Direction,
-  dismissible: Bool,
-  modal: Bool,
-  nested: Bool,
-  handleOnly: Bool,
-  handle: Bool,
-  preventCycle: Bool,
-  defaultOpen: Bool,
-  scalesBackground: Bool,
-  colorsBodyOnScale: Bool,
-  sequential: Bool,
-  repositionsInputs: Bool,
-  snapPoints: Array[Str],
-  activeSnap: Int,
-  fadeFrom: Option[Int],
-  closeThreshold: Str,
-  scrollLock: Int
-}
 
 export fn props() -> Props
 
 export trait Configuring {
-  fn direction(self: &Self, value: Direction) -> Self
-
-  fn notDismissible(self: &Self) -> Self
-
-  fn notModal(self: &Self) -> Self
-
-  fn nested(self: &Self) -> Self
-
-  fn handleOnly(self: &Self) -> Self
-
-  fn withoutHandle(self: &Self) -> Self
-
-  fn preventCycle(self: &Self) -> Self
-
-  fn defaultOpen(self: &Self) -> Self
-
-  fn scalesBackground(self: &Self) -> Self
-
-  fn keepsBodyColor(self: &Self) -> Self
-
-  fn sequential(self: &Self) -> Self
-
-  fn keepsPositionOverKeyboard(self: &Self) -> Self
-
-  fn snapPoints(self: &Self, value: Array[Str]) -> Self
-
-  fn activeSnap(self: &Self, index: Int) -> Self
-
-  fn fadeFrom(self: &Self, index: Int) -> Self
-
-  fn closeThreshold(self: &Self, value: Str) -> Self
-
-  fn scrollLock(self: &Self, value: Int) -> Self
-}
-
-impl Configuring for Props
 
 export fn trigger(id: Str, given: Button.Props) -> H.Node
 

@@ -2,40 +2,46 @@
 module PuduLangFui.Components.Composites.Carousel
 
 import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
-/// Slides scrolled one at a time, with a dot linking to each.
+/// One arrow beside the slides.
+fn arrow(part: Str, glyph: Icon.Glyph, caption: Str) -> H.Node {
+  Button.button(Button.props().variant(Button.Outline).size(Button.IconSmall)).data("part", part).label(caption).holding([Icon.icon(glyph)])
+}
+
+/// Slides moved one view at a time, by arrow, scroll, or swipe.
 export fn carousel(id: Str, caption: Str, slides: Array[H.Node]) -> H.Node {
   var held: Array[H.Node] = []
-  var dots: Array[H.Node] = []
   var index = 0
 
   for slide in slides {
-    let target = id + "-slide-" + show(index + 1)
-
-    held = held.push(Core.part("carousel-slide").id(target).holding([slide]))
-    dots = dots.push(H.a().slot("carousel-dot").href("#" + target).label("Slide " + show(index + 1)))
+    held = held.push(Core.part("carousel-item").id(id + "-slide-" + show(index + 1)).role("group").at("aria-roledescription", "slide").holding([slide]))
     index = index + 1
   }
 
-  H.section().slot("carousel").label(caption).at("aria-roledescription", "carousel").holding([
-      Core.part("carousel-viewport").at("tabindex", "0").holding(held),
-      Core.part("carousel-dots").holding(dots)
+  H.section().slot("carousel").id(id).label(caption).at("aria-roledescription", "carousel").holding([
+      Core.part("carousel-content").at("tabindex", "0").holding(held),
+      arrow("carousel-previous", Icon.ChevronLeft, "Previous slide"),
+      arrow("carousel-next", Icon.ChevronRight, "Next slide")
     ])
 }
 
 /// The styles of a carousel.
 export fn style() -> Css.Block {
   Css.block("carousel", [
-      Css.base("display: flex; flex-direction: column; gap: $space-2"),
-      Css.slot("carousel-viewport", "display: flex; gap: $space-4; overflow-x: auto; scroll-snap-type: inline mandatory; scroll-behavior: smooth; scrollbar-width: none; outline: none"),
-      Css.slotWhen("carousel-viewport", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
-      Css.slotWhen("carousel-viewport", "::scroll-button(inline-start)", "content: '<'; position: absolute; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; inline-size: $control-md; block-size: $control-md; cursor: pointer"),
-      Css.slotWhen("carousel-viewport", "::scroll-button(inline-end)", "content: '>'; position: absolute; background: $background; color: $foreground; border: $border-width solid $border; border-radius: $radius-full; inline-size: $control-md; block-size: $control-md; cursor: pointer"),
-      Css.slot("carousel-slide", "flex: 0 0 100%; scroll-snap-align: start"),
-      Css.slot("carousel-dots", "display: flex; justify-content: center; gap: $space-2"),
-      Css.slot("carousel-dot", "inline-size: $space-2; block-size: $space-2; background: $border; border-radius: $radius-full"),
-      Css.slotWhen("carousel-dot", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px")
+      Css.base("position: relative; inline-size: 100%"),
+      Css.slot("carousel-content", "display: flex; overflow-x: auto; scroll-snap-type: inline mandatory; scroll-behavior: smooth; scrollbar-width: none; outline: none"),
+      Css.slotWhen("carousel-content", "::-webkit-scrollbar", "display: none"),
+      Css.slotWhen("carousel-content", ":focus-visible", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.slot("carousel-item", "flex: 0 0 100%; min-inline-size: 0; padding: 1px; scroll-snap-align: start"),
+      Css.rule("[data-part=\"carousel-previous\"], [data-part=\"carousel-next\"]", "position: absolute; inset-block-start: 50%; translate: 0 -50%"),
+      Css.rule("[data-part=\"carousel-previous\"]", "inset-inline-start: calc($unit * -12)"),
+      Css.rule("[data-part=\"carousel-next\"]", "inset-inline-end: calc($unit * -12)"),
+      Css.rule(":dir(rtl) :is([data-part=\"carousel-previous\"], [data-part=\"carousel-next\"]) [data-slot=\"icon\"]", "scale: -1 1"),
+      Css.behavior(Script.CAROUSEL)
     ])
 }

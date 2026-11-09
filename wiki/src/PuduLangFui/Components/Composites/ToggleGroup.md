@@ -24,7 +24,11 @@ A set of toggles allowing one or many.
 ```pudu
 export type Kind = One | Many
 
+export type Variant = Plain | Outline
+
 export fn group(caption: Str) -> H.Node
+
+export fn styled(caption: Str, variant: Variant) -> H.Node
 
 export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node
 
@@ -37,7 +41,7 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A factory table maps the kind to the input type: radios for one, checkboxes for many.
+1. Native inputs drive pressed toggles, plain or outlined.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -45,7 +49,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Radios allow no empty state once chosen.
+- Radios keep one pressed.
 
 ## Depth
 

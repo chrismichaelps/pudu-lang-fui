@@ -27,16 +27,6 @@ export type Props = { checked: Bool, mixed: Bool, disabled: Bool, invalid: Bool 
 export fn props() -> Props
 
 export trait Configuring {
-  fn checked(self: &Self) -> Self
-
-  fn mixed(self: &Self) -> Self
-
-  fn disabled(self: &Self) -> Self
-
-  fn invalid(self: &Self) -> Self
-}
-
-impl Configuring for Props
 
 export fn checkbox(name: Str, given: Props) -> H.Node
 

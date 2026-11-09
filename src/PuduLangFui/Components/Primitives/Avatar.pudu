@@ -36,7 +36,7 @@ export fn style() -> Css.Block {
       Css.base("--avatar-size: $control-sm; position: relative; display: inline-flex; flex-shrink: 0; inline-size: var(--avatar-size); block-size: var(--avatar-size); border-radius: $radius-full; overflow: hidden"),
       Css.variant("size", "small", "--avatar-size: calc($unit * 6)"),
       Css.variant("size", "large", "--avatar-size: $control-lg"),
-      Css.slot("avatar-fallback", "position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: $muted; color: $muted-foreground; font-size: $text-sm; font-weight: $weight-medium"),
+      Css.slot("avatar-fallback", "position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: $muted; color: $muted-foreground; border-radius: inherit; font-size: $text-sm"),
       Css.slot("avatar-image", "position: relative; inline-size: 100%; block-size: 100%; object-fit: cover; color: transparent"),
       Css.slot("avatar-group", "display: flex"),
       Css.rule("[data-slot=\"avatar-group\"] > * + *", "margin-inline-start: calc($space-2 * -1); box-shadow: 0 0 0 2px $background"),

@@ -22,7 +22,7 @@ tags: [handoff]
 
 ## Exact next action
 
-Maintainer: review the looks and the Create page against the design reference and list any part that still differs. No release is planned yet.
+Maintainer: review the deployed site against the design reference and list any part that still differs. No release is planned yet.
 
 ## Referenced by
 

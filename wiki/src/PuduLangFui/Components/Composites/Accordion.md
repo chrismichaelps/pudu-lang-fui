@@ -1,6 +1,6 @@
 ---
 type: module
-path: "@root/src/PuduLangFui/Components/Primitives/Accordion.pudu"
+path: "@root/src/PuduLangFui/Components/Composites/Accordion.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
@@ -8,10 +8,10 @@ depth_score: 0.63
 depth_status: MEDIUM
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, medium]
-aliases: [PuduLangFui.Components.Primitives.Accordion]
+aliases: [PuduLangFui.Components.Composites.Accordion]
 ---
 
-# PuduLangFui.Components.Primitives.Accordion
+# PuduLangFui.Components.Composites.Accordion
 
 ## Purpose
 
@@ -33,7 +33,7 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
@@ -58,4 +58,4 @@ DEPTH 0.63 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Primitives/_MOC]]
+[[src/PuduLangFui/Catalog/Catalog]] · [[src/PuduLangFui/Components/Composites/_MOC]]

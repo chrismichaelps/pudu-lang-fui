@@ -18,14 +18,16 @@ fui add toggle-group
 ## Usage
 
 ```pudu
-ToggleGroup.group("Alignment").holding([ToggleGroup.item(ToggleGroup.One, "align", "start", true).holding([H.words("Start")]), ToggleGroup.item(ToggleGroup.One, "align", "end").holding([H.words("End")])])
+ToggleGroup.styled("Text formatting", ToggleGroup.Outline).css("gap", "var(--fui-space-2)").holding([ToggleGroup.item(ToggleGroup.Many, "format", "bold").label("Toggle bold").holding([Icon.sized(Icon.Bold, Icon.Small)]), ToggleGroup.item(ToggleGroup.Many, "format", "italic").label("Toggle italic").holding([Icon.sized(Icon.Italic, Icon.Small)]), ToggleGroup.item(ToggleGroup.Many, "format", "underline").label("Toggle underline").holding([Icon.sized(Icon.Underline, Icon.Small)])])
 ```
 
 ## API
 
 ```pudu
 export type Kind = One | Many
-export fn group(caption: Str) -> H.Node
+export type Variant = Plain | Outline
+export fn group(caption: Str) -> H.Node styled(caption, Plain) }
+export fn styled(caption: Str, variant: Variant) -> H.Node
 export fn item(kind: Kind, name: Str, value: Str, pressed: Bool = false) -> H.Node
 export fn style() -> Css.Block
 ```

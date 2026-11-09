@@ -26,11 +26,11 @@ export fn header() -> H.Node { Core.part("empty-header") }
 /// The styles of an empty state.
 export fn style() -> Css.Block {
   Css.block("empty", [
-      Css.base("display: flex; flex-direction: column; align-items: center; justify-content: center; gap: $space-4; padding: $space-12; text-align: center; text-wrap: balance; border-radius: $radius-2xl"),
-      Css.slot("empty-media", "display: flex; align-items: center; justify-content: center; inline-size: $space-10; block-size: $space-10; margin-block-end: $space-2; background: $muted; border-radius: $radius-xl"),
-      Css.slot("empty-title", "font-size: $text-lg; font-weight: $weight-medium; letter-spacing: $tracking"),
-      Css.slot("empty-description", "max-inline-size: 24rem; font-size: $text-sm; line-height: 1.625; color: $muted-foreground"),
-      Css.slot("empty-content", "display: flex; flex-direction: column; align-items: center; gap: $space-4; font-size: $text-sm"),
-      Css.slot("empty-header", "display: flex; flex-direction: column; align-items: center; gap: $space-2; max-inline-size: 24rem")
+      Css.base("display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; text-wrap: balance"),
+      Css.slot("empty-media", "display: flex; align-items: center; justify-content: center"),
+      Css.slot("empty-title", "font-weight: $weight-medium"),
+      Css.slot("empty-description", "color: $muted-foreground"),
+      Css.slot("empty-content", "display: flex; flex-direction: column; align-items: center"),
+      Css.slot("empty-header", "display: flex; flex-direction: column; align-items: center")
     ])
 }

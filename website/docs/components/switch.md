@@ -18,7 +18,7 @@ fui add switch
 ## Usage
 
 ```pudu
-Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Switch.switcher("airplane", true), Label.label("airplane").says("Airplane mode")])
+Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Switch.switcher("airplane", false), Label.label("airplane").says("Airplane Mode")])
 ```
 
 ## API

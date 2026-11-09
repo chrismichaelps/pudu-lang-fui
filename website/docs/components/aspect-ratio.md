@@ -18,7 +18,7 @@ fui add aspect-ratio
 ## Usage
 
 ```pudu
-AspectRatio.aspectRatio("16 / 9").css("inline-size", "20rem").css("background", "var(--fui-muted)").css("border-radius", "var(--fui-radius-xl)")
+AspectRatio.aspectRatio("16 / 9").css("inline-size", "24rem").css("background", "linear-gradient(135deg, var(--fui-muted), var(--fui-border))").css("border-radius", "var(--fui-radius)")
 ```
 
 ## API

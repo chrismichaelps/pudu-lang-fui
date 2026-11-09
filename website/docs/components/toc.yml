@@ -1,5 +1,3 @@
-- name: Accordion
-  href: accordion.md
 - name: Alert
   href: alert.md
 - name: Aspect Ratio
@@ -74,6 +72,8 @@
   href: typeset.md
 - name: Typography
   href: typography.md
+- name: Accordion
+  href: accordion.md
 - name: Alert Dialog
   href: alert-dialog.md
 - name: Attachment

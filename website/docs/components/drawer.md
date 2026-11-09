@@ -19,9 +19,10 @@ fui add drawer
 
 ```pudu
 H.div().holding([
-    Drawer.trigger("goal", Button.props().variant(Button.Outline)).says("Open drawer"),
+    Drawer.trigger("goal", Button.props().variant(Button.Outline)).says("Open Drawer"),
     Drawer.drawer("goal", "Move goal", Drawer.props().snapPoints(["0.4", "1"]), [
-        Drawer.header().holding([Drawer.title().says("Move goal"), Drawer.description().says("Drag down to settle, or further to dismiss.")]),
+        Drawer.header().holding([Drawer.title().says("Move Goal"), Drawer.description().says("Set your daily activity goal.")]),
+        H.div().css("display", "flex").css("flex-direction", "column").css("align-items", "center").css("gap", "var(--fui-space-2)").css("padding", "var(--fui-space-4)").holding([H.div().css("font-size", "4.5rem").css("font-weight", "700").css("line-height", "1").says("350"), H.div().css("font-size", "0.75rem").css("color", "var(--fui-muted-foreground)").says("CALORIES/DAY")]),
         Drawer.footer().holding([Button.button(Button.props()).says("Submit"), Drawer.close("goal", Button.props().variant(Button.Outline)).says("Cancel")])
       ])
   ])

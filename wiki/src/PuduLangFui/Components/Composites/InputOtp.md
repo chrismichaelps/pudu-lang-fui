@@ -22,19 +22,18 @@ A one-time code entry.
 ### Signatures
 
 ```pudu
-export fn inputOtp(name: Str, length: Int = 6) -> H.Node
+export fn inputOtp(name: Str, length: Int = 6, value: Str = "") -> H.Node
 
 export fn style() -> Css.Block
 ```
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. One `input` with `autocomplete=one-time-code`
-2. a repeating background draws the cells and `letter-spacing` aligns digits.
+1. One real field carries the value and sits invisibly over the cells, which a script paints from it.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -42,7 +41,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Paste and autofill work because it is one field.
+- Non-digits are removed as they are typed.
 
 ## Depth
 

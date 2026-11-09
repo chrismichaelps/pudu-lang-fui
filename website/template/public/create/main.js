@@ -2,11 +2,15 @@ import { CODE_PARAMETER, DATA_URL, FIELDS, HOME_ITEM } from "./constants.js";
 import { createGetCode, createOpenPreset } from "./dialogs.js";
 import { copied, element } from "./dom.js";
 import { decode, encode, initialState, isValid, optionsFor, shuffled, titleOf } from "./model.js";
-import { createPicker } from "./picker.js";
+import { createControl } from "./picker.js";
 import { applyDesign, previewUrl } from "./preview.js";
 
-const LABELS = { look: "Style", base: "Base Color", theme: "Theme", chart: "Chart Color", heading: "Heading", font: "Font", icons: "Icon Library", radius: "Radius", menu: "Menu", accent: "Menu Accent" };
-const GROUPS = [["look"], ["base", "theme", "chart"], ["heading", "font"], ["icons", "radius"], ["menu", "accent"]];
+const SECTIONS = [
+  ["Foundation", [["look", "Look", "tiles"], ["radius", "Corners", "segments"]]],
+  ["Color", [["base", "Neutral", "swatches"], ["theme", "Accent", "swatches"], ["chart", "Charts", "swatches"]]],
+  ["Type", [["heading", "Headings", "select"], ["font", "Body", "select"], ["icons", "Icons", "select"]]],
+  ["Menus", [["menu", "Surface", "segments"], ["accent", "Highlight", "segments"]]],
+];
 
 function currentSiteMode() {
   const chosen = document.documentElement.getAttribute("data-theme");
@@ -21,14 +25,13 @@ function start(holder, data) {
   let item = HOME_ITEM;
   let mode = currentSiteMode();
   const frame = element("iframe", { title: "Design preview", src: previewUrl(item) });
-  const panel = element("aside", { class: "fui-create-panel", "aria-label": "Design choices" });
-  const pickers = {};
+  const controls = {};
 
   function refresh() {
     const options = optionsFor(data, state);
 
-    FIELDS.forEach((field) => pickers[field].update(options[field], state[field]));
-    codeButton.textContent = `--preset ${encode(state)}`;
+    FIELDS.forEach((field) => controls[field].update(options[field], state[field]));
+    codeButton.textContent = encode(state);
     applyDesign(data, state, frame, mode);
   }
 
@@ -57,18 +60,18 @@ function start(holder, data) {
     return true;
   }
 
-  FIELDS.forEach((field) => {
-    pickers[field] = createPicker({ label: LABELS[field], panel, onPick: (value) => change({ ...state, [field]: value }) });
-  });
+  SECTIONS.forEach(([, fields]) => fields.forEach(([field, label, kind]) => {
+    controls[field] = createControl({ label, kind, onPick: (value) => change({ ...state, [field]: value }) });
+  }));
 
   const getCode = createGetCode(() => encode(state));
   const openPreset = createOpenPreset(openCode);
-  const codeButton = element("button", { type: "button", class: "fui-create-button fui-create-code", title: "Copy design code", on: { click: (event) => copied(event.currentTarget, encode(state)) } });
-  const modeButton = element("button", { type: "button", class: "fui-create-icon", "aria-label": "Toggle light and dark", text: "◐", on: { click: () => {
+  const codeButton = element("button", { type: "button", class: "fui-design-code", title: "Copy design code", on: { click: (event) => copied(event.currentTarget, encode(state)) } });
+  const modeButton = element("button", { type: "button", class: "fui-design-tool", text: "Light / Dark", on: { click: () => {
     mode = mode === "dark" ? "light" : "dark";
     refresh();
   } } });
-  const itemSelect = element("select", { class: "fui-create-items", "aria-label": "Previewed item", on: { change: (event) => {
+  const itemSelect = element("select", { class: "fui-design-items", "aria-label": "Previewed item", on: { change: (event) => {
     item = event.target.value;
     frame.src = previewUrl(item);
   } } }, [HOME_ITEM, ...data.items].map((name) => element("option", { value: name, text: titleOf(name) })));
@@ -79,31 +82,38 @@ function start(holder, data) {
     itemSelect.dispatchEvent(new Event("change"));
   };
 
-  panel.append(
-    element("header", {}, [element("span", { class: "fui-create-title", text: "Create" }), modeButton]),
-    element("div", { class: "fui-create-fields" }, GROUPS.flatMap((group, index) => [
-      ...(index ? [element("hr")] : []),
-      ...group.flatMap((field) => pickers[field].nodes),
-    ])),
-    element("footer", {}, [
-      codeButton,
-      element("button", { type: "button", class: "fui-create-button", text: "Open Preset", on: { click: () => openPreset.open() } }),
-      element("button", { type: "button", class: "fui-create-button", text: "Shuffle", on: { click: () => change(shuffled(data)) } }),
-      element("button", { type: "button", class: "fui-create-button", text: "Reset", on: { click: () => change(decode(data.code)) } }),
-      element("button", { type: "button", class: "fui-create-button fui-create-primary", text: "Get Code", on: { click: () => getCode.open() } }),
-    ]),
-  );
-
-  holder.replaceChildren(
-    panel,
-    element("div", { class: "fui-create-stage" }, [
-      frame,
-      element("nav", { class: "fui-create-switcher", "aria-label": "Preview" }, [
-        element("button", { type: "button", class: "fui-create-icon", "aria-label": "Previous item", text: "‹", on: { click: () => step(-1) } }),
-        itemSelect,
-        element("button", { type: "button", class: "fui-create-icon", "aria-label": "Next item", text: "›", on: { click: () => step(1) } }),
+  const toolbar = element("nav", { class: "fui-design-toolbar", "aria-label": "Preview" }, [
+    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Previous item", text: "‹", on: { click: () => step(-1) } }),
+    itemSelect,
+    element("button", { type: "button", class: "fui-design-tool", "aria-label": "Next item", text: "›", on: { click: () => step(1) } }),
+    element("span", { class: "fui-design-spacer" }),
+    modeButton,
+  ]);
+  const inspector = element("aside", { class: "fui-design-inspector", "aria-label": "Design choices" }, [
+    element("header", {}, [
+      element("div", {}, [element("h2", { text: "Your design" }), element("p", { text: "Every change shows at once." })]),
+      element("div", { class: "fui-design-header-actions" }, [
+        element("button", { type: "button", class: "fui-design-tool", text: "Surprise me", on: { click: () => change(shuffled(data)) } }),
+        element("button", { type: "button", class: "fui-design-tool", text: "Start over", on: { click: () => change(decode(data.code)) } }),
       ]),
     ]),
+    element("div", { class: "fui-design-sections" }, SECTIONS.map(([heading, fields]) => element("section", {}, [
+      element("h3", { text: heading }),
+      ...fields.map(([field]) => controls[field].node),
+    ]))),
+    element("footer", {}, [
+      element("label", { class: "fui-design-code-label", text: "Design code" }),
+      codeButton,
+      element("div", { class: "fui-design-footer-actions" }, [
+        element("button", { type: "button", class: "fui-design-action", text: "Paste a code", on: { click: () => openPreset.open() } }),
+        element("button", { type: "button", class: "fui-design-action fui-design-action-primary", text: "Use this design", on: { click: () => getCode.open() } }),
+      ]),
+    ]),
+  ]);
+
+  holder.replaceChildren(
+    element("div", { class: "fui-design-canvas" }, [toolbar, element("div", { class: "fui-design-stage" }, [frame])]),
+    inspector,
     getCode.node,
     openPreset.node,
   );

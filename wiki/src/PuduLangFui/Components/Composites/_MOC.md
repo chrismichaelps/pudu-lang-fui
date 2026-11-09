@@ -5,6 +5,7 @@ tags: [moc]
 
 # Composites
 
+- [[src/PuduLangFui/Components/Composites/Accordion]] — Sections of which at most one is open.
 - [[src/PuduLangFui/Components/Composites/AlertDialog]] — A modal asking for a decision.
 - [[src/PuduLangFui/Components/Composites/Attachment]] — A file or image with metadata and upload state.
 - [[src/PuduLangFui/Components/Composites/Breadcrumb]] — Where a page sits in a hierarchy.

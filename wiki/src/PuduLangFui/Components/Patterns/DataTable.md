@@ -42,12 +42,16 @@ export fn visibility[T](id: Str, columns: &Array[Column[T]], hidden: &Array[Str]
 
 export fn toolbar() -> H.Node
 
+export fn footer() -> H.Node
+
+export fn selectedCount(total: Int) -> H.Node
+
 export fn style() -> Css.Block
 ```
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Components/Primitives/Popover]] · [[src/PuduLangFui/Components/Primitives/Table]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Composites/Pagination]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Components/Primitives/Popover]] · [[src/PuduLangFui/Components/Primitives/Table]] · [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

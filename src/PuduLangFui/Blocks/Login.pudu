@@ -29,4 +29,4 @@ export fn login(action: Str, errors: &Array[Str]) -> H.Node {
 }
 
 /// The styles of a login section.
-export fn style() -> Css.Block { Css.block("login", [Css.base("max-inline-size: 24rem; margin-inline: auto")]) }
+export fn style() -> Css.Block { Css.block("login", [Css.base("inline-size: 100%; max-inline-size: 24rem; margin-inline: auto")]) }

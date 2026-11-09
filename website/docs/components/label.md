@@ -18,7 +18,7 @@ fui add label
 ## Usage
 
 ```pudu
-Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holding([Checkbox.checkbox("agree", Checkbox.props()), Label.label("agree").says("Accept terms")])
+H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-2)").holding([Checkbox.checkbox("agree", Checkbox.props()), Label.label("agree").says("Accept terms and conditions")])
 ```
 
 ## API

@@ -18,7 +18,7 @@ fui add input
 ## Usage
 
 ```pudu
-column("18rem", [Input.input("name", Input.props()).placeholder("Name")])
+column("20rem", [Field.field().holding([Field.label("api-key").says("API Key"), Input.input("api-key", Input.props().kind("password")).placeholder("sk-..."), Field.description().says("Your API key is encrypted and stored securely.")])])
 ```
 
 ## API

@@ -18,13 +18,9 @@ fui add button
 ## Usage
 
 ```pudu
-H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([
-    Button.button(Button.props()).holding([H.words("Button"), Icon.icon(Icon.ArrowRight)]),
-    Button.button(Button.props().variant(Button.Secondary)).says("Secondary"),
-    Button.button(Button.props().variant(Button.Outline)).says("Outline"),
-    Button.button(Button.props().variant(Button.Ghost)).says("Ghost"),
-    Button.button(Button.props().variant(Button.Destructive)).says("Destructive"),
-    Button.button(Button.props().variant(Button.Plain)).says("Link")
+H.div().css("display", "flex").css("flex-wrap", "wrap").css("justify-content", "center").css("gap", "var(--fui-space-2)").holding([
+    Button.button(Button.props().variant(Button.Outline)).says("Button"),
+    Button.button(Button.props().variant(Button.Outline).size(Button.IconMedium)).label("Submit").holding([Icon.icon(Icon.ArrowUp)])
   ])
 ```
 

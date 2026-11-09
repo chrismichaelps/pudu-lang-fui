@@ -1,20 +1,47 @@
-/** @Fui.Combobox.Component — a field with suggestions */
+/** @Fui.Combobox.Component — a field that filters a list of choices */
 module PuduLangFui.Components.Composites.Combobox
 
 import Std.Html.Build as H
-import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
-/// A field named `name` suggesting the given values.
-export fn combobox(name: Str, suggestions: &Array[Str]) -> H.Node {
-  let list = name + "-suggestions"
+/// One choice in the list.
+fn choice(value: Str) -> H.Node {
+  H.button().kind("button").slot("combobox-item").role("option").at("tabindex", "-1").at("aria-selected", "false").says(value)
+}
+
+/// A field named `name` that filters the given values, showing `hint` while empty.
+export fn combobox(name: Str, suggestions: &Array[Str], hint: Str = "") -> H.Node {
+  let list = name + "-list"
 
   Core.part("combobox").holding([
-      Input.input(name, Input.props()).at("list", list).at("autocomplete", "off"),
-      H.tag("datalist").id(list).holding(suggestions.map(|value: Str| H.option().value(value)))
+      Core.part("input-group").role("group").holding([
+          H.input().slot("input-group-control").id(name).name(name).kind("text").placeholder(hint).role("combobox").at("aria-expanded", "false").at("aria-controls", list).at("autocomplete", "off"),
+          Core.part("input-group-addon").data("align", "end").holding([
+              Button.button(Button.props().variant(Button.Ghost).size(Button.IconTiny)).at("tabindex", "-1").label("Show choices").holding([Icon.sized(Icon.ChevronDown, Icon.Small)])
+            ])
+        ]),
+      Core.part("combobox-content").id(list).at("popover", "manual").data("side", "bottom").holding([
+          Core.part("combobox-list").role("listbox").holding(suggestions.map(|value: Str| choice(value))),
+          Core.part("combobox-empty").flag("hidden").says("No items found.")
+        ])
     ])
 }
 
 /// The styles of a combobox.
-export fn style() -> Css.Block { Css.block("combobox", [Css.base("display: block; inline-size: 100%")]) }
+export fn style() -> Css.Block {
+  Css.block("combobox", [
+      Css.base("display: block; inline-size: 100%"),
+      Css.slot("combobox-content", "position: fixed; inset: auto; margin: 0; inline-size: var(--anchor-width); max-block-size: var(--available-height); border: 0; overflow: hidden"),
+      Css.slot("combobox-list", "overflow-y: auto; max-block-size: 18rem"),
+      Css.slot("combobox-item", "display: flex; align-items: center; inline-size: 100%; color: inherit; background: transparent; border: 0; font: inherit; text-align: start; cursor: default; outline: none"),
+      Css.slotWhen("combobox-item", "[aria-selected=\"true\"]", "font-weight: $weight-medium"),
+      Css.slotWhen("combobox-item", "[hidden]", "display: none !important"),
+      Css.slotWhen("combobox-empty", "[hidden]", "display: none !important"),
+      Css.slotWhen("combobox-empty", ":not([hidden])", "display: flex"),
+      Css.behavior(Script.COMBOBOX)
+    ])
+}

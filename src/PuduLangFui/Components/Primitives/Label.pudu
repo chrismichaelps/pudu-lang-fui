@@ -11,7 +11,7 @@ export fn label(control: Str) -> H.Node { H.labelFor().at("for", control).slot("
 /// The styles of a label.
 export fn style() -> Css.Block {
   Css.block("label", [
-      Css.base("display: inline-flex; align-items: center; gap: $space-2; font-size: $text-sm; font-weight: $weight-medium; line-height: $leading-tight; user-select: none"),
+      Css.base("display: inline-flex; align-items: center; gap: $space-2; font-size: $text-sm; font-weight: $weight-medium; line-height: 1; user-select: none"),
       Css.when(":has(+ :disabled)", "opacity: 0.5")
     ])
 }

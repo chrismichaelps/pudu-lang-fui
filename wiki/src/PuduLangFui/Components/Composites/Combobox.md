@@ -22,18 +22,18 @@ A field with suggestions.
 ### Signatures
 
 ```pudu
-export fn combobox(name: Str, suggestions: &Array[Str]) -> H.Node
+export fn combobox(name: Str, suggestions: &Array[Str], hint: Str = "") -> H.Node
 
 export fn style() -> Css.Block
 ```
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. An `input` joined to a `datalist`.
+1. A field filters a list in a popover placed under it; arrow keys walk the list and Enter picks.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -41,7 +41,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Free text is allowed.
+- With nothing matching, the empty message shows.
 
 ## Depth
 

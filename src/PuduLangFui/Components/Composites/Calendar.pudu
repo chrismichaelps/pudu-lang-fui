@@ -5,17 +5,21 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Constants.Calendar as Names
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
+
+/// How many years the year list shows on either side of the current one.
+const YEARS_AROUND: Int = 10
 
 /** @Fui.Calendar.Date — a day of the calendar */
 export type Date = { year: Int, month: Int, day: Int }
 
 /** @Fui.Calendar.Props — what a month shows */
-export type Props = { today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str] }
+export type Props = { today: Option[Date], selected: Option[Date], monthNames: Array[Str], weekdayNames: Array[Str], dropdowns: Bool }
 
 /// No day marked, in English.
-export fn props() -> Props { Props{today: None, selected: None, monthNames: Names.MONTHS, weekdayNames: Names.WEEKDAYS} }
+export fn props() -> Props { Props{today: None, selected: None, monthNames: Names.MONTHS, weekdayNames: Names.WEEKDAYS, dropdowns: false} }
 
 /** @Fui.Calendar.Configuring — one method per prop */
 export trait Configuring {
@@ -27,6 +31,9 @@ export trait Configuring {
 
   /// Replaces the month and weekday names.
   fn names(self: &Self, months: Array[Str], weekdays: Array[Str]) -> Self
+
+  /// Replaces the title with lists of months and years.
+  fn withDropdowns(self: &Self) -> Self
 }
 
 impl Configuring for Props {
@@ -35,6 +42,8 @@ impl Configuring for Props {
   fn selected(self: &Self, value: Date) -> Self { Props{..*self, selected: Some(value)} }
 
   fn names(self: &Self, months: Array[Str], weekdays: Array[Str]) -> Self { Props{..*self, monthNames: months, weekdayNames: weekdays} }
+
+  fn withDropdowns(self: &Self) -> Self { Props{..*self, dropdowns: true} }
 }
 
 /// A date from its parts.
@@ -67,31 +76,40 @@ fn previousMonth(year: Int, month: Int) -> (Int, Int) { if month == 1 { (year - 
 /// The month after a year and month.
 fn nextMonth(year: Int, month: Int) -> (Int, Int) { if month == 12 { (year + 1, 1) } else { (year, month + 1) } }
 
-/// One day's cell.
-fn dayCell(day: Date, given: &Props, linkTo: fn(Date) -> Str) -> H.Node {
+/// A number written in two digits.
+fn twoDigits(value: Int) -> Str { if value < 10 { "0" + show(value) } else { show(value) } }
+
+/// A date as `YYYY-MM-DD`.
+fn isoDate(day: &Date) -> Str { show(day.year) + "-" + twoDigits(day.month) + "-" + twoDigits(day.day) }
+
+/// One day's cell; a day of a neighboring month is marked as outside.
+fn dayCell(day: Date, outside: Bool, given: &Props, linkTo: fn(Date) -> Str) -> H.Node {
   H.td().slot("calendar-cell").holding([
-      H.a().slot("calendar-day").href(linkTo(day)).says(show(day.day))
+      H.a().slot("calendar-day").href(linkTo(day)).data("date", isoDate(&day)).says(show(day.day))
         .atIf(given.today == Some(day), "aria-current", "date")
         .atIf(given.selected == Some(day), "data-selected", "true")
+        .atIf(outside, "data-outside", "true")
     ])
 }
 
-/// The rows of a month, padded before its first day.
+/// The rows of a month, filled out with the days of the months around it.
 fn weeks(year: Int, month: Int, given: &Props, linkTo: fn(Date) -> Str) -> Array[H.Node] {
   let lead = weekdayOf(year, month, 1)
+  let (backYear, backMonth) = previousMonth(year, month)
+  let backLength = daysIn(backYear, backMonth)
   var rows: Array[H.Node] = []
   var row: Array[H.Node] = []
   var blank = 0
 
   while blank < lead {
-    row = row.push(H.td().slot("calendar-cell"))
+    row = row.push(dayCell(date(backYear, backMonth, backLength - lead + blank + 1), true, given, linkTo))
     blank = blank + 1
   }
 
   var day = 1
 
   while day <= daysIn(year, month) {
-    row = row.push(dayCell(date(year, month, day), given, linkTo))
+    row = row.push(dayCell(date(year, month, day), false, given, linkTo))
 
     if row.length() == 7 {
       rows = rows.push(H.tr().holding(row))
@@ -101,7 +119,49 @@ fn weeks(year: Int, month: Int, given: &Props, linkTo: fn(Date) -> Str) -> Array
     day = day + 1
   }
 
+  let (forwardYear, forwardMonth) = nextMonth(year, month)
+  var following = 1
+
+  while !row.isEmpty() && row.length() < 7 {
+    row = row.push(dayCell(date(forwardYear, forwardMonth, following), true, given, linkTo))
+    following = following + 1
+  }
+
   if row.isEmpty() { rows } else { rows.push(H.tr().holding(row)) }
+}
+
+/// One list of the caption, drawn as its current choice with a chevron.
+fn dropdown(caption: Str, shown: Str, choices: Array[H.Node]) -> H.Node {
+  Core.part("calendar-dropdown-root").holding([
+      H.select().slot("calendar-dropdown").label(caption).holding(choices),
+      Core.inline("calendar-caption-label").holding([H.span().says(shown), Icon.sized(Icon.ChevronDown, Icon.Small)])
+    ])
+}
+
+/// The month and year lists of a caption.
+fn dropdowns(year: Int, number: Int, monthLink: fn(Int, Int) -> Str, given: &Props) -> H.Node {
+  var months: Array[H.Node] = []
+  var month = 1
+
+  while month <= 12 {
+    let name = given.monthNames[month - 1]
+
+    months = months.push(H.option().value(monthLink(year, month)).data("short", name.take(3)).flagIf(month == number, "selected").says(name))
+    month = month + 1
+  }
+
+  var years: Array[H.Node] = []
+  var shown = year - YEARS_AROUND
+
+  while shown <= year + YEARS_AROUND {
+    years = years.push(H.option().value(monthLink(shown, number)).flagIf(shown == year, "selected").says(show(shown)))
+    shown = shown + 1
+  }
+
+  Core.part("calendar-caption").holding([
+      dropdown("Month", given.monthNames[number - 1].take(3), months),
+      dropdown("Year", show(year), years)
+    ])
 }
 
 /// A month whose days link through `linkTo` and whose arrows link through `monthLink`.
@@ -109,11 +169,12 @@ export fn calendar(year: Int, number: Int, linkTo: fn(Date) -> Str, monthLink: f
   let (backYear, backMonth) = previousMonth(year, number)
   let (forwardYear, forwardMonth) = nextMonth(year, number)
   let arrow = Button.props().variant(Button.Ghost).size(Button.IconSmall)
+  let caption = if given.dropdowns { dropdowns(year, number, monthLink, &given) } else { Core.part("calendar-title").says(given.monthNames[number - 1] + " " + show(year)) }
 
   Core.part("calendar").holding([
       Core.part("calendar-header").holding([
           Button.link(monthLink(backYear, backMonth), arrow).label("Previous month").holding([Icon.icon(Icon.ChevronLeft)]),
-          Core.part("calendar-title").says(given.monthNames[number - 1] + " " + show(year)),
+          caption,
           Button.link(monthLink(forwardYear, forwardMonth), arrow).label("Next month").holding([Icon.icon(Icon.ChevronRight)])
         ]),
       H.table().slot("calendar-grid").holding([
@@ -126,16 +187,22 @@ export fn calendar(year: Int, number: Int, linkTo: fn(Date) -> Str, monthLink: f
 /// The styles of a calendar.
 export fn style() -> Css.Block {
   Css.block("calendar", [
-      Css.base("display: inline-flex; flex-direction: column; gap: $space-2; padding: $space-3"),
-      Css.slot("calendar-header", "display: flex; align-items: center; justify-content: space-between"),
+      Css.base("--radius-md: $radius-md; --cell-radius: $radius-md; --cell-size: calc($unit * 7); display: inline-flex; flex-direction: column; gap: $space-4; inline-size: fit-content"),
+      Css.slot("calendar-header", "display: flex; align-items: center; justify-content: space-between; gap: $space-1; block-size: var(--cell-size)"),
       Css.slot("calendar-title", "font-size: $text-sm; font-weight: $weight-medium"),
-      Css.slot("calendar-grid", "border-collapse: collapse"),
-      Css.slot("calendar-weekday", "inline-size: $control-sm; padding-block-end: $space-1; font-size: $text-xs; font-weight: $weight-normal; color: $muted-foreground"),
+      Css.slot("calendar-caption", "display: flex; align-items: center; justify-content: center; gap: calc($unit * 1.5); block-size: var(--cell-size); font-weight: $weight-medium"),
+      Css.slot("calendar-dropdown-root", "position: relative; border: 0"),
+      Css.slot("calendar-dropdown", "position: absolute; inset: 0; opacity: 0; cursor: pointer"),
+      Css.slot("calendar-caption-label", "display: flex; align-items: center; gap: $unit; font-size: $text-sm"),
+      Css.slot("calendar-grid", "border-collapse: separate; border-spacing: 0 $space-2; margin-block-start: calc($space-2 * -1)"),
+      Css.slot("calendar-weekday", "inline-size: var(--cell-size); padding: 0; font-size: 0.8rem; font-weight: $weight-normal; color: $muted-foreground"),
       Css.slot("calendar-cell", "padding: 0; text-align: center"),
-      Css.slot("calendar-day", "display: inline-flex; align-items: center; justify-content: center; inline-size: $control-sm; block-size: $control-sm; color: inherit; border-radius: $radius-4xl; font-size: $text-sm; text-decoration: none"),
-      Css.slotWhen("calendar-day", ":hover", "background: $accent; color: $accent-foreground"),
+      Css.slot("calendar-day", "display: flex; align-items: center; justify-content: center; color: inherit; border-radius: var(--cell-radius); font-size: $text-sm; text-decoration: none"),
+      Css.slotWhen("calendar-day", ":hover", "background: $muted; color: $foreground"),
       Css.slotWhen("calendar-day", ":focus-visible", "outline: 2px solid $ring; outline-offset: 1px"),
-      Css.slotWhen("calendar-day", "[aria-current=\"date\"]", "background: $muted; font-weight: $weight-semibold"),
-      Css.slotWhen("calendar-day", "[data-selected=\"true\"]", "background: $primary; color: $primary-foreground")
+      Css.slotWhen("calendar-day", "[data-outside=\"true\"]", "color: $muted-foreground"),
+      Css.slotWhen("calendar-day", "[aria-current=\"date\"]", "background: $muted; color: $foreground"),
+      Css.slotWhen("calendar-day", "[data-selected=\"true\"]", "background: $primary; color: $primary-foreground"),
+      Css.behavior(Script.CALENDAR)
     ])
 }

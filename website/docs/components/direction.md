@@ -18,7 +18,7 @@ fui add direction
 ## Usage
 
 ```pudu
-Direction.direction("rtl").holding([column("20rem", [demoAlert()])])
+Direction.direction("rtl").holding([loginCard(["تسجيل الدخول إلى حسابك", "أدخل بريدك الإلكتروني أدناه لتسجيل الدخول إلى حسابك", "إنشاء حساب", "البريد الإلكتروني", "كلمة المرور", "نسيت كلمة المرور؟", "تسجيل الدخول", "تسجيل الدخول باستخدام Google"])])
 ```
 
 ## API

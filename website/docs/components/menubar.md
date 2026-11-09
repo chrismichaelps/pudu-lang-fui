@@ -18,7 +18,7 @@ fui add menubar
 ## Usage
 
 ```pudu
-Menubar.menubar().holding([Menubar.menu("file", "File", [DropdownMenu.item(false).says("New tab"), DropdownMenu.item(false).says("Open")]), Menubar.menu("view", "View", [DropdownMenu.item(false).says("Reload")])])
+Menubar.menubar().css("inline-size", "18rem").holding([Menubar.menu("file", "File", [DropdownMenu.item(false).holding([H.words("New Tab"), DropdownMenu.shortcut().says("⌘T")]), DropdownMenu.item(false).says("New Window"), DropdownMenu.separator(), DropdownMenu.item(false).says("Print")]), Menubar.menu("edit", "Edit", [DropdownMenu.item(false).holding([H.words("Undo"), DropdownMenu.shortcut().says("⌘Z")]), DropdownMenu.item(false).says("Redo")]), Menubar.menu("view", "View", [DropdownMenu.item(false).says("Reload")]), Menubar.menu("profiles", "Profiles", [DropdownMenu.item(false).says("Switch Profile")])])
 ```
 
 ## API

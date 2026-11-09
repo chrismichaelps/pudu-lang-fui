@@ -1,71 +1,74 @@
-import { PANEL_GAP, SCREEN_MARGIN } from "./constants.js";
 import { element } from "./dom.js";
 
-function placeBeside(list, trigger, panel) {
-  const anchor = trigger.getBoundingClientRect();
-  const frame = panel.getBoundingClientRect();
-  const height = list.offsetHeight;
-  const narrow = innerWidth < 768;
-  const left = narrow ? SCREEN_MARGIN : frame.right + PANEL_GAP;
-  const lowest = innerHeight - height - SCREEN_MARGIN;
-
-  list.style.left = `${left}px`;
-  list.style.top = `${Math.max(SCREEN_MARGIN, Math.min(anchor.top, lowest))}px`;
+function choiceButton(option, onPick, className, content) {
+  return element("button", { type: "button", class: className, title: option.label, "aria-label": option.label, "aria-pressed": "false", value: option.value, on: { click: () => onPick(option.value) } }, content);
 }
 
-function optionNode(option, onPick) {
-  const content = [];
+const RENDERERS = {
+  tiles: (option, onPick) => choiceButton(option, onPick, "fui-design-tile", [
+    element("span", { class: "fui-design-tile-mark", style: option.mark || "", "aria-hidden": "true" }),
+    element("span", { text: option.label }),
+  ]),
+  swatches: (option, onPick) => choiceButton(option, onPick, "fui-design-dot", [
+    element("span", { style: `background: ${option.swatch}`, "aria-hidden": "true" }),
+  ]),
+  segments: (option, onPick) => choiceButton(option, onPick, "fui-design-segment", [element("span", { text: option.label })]),
+};
 
-  if (option.swatch) content.push(element("span", { class: "fui-swatch", style: `background: ${option.swatch}` }));
-
-  content.push(element("span", { text: option.label, style: option.family ? `font-family: '${option.family}', sans-serif` : "" }));
-
-  return element("button", { type: "button", class: "fui-picker-option", role: "option", value: option.value, on: { click: () => onPick(option.value) } }, content);
+function markPressed(holder, selected) {
+  holder.querySelectorAll("button").forEach((node) => node.setAttribute("aria-pressed", String(node.value === selected)));
 }
 
-function moveFocus(list, step) {
-  const options = [...list.querySelectorAll(".fui-picker-option")];
-  const next = options.indexOf(list.ownerDocument.activeElement) + step;
+function createList({ label, kind, onPick }) {
+  const holder = element("div", { class: `fui-design-${kind}`, role: "group", "aria-label": label });
+  let drawn = "";
 
-  options[(next + options.length) % options.length].focus();
+  return {
+    node: holder,
+    update(options, selected) {
+      const signature = options.map((option) => option.value).join();
+
+      if (signature !== drawn) {
+        holder.replaceChildren(...options.map((option) => RENDERERS[kind](option, onPick)));
+        drawn = signature;
+      }
+
+      markPressed(holder, selected);
+    },
+  };
 }
 
-export function createPicker({ label, panel, onPick }) {
-  const value = element("span", { class: "fui-picker-value" });
-  const mark = element("span", { class: "fui-picker-mark" });
-  const list = element("div", { class: "fui-picker-list", role: "listbox", "aria-label": label, popover: "auto" });
-  const trigger = element("button", { type: "button", class: "fui-picker", "aria-haspopup": "listbox" }, [
-    element("span", { class: "fui-picker-text" }, [element("span", { class: "fui-picker-label", text: label }), value]),
-    mark,
-  ]);
+function createSelect({ label, onPick }) {
+  const select = element("select", { class: "fui-design-select", "aria-label": label, on: { change: (event) => onPick(event.target.value) } });
+  let drawn = "";
 
-  trigger.addEventListener("click", () => list.togglePopover());
-  list.addEventListener("toggle", (event) => {
-    if (event.newState !== "open") return;
+  return {
+    node: select,
+    update(options, selected) {
+      const signature = options.map((option) => option.value).join();
 
-    placeBeside(list, trigger, panel);
-    (list.querySelector("[aria-selected=true]") || list.firstElementChild).focus();
-  });
-  list.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault();
-      moveFocus(list, event.key === "ArrowDown" ? 1 : -1);
-    }
-  });
+      if (signature !== drawn) {
+        select.replaceChildren(...options.map((option) => element("option", { value: option.value, text: option.label })));
+        drawn = signature;
+      }
 
-  function update(options, selected) {
-    const chosen = options.find((option) => option.value === selected) || options[0];
+      select.value = selected;
+    },
+  };
+}
 
-    value.textContent = chosen.label;
-    mark.style.background = chosen.swatch || "";
-    mark.hidden = !chosen.swatch;
-    list.replaceChildren(...options.map((option) => optionNode(option, (picked) => {
-      list.hidePopover();
-      trigger.focus();
-      onPick(picked);
-    })));
-    list.querySelectorAll(".fui-picker-option").forEach((node) => node.setAttribute("aria-selected", String(node.value === selected)));
-  }
+export function createControl({ label, kind, onPick }) {
+  const control = kind === "select" ? createSelect({ label, onPick }) : createList({ label, kind, onPick });
+  const value = element("span", { class: "fui-design-value" });
 
-  return { nodes: [trigger, list], update };
+  return {
+    node: element("div", { class: "fui-design-field" }, [
+      element("div", { class: "fui-design-field-head" }, [element("span", { text: label }), value]),
+      control.node,
+    ]),
+    update(options, selected) {
+      control.update(options, selected);
+      value.textContent = (options.find((option) => option.value === selected) || options[0]).label;
+    },
+  };
 }

@@ -18,7 +18,10 @@ fui add kbd
 ## Usage
 
 ```pudu
-Kbd.group().holding([Kbd.key("⌘"), Kbd.key("K")])
+H.div().css("display", "flex").css("flex-direction", "column").css("align-items", "center").css("gap", "var(--fui-space-4)").holding([
+    Kbd.group().holding([Kbd.key("⌘"), Kbd.key("⇧"), Kbd.key("⌥"), Kbd.key("⌃")]),
+    Kbd.group().holding([Kbd.key("Ctrl"), H.span().says("+"), Kbd.key("B")])
+  ])
 ```
 
 ## API

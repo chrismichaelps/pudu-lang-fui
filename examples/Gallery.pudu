@@ -37,7 +37,7 @@ import PuduLangFui.Components.Patterns.DataTable as DataTable
 import PuduLangFui.Components.Patterns.DatePicker as DatePicker
 import PuduLangFui.Components.Patterns.Menubar as Menubar
 import PuduLangFui.Components.Patterns.Questionnaire as Questionnaire
-import PuduLangFui.Components.Primitives.Accordion as Accordion
+import PuduLangFui.Components.Composites.Accordion as Accordion
 import PuduLangFui.Components.Primitives.Alert as Alert
 import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
 import PuduLangFui.Components.Primitives.Avatar as Avatar

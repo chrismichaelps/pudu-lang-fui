@@ -5,7 +5,6 @@ tags: [moc]
 
 # Primitives
 
-- [[src/PuduLangFui/Components/Primitives/Accordion]] — Sections of which at most one is open.
 - [[src/PuduLangFui/Components/Primitives/Alert]] — A callout for information or a problem.
 - [[src/PuduLangFui/Components/Primitives/AspectRatio]] — Holds content at a width-to-height ratio.
 - [[src/PuduLangFui/Components/Primitives/Avatar]] — A person's image with initials behind it.

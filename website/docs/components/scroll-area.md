@@ -18,7 +18,9 @@ fui add scroll-area
 ## Usage
 
 ```pudu
-ScrollArea.scrollArea("Tags").css("block-size", "10rem").css("inline-size", "14rem").holding([H.p().css("margin", "0").says("A long list that scrolls inside its region, past the edge of the box, line after line after line, until it finally reaches the end.")])
+ScrollArea.scrollArea("Tags").css("block-size", "18rem").css("inline-size", "12rem").css("border", "1px solid var(--fui-border)").css("border-radius", "calc(var(--fui-radius) * 0.8)").holding([
+    H.div().css("padding", "var(--fui-space-4)").holding([H.h3().css("margin", "0 0 var(--fui-space-4)").css("font-size", "var(--fui-text-sm)").css("font-weight", "500").says("Tags")].concat(tagRows()))
+  ])
 ```
 
 ## API

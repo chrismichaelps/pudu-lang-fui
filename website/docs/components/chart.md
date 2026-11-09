@@ -18,7 +18,10 @@ fui add chart
 ## Usage
 
 ```pudu
-column("28rem", [Chart.labelled(Chart.Bars, "Monthly visits", ["Jan", "Feb", "Mar", "Apr"], [Chart.series("Visits", [3.0, 7.0, 4.0, 8.0])])])
+Card.card().css("inline-size", "36rem").css("--fui-chart-2", "oklch(0.623 0.214 259.815)").holding([
+    Card.header().holding([Card.title().says("Bar Chart - Interactive"), Card.description().says("Showing total visitors for the last 3 months")]),
+    Card.content().holding([Chart.labelled(Chart.Bars, "Daily visitors", ["Apr 1", "", "", "", "Apr 5", "", "", "", "Apr 9", "", "", "", "Apr 13", "", "", "", "Apr 17", "", "", "", "Apr 21", "", "", "", "Apr 25", "", "", "", "Apr 29", ""], [Chart.series("Desktop", [222.0, 97.0, 167.0, 242.0, 373.0, 301.0, 245.0, 409.0, 59.0, 261.0, 327.0, 292.0, 342.0, 137.0, 120.0, 138.0, 446.0, 364.0, 243.0, 89.0, 137.0, 224.0, 138.0, 387.0, 215.0, 75.0, 383.0, 122.0, 315.0, 454.0])])])
+  ])
 ```
 
 ## API

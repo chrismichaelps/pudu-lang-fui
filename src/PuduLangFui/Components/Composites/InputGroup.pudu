@@ -26,10 +26,9 @@ export fn textarea(name: Str) -> H.Node { H.textarea().slot("input-group-textare
 /// The styles of a group.
 export fn style() -> Css.Block {
   Css.block("input-group", [
-      Css.base("display: flex; align-items: center; inline-size: 100%; block-size: $control-md; background: color-mix(in oklab, $input 50%, transparent); border: $border-width solid transparent; border-radius: $radius-4xl"),
-      Css.when(":focus-within", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
-      Css.slot("input-group-control", "flex: 1; min-inline-size: 0; block-size: 100%; padding-inline: $space-3; background: transparent; color: $foreground; border: 0; font: inherit; font-size: $text-sm; outline: none"),
-      Css.slot("input-group-addon", "display: flex; align-items: center; gap: $space-2; padding-block: $space-2; padding-inline: $space-3; color: $muted-foreground; font-size: $text-sm; font-weight: $weight-medium"),
+      Css.base("display: flex; align-items: center; inline-size: 100%"),
+      Css.slot("input-group-control", "flex: 1; min-inline-size: 0; block-size: 100%; background: transparent; color: $foreground; border: 0; font: inherit; font-size: $text-sm; outline: none"),
+      Css.slot("input-group-addon", "display: flex; align-items: center"),
       Css.slotWhen("input-group-addon", "[data-align=\"end\"]", "order: 1"),
       Css.variant("multiline", "true", "flex-direction: column; align-items: stretch; block-size: auto"),
       Css.slot("input-group-textarea", "flex: 1; padding: $space-2 $space-3; background: transparent; color: $foreground; border: 0; font: inherit; font-size: $text-sm; outline: none; resize: none; field-sizing: content"),

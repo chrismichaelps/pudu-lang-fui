@@ -18,7 +18,7 @@ fui add toggle
 ## Usage
 
 ```pudu
-Toggle.toggle("bold", "on", true, Toggle.Outline).holding([Icon.icon(Icon.Star), H.words("Bookmark")])
+Toggle.toggle("bookmark", "on", false, Toggle.Outline).holding([Icon.sized(Icon.Bookmark, Icon.Small), H.words("Bookmark")])
 ```
 
 ## API

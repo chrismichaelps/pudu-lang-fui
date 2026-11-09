@@ -7,6 +7,7 @@ import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Components.Primitives.Popover as Popover
 import PuduLangFui.Components.Primitives.Table as Table
+import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -18,6 +19,9 @@ export type View = { sort: Str, descending: Bool, page: Int, lastPage: Int }
 
 /** @Fui.DataTable.Links — how a table links to another view */
 export type Links = { sortBy: fn(Str, Bool) -> Str, pageAt: fn(Int) -> Str }
+
+/// The key of the column of row checkboxes.
+const SELECT_KEY: Str = "select"
 
 /// A column that does not sort.
 export fn column[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T] {
@@ -31,6 +35,7 @@ export fn sortable[T](key: Str, header: Str, cell: fn(&T) -> H.Node) -> Column[T
 
 /// One column's heading.
 fn headingOf[T](item: &Column[T], view: &View, links: &Links) -> H.Node {
+  if item.key == SELECT_KEY { return Table.head().holding([H.input().slot("checkbox").kind("checkbox").label("Select all rows")]) }
   if !item.sortable { return Table.head().says(item.header) }
 
   let active = view.sort == item.key
@@ -68,14 +73,14 @@ export fn dataTable[T](columns: Array[Column[T]], rows: Array[T], view: View, li
   }
 
   Core.part("data-table").holding([
-      Table.table([Table.header().holding([Table.row().holding(headings)]), Table.body().holding(shown)]),
+      Core.part("data-table-frame").holding([Table.table([Table.header().holding([Table.row().holding(headings)]), Table.body().holding(shown)])]),
       Pagination.pagination(view.page, view.lastPage, links.pageAt)
     ])
 }
 
 /// A column of checkboxes selecting rows by the key a row answers.
 export fn selection[T](name: Str, keyOf: fn(&T) -> Str) -> Column[T] {
-  column("select", "", |row: &T| H.input().slot("checkbox").kind("checkbox").name(name).value(keyOf(row)).label("Select row"))
+  column(SELECT_KEY, "", |row: &T| H.input().slot("checkbox").kind("checkbox").name(name).value(keyOf(row)).label("Select row"))
 }
 
 /// A form filtering the table by the text in `name`, posting to the current page.
@@ -110,10 +115,21 @@ fn columnChoices[T](columns: &Array[Column[T]], hidden: &Array[Str]) -> Array[H.
 /// The bar above a table.
 export fn toolbar() -> H.Node { Core.part("data-table-toolbar") }
 
+/// The bar below a table.
+export fn footer() -> H.Node { Core.part("data-table-footer") }
+
+/// How many rows are selected, which the selection column keeps current.
+export fn selectedCount(total: Int) -> H.Node { Core.part("data-table-count").says("0 of " + show(total) + " row(s) selected.") }
+
 /// The styles of a data table.
 export fn style() -> Css.Block {
   Css.block("data-table", [
       Css.base("display: flex; flex-direction: column; gap: $space-4"),
+      Css.slot("data-table-frame", "overflow: hidden; border: $border-width solid $border; border-radius: $radius-md"),
+      Css.slot("data-table-footer", "display: flex; align-items: center; justify-content: flex-end; gap: $space-2"),
+      Css.slot("data-table-count", "flex: 1; font-size: $text-sm; color: $muted-foreground"),
+      Css.rule("[data-slot=\"data-table\"] tr[data-selected]", "background: $muted"),
+      Css.behavior(Script.DATA_TABLE),
       Css.slot("data-table-sort", "display: inline-flex; align-items: center; gap: $space-1; color: inherit; text-decoration: none"),
       Css.slotWhen("data-table-sort", ":hover", "color: $primary"),
       Css.slot("data-table-empty", "padding: $space-8; text-align: center; color: $muted-foreground"),

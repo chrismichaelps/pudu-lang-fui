@@ -1,0 +1,34 @@
+/** @Fui.Accordion.Component — sections kept exclusive by the platform */
+module PuduLangFui.Components.Composites.Accordion
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// Sections stacked together.
+export fn accordion() -> H.Node { Core.part("accordion") }
+
+/// A section with a heading; sections sharing a non-empty `group` open one at a time.
+export fn item(group: Str, heading: Str, open: Bool = false) -> H.Node {
+  H.details().slot("accordion-item").atIf(!group.isEmpty(), "name", group).flagIf(open, "open").holding([
+      H.summary().slot("accordion-trigger").holding([H.words(heading), Core.inline("accordion-trigger-icon").holding([Icon.sized(Icon.ChevronDown, Icon.Small)])])
+    ])
+}
+
+/// The section's body.
+export fn content() -> H.Node { Core.part("accordion-content") }
+
+/// The styles of an accordion.
+export fn style() -> Css.Block {
+  Css.block("accordion", [
+      Css.base("display: flex; flex-direction: column; inline-size: 100%"),
+      Css.slot("accordion-item", "interpolate-size: allow-keywords"),
+      Css.slotWhen("accordion-item", "::details-content", "block-size: 0; overflow: clip; transition: block-size $duration-base $ease-standard, content-visibility $duration-base allow-discrete"),
+      Css.slotWhen("accordion-item", "[open]::details-content", "block-size: auto"),
+      Css.slot("accordion-trigger", "display: flex; align-items: flex-start; justify-content: space-between; gap: $space-6; text-align: start; cursor: pointer; list-style: none"),
+      Css.slotWhen("accordion-trigger", "::-webkit-details-marker", "display: none"),
+      Css.slot("accordion-trigger-icon", "display: inline-flex !important; flex-shrink: 0; margin-inline-start: auto; color: $muted-foreground; transition: rotate $duration-base $ease-standard"),
+      Css.rule("[data-slot=\"accordion-item\"][open] > [data-slot=\"accordion-trigger\"] > [data-slot=\"accordion-trigger-icon\"]", "rotate: 180deg")
+    ])
+}

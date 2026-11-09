@@ -18,7 +18,11 @@ fui add avatar
 ## Usage
 
 ```pudu
-H.div().css("display", "flex").css("gap", "var(--fui-space-4)").holding([Avatar.initials("AL", "Ada", Avatar.Medium), Avatar.initials("GH", "Grace", Avatar.Large), Avatar.group().holding([Avatar.initials("A", "Ada", Avatar.Small), Avatar.initials("B", "Bob", Avatar.Small), Avatar.count("+3")])])
+H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fui-space-12)").holding([
+    Avatar.initials("CN", "Ada", Avatar.Medium),
+    Avatar.initials("ER", "Grace", Avatar.Medium).holding([Avatar.badge().css("background", "var(--fui-success)")]),
+    Avatar.group().holding([Avatar.initials("CN", "Ada", Avatar.Medium), Avatar.initials("LR", "Bob", Avatar.Medium), Avatar.initials("ER", "Grace", Avatar.Medium), Avatar.count("+3")])
+  ])
 ```
 
 ## API

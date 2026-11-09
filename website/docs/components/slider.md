@@ -18,7 +18,7 @@ fui add slider
 ## Usage
 
 ```pudu
-column("18rem", [Slider.slider("volume", 40)])
+column("20rem", [Slider.slider("volume", 75)])
 ```
 
 ## API

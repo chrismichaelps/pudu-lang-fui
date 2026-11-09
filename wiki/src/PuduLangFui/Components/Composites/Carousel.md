@@ -29,11 +29,11 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. Scroll snap, with dot links to slide ids and buttons drawn by `::scroll-button` where supported.
+1. Slides sit on native scroll snap; two arrows move one view and disable themselves at either end.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -41,7 +41,7 @@ export fn style() -> Css.Block
 
 ## Edge Cases
 
-- Keyboard works through the focusable region.
+- A single slide disables both arrows.
 
 ## Depth
 

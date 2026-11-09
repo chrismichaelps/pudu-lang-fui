@@ -18,7 +18,7 @@ fui add hover-card
 ## Usage
 
 ```pudu
-HoverCard.hoverCard(H.a().href("#").says("@pudu"), H.p().css("margin", "0").says("A statically typed language."))
+HoverCard.hoverCard(Button.link("#", Button.props().variant(Button.Plain)).says("Hover Here"), H.div().holding([H.div().css("font-weight", "500").says("@pudu"), H.p().css("margin", "0").says("A statically typed language.")]))
 ```
 
 ## API

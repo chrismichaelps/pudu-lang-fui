@@ -18,11 +18,7 @@ fui add card
 ## Usage
 
 ```pudu
-Card.card().css("inline-size", "22rem").holding([
-    Card.header().holding([Card.title().says("Create project"), Card.description().says("Deploy your new project in one click.")]),
-    Card.content().holding([Field.field().holding([Field.label("project").says("Name"), Input.input("project", Input.props()).placeholder("Name of your project")])]),
-    Card.footer().css("justify-content", "space-between").holding([Button.button(Button.props().variant(Button.Outline)).says("Cancel"), Button.button(Button.props()).says("Deploy")])
-  ])
+loginCard(["Login to your account", "Enter your email below to login to your account", "Sign Up", "Email", "Password", "Forgot your password?", "Login", "Login with Google"])
 ```
 
 ## API

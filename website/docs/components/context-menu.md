@@ -19,8 +19,8 @@ fui add context-menu
 
 ```pudu
 H.div().holding([
-    ContextMenu.area("menu").css("padding", "var(--fui-space-12)").css("border", "1px dashed var(--fui-border)").css("border-radius", "var(--fui-radius-2xl)").says("Right-click here"),
-    ContextMenu.menu("menu").holding([ContextMenu.item().holding([H.words("Back"), ContextMenu.shortcut().says("⌘[")]), ContextMenu.separator(), ContextMenu.item().says("Reload")])
+    ContextMenu.area("menu").css("display", "flex").css("align-items", "center").css("justify-content", "center").css("inline-size", "20rem").css("block-size", "11rem").css("border", "1px dashed var(--fui-border)").css("border-radius", "var(--fui-radius-xl)").css("font-size", "var(--fui-text-sm)").says("Right click here"),
+    ContextMenu.menu("menu").holding([ContextMenu.item().holding([H.words("Back"), ContextMenu.shortcut().says("⌘[")]), ContextMenu.item().flag("disabled").holding([H.words("Forward"), ContextMenu.shortcut().says("⌘]")]), ContextMenu.item().holding([H.words("Reload"), ContextMenu.shortcut().says("⌘R")]), ContextMenu.separator(), ContextMenu.item().says("Show Bookmarks")])
   ])
 ```
 

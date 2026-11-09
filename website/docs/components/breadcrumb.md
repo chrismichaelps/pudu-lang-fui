@@ -18,7 +18,7 @@ fui add breadcrumb
 ## Usage
 
 ```pudu
-Breadcrumb.breadcrumb(&[Breadcrumb.crumb("Home", "#"), Breadcrumb.crumb("Components", "#"), Breadcrumb.crumb("Breadcrumb", "#")])
+Breadcrumb.breadcrumb(&[Breadcrumb.crumb("Home", "#"), Breadcrumb.collapsed(), Breadcrumb.crumb("Components", "#"), Breadcrumb.crumb("Breadcrumb", "#")])
 ```
 
 ## API
@@ -26,6 +26,7 @@ Breadcrumb.breadcrumb(&[Breadcrumb.crumb("Home", "#"), Breadcrumb.crumb("Compone
 ```pudu
 export type Crumb = caption: Str, target: Str }
 export fn crumb(caption: Str, target: Str) -> Crumb Crumb{caption: caption, target: target} }
+export fn collapsed() -> Crumb Crumb{caption: "", target: ""} }
 export fn breadcrumb(trail: &Array[Crumb]) -> H.Node
 export fn ellipsis() -> H.Node
 export fn style() -> Css.Block
