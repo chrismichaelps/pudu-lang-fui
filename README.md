@@ -9,7 +9,7 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-# pudu-lang-fui
+# Pudu Lang - Foundation UI
 
 A component system for Pudu. Typed props, one file per component holding its markup and its styles,
 a theme built from seven design aspects, and a generator that puts the source in your project.
