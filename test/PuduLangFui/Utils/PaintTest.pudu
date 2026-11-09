@@ -1,0 +1,39 @@
+/** @Test.Utils.PaintTest.Suite — source text as colored markup */
+module PuduLangFui.Utils.PaintTest
+
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Utils.Paint as Paint
+
+/// Runs the suite.
+fn main() -> Int {
+  let pudu = Paint.paint("pudu", "fn main() -> Int { 1 }")
+  let text = Paint.paint("pudu", "\"a\\n\{b\}\"")
+  let shell = Paint.paint("bash", "fui add --dry \"x\" # note")
+  let checks = Test.suite("Utils.Paint", &[
+      Test.that("a keyword is colored", pudu.contains("<span class=\"tok-keyword\">fn</span>")),
+      Test.that("a called name is a function", pudu.contains("<span class=\"tok-function\">main</span>")),
+      Test.that("a capitalized word is a type", pudu.contains("<span class=\"tok-type\">Int</span>")),
+      Test.that("a number is colored", pudu.contains("<span class=\"tok-number\">1</span>")),
+      Test.that("an arrow is one operator", pudu.contains("<span class=\"tok-operator\">-&gt;</span>")),
+      Test.that("an escape stands apart", text.contains("<span class=\"tok-escape\">\\n</span>")),
+      Test.that("an interpolation stands apart", text.contains("<span class=\"tok-interpolation\">\{b\}</span>")),
+      Test.that("a doc comment differs from a comment", Paint.paint("pudu", "/// a").contains("tok-doc") && Paint.paint("pudu", "// a").contains("tok-comment")),
+      Test.that("a block comment nests", Paint.paint("pudu", "/* a /* b */ c */ fn").contains("tok-keyword")),
+      Test.that("a command is colored", shell.contains("<span class=\"tok-function\">fui</span>")),
+      Test.that("a flag is colored", shell.contains("<span class=\"tok-constant\">--dry</span>")),
+      Test.that("a shell comment is colored", shell.contains("<span class=\"tok-comment\"># note</span>")),
+      Test.that("a TOML key is colored", Paint.paint("toml", "root = \"a\"").contains("<span class=\"tok-function\">root</span>")),
+      Test.that("a JSON key differs from a value", Paint.paint("json", "\{\"a\": \"b\"\}").contains("<span class=\"tok-function\">&quot;a&quot;</span>")),
+      Test.equals("markup in a sample is escaped", &Paint.paint("unknown", "<b>"), &"&lt;b&gt;"),
+      Test.that("an unknown language is reported", !Paint.knows("unknown")),
+      Test.equals("an unterminated text stops at its line", &Paint.paint("shell", "\""), &"<span class=\"tok-string\">&quot;</span>")
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _said = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

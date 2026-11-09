@@ -137,7 +137,9 @@ a:hover { text-decoration: none; }
 
 .fui-preview { display: block; inline-size: 100%; min-block-size: 18rem; margin-block: 24px; overflow: hidden; border: 1px solid var(--border); border-radius: 18px; background: var(--bg); }
 .fui-preview iframe, .fui-home iframe { display: block; inline-size: 100%; block-size: 100%; border: 0; background: transparent; }
-@media (min-width: 62rem) { .fui-preview iframe { position: relative; inset-inline-start: 50%; inline-size: 48rem; translate: -50% 0; } }
+.fui-preview.is-canvas { position: relative; min-block-size: 0; }
+.fui-preview.is-canvas iframe { position: absolute; inset: 0 auto auto 0; translate: none; transform-origin: 0 0; }
+@media (min-width: 62rem) { .fui-preview:not(.is-canvas) iframe { position: relative; inset-inline-start: 50%; inline-size: 48rem; translate: -50% 0; } }
 
 .kind-landing .content { max-inline-size: none; }
 .layout-landing .main, .layout-landing .content { max-inline-size: none; padding: 0; }
@@ -154,7 +156,8 @@ a:hover { text-decoration: none; }
   .search input { inline-size: 100%; }
 }
 @media (max-width: 1024px) {
-  .sidebar { background: var(--bg); box-shadow: 0 16px 40px oklch(0 0 0 / 0.28); }
+  .sidebar { background: var(--bg); box-shadow: none; }
+  .sidebar.open { box-shadow: 0 16px 40px oklch(0 0 0 / 0.28); }
   .sidebar-inner { padding: 16px 12px 32px; }
   .toc a { padding-block: 9px; }
   .navbar { background: var(--bg); }

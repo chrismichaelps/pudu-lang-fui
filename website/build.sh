@@ -16,5 +16,12 @@ mkdir -p "$here/.cache"
 cp -R "$generator" "$cache"
 sed -i.bak 's/written.concat(&answered.body)/written.concat(answered.body)/' "$cache/src/PuduLangDocgen/Serve.pudu"
 
+# The finishing step rewrites pages, so each build starts from nothing.
+rm -rf "$here/_site" "$here/.docgen/cache"
+
 cd "$cache"
 pudu run examples/Cli.pudu build "$here"
+
+# Colors the code and places every preview in its page, so the browser computes nothing.
+cd "$root"
+pudu run website/Finish.pudu

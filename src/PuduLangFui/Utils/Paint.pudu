@@ -1,0 +1,460 @@
+/** @Fui.Utils.Paint.Module — source text as colored markup, without a browser */
+module PuduLangFui.Utils.Paint
+
+import Std.Char as Char
+import Std.Option as Option
+
+/// One token: the class it wears, empty for plain text, and where it ends.
+type Piece = (Str, Int)
+
+/// A scanner: the tokens starting at an index.
+type Scanner = fn(&Array[Char], Int) -> Array[Piece]
+
+/// The words Pudu reserves.
+const PUDU_WORDS: Set[Str] = setOf(["module", "import", "export", "as", "let", "var", "const", "mut", "fn", "async", "return", "if", "else", "match", "case", "for", "in", "while", "loop", "break", "continue", "type", "enum", "struct", "trait", "impl", "where", "await", "task", "spawn", "comptime", "macro", "unsafe", "with", "scope", "dynamic", "foreign"])
+
+/// The literal words of Pudu and of data formats.
+const LITERALS: Set[Str] = setOf(["true", "false", "null"])
+
+/// The operators, longest first so a short one never splits a long one.
+const OPERATORS: Array[Str] = ["..=", "=>", "->", "==", "!=", "<=", ">=", "&&", "||", "..", "-", "+", "*", "/", "%", "=", "<", ">", "!", "&", "|", "^", "?", ":", "."]
+
+/// The words a shell reserves.
+const SHELL_WORDS: Set[Str] = setOf(["if", "then", "else", "elif", "fi", "for", "while", "until", "do", "done", "case", "esac", "function", "export", "local", "return"])
+
+/// The words a script reserves.
+const SCRIPT_WORDS: Set[Str] = setOf(["async", "await", "break", "case", "catch", "class", "const", "continue", "default", "delete", "do", "else", "export", "extends", "finally", "for", "from", "function", "if", "import", "in", "instanceof", "interface", "let", "new", "of", "return", "static", "switch", "this", "throw", "try", "type", "typeof", "var", "void", "while", "yield"])
+
+/// The characters that end a run of shell text.
+const SHELL_STOPS: Set[Char] = setOf([' ', '\t', '\n', '|', ';', '&', '<', '>', '"', '\''])
+
+/// The scanner of each language name.
+const SCANNERS: Map[Str, Scanner] = mapOf([
+    ("pudu", puduStep),
+    ("bash", shellStep),
+    ("sh", shellStep),
+    ("shell", shellStep),
+    ("zsh", shellStep),
+    ("toml", tomlStep),
+    ("json", jsonStep),
+    ("css", cssStep),
+    ("js", scriptStep),
+    ("javascript", scriptStep),
+    ("ts", scriptStep),
+    ("typescript", scriptStep)
+  ])
+
+/// The smaller of two numbers.
+fn smaller(left: Int, right: Int) -> Int { if left < right { left } else { right } }
+
+/// The larger of two numbers.
+fn larger(left: Int, right: Int) -> Int { if left > right { left } else { right } }
+
+/// Whether the character at an index is the given one.
+fn isAt(chars: &Array[Char], index: Int, wanted: Char) -> Bool { index < chars.length() && chars[index] == wanted }
+
+/// Whether the text continues with the given prefix at an index.
+fn startsAt(chars: &Array[Char], index: Int, prefix: Str) -> Bool {
+  let wanted = prefix.chars()
+
+  if index + wanted.length() > chars.length() { return false }
+
+  var offset = 0
+
+  while offset < wanted.length() {
+    if chars[index + offset] != wanted[offset] { return false }
+
+    offset = offset + 1
+  }
+
+  true
+}
+
+/// The text between two indexes.
+fn textOf(chars: &Array[Char], from: Int, to: Int) -> Str {
+  var out: Array[Str] = []
+  var index = from
+
+  while index < to && index < chars.length() {
+    out = out.push(chars[index].toText())
+    index = index + 1
+  }
+
+  out.join("")
+}
+
+/// Whether a character can begin a word.
+fn isWordStart(character: Char) -> Bool { Char.isLower(character) || Char.isUpper(character) || character == '_' }
+
+/// Whether a character can continue a word.
+fn isWordPart(character: Char) -> Bool { Char.isAlphanumeric(character) || character == '_' }
+
+/// Whether a character is a space, a tab, or a line end.
+fn isBlank(character: Char) -> Bool { character == ' ' || character == '\t' || character == '\n' }
+
+/// Where the word starting at an index ends.
+fn wordEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while stop < chars.length() && isWordPart(chars[stop]) { stop = stop + 1 }
+
+  stop
+}
+
+/// Where the run of blanks starting at an index ends.
+fn blankEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while stop < chars.length() && isBlank(chars[stop]) { stop = stop + 1 }
+
+  stop
+}
+
+/// Where the current line ends.
+fn lineEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while stop < chars.length() && chars[stop] != '\n' { stop = stop + 1 }
+
+  stop
+}
+
+/// Where a quoted run opening at an index ends; an unterminated one stops at the line end.
+fn quotedEnd(chars: &Array[Char], index: Int) -> Int {
+  let quote = chars[index]
+  var stop = index + 1
+
+  while stop < chars.length() && chars[stop] != quote && chars[stop] != '\n' {
+    stop = stop + (if chars[stop] == '\\' { 2 } else { 1 })
+  }
+
+  if isAt(chars, stop, quote) { stop + 1 } else { smaller(stop, chars.length()) }
+}
+
+/// Where the first character after the blanks of a line sits.
+fn afterSpaces(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while isAt(chars, stop, ' ') || isAt(chars, stop, '\t') { stop = stop + 1 }
+
+  stop
+}
+
+/// The operator at an index, as a token, or a single plain character.
+fn operatorAt(chars: &Array[Char], index: Int) -> Piece {
+  for operator in OPERATORS {
+    if startsAt(chars, index, operator) { return ("operator", index + operator.chars().length()) }
+  }
+
+  ("", index + 1)
+}
+
+/// Where a number starting at an index ends, with its base, fraction, exponent, and suffix.
+fn numberEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index + 1
+
+  while stop < chars.length() && (isWordPart(chars[stop])) { stop = stop + 1 }
+
+  if isAt(chars, stop, '.') && stop + 1 < chars.length() && Char.isDigit(chars[stop + 1]) {
+    stop = stop + 1
+
+    while stop < chars.length() && isWordPart(chars[stop]) { stop = stop + 1 }
+  }
+
+  stop
+}
+
+/// Whether a capitalized word is written entirely in capitals.
+fn isConstant(word: Str) -> Bool {
+  word.length() > 1 && word.chars().filter(|one: Char| !(Char.isUpper(one) || Char.isDigit(one) || one == '_')).isEmpty()
+}
+
+/// The class of a Pudu word given the character after it.
+fn puduWord(word: Str, next: Bool) -> Str {
+  if PUDU_WORDS.contains(word) { return "keyword" }
+  if LITERALS.contains(word) { return "literal" }
+  if Char.isUpper(word.chars()[0]) { return if isConstant(word) { "constant" } else { "type" } }
+
+  if next { "function" } else { "" }
+}
+
+/// Where a nesting block comment ends.
+fn blockCommentEnd(chars: &Array[Char], from: Int) -> Int {
+  var depth = 0
+  var index = from
+
+  while index < chars.length() {
+    if startsAt(chars, index, "/*") {
+      depth = depth + 1
+      index = index + 2
+    } else if startsAt(chars, index, "*/") {
+      depth = depth - 1
+      index = index + 2
+
+      if depth == 0 { return index }
+    } else {
+      index = index + 1
+    }
+  }
+
+  chars.length()
+}
+
+/// Where the closing brace of an interpolation sits, one past the brace; the character alone when there is none on the line.
+fn interpolationEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index + 1
+
+  while stop < chars.length() && chars[stop] != '}' && chars[stop] != '\n' { stop = stop + 1 }
+
+  if isAt(chars, stop, '}') { stop + 1 } else { index + 1 }
+}
+
+/// Where the escape at an index ends.
+fn escapeEnd(chars: &Array[Char], index: Int) -> Int {
+  if startsAt(chars, index + 1, "u\{") {
+    var stop = index
+
+    while stop < chars.length() && chars[stop] != '}' && chars[stop] != '\n' { stop = stop + 1 }
+
+    if isAt(chars, stop, '}') { return stop + 1 }
+  }
+
+  index + 2
+}
+
+/// A Pudu text literal with its escapes and interpolations apart; it never spans a line.
+fn puduString(chars: &Array[Char], from: Int) -> Array[Piece] {
+  var pieces: Array[Piece] = []
+  var index = from + 1
+
+  while index < chars.length() && chars[index] != '\n' {
+    let character = chars[index]
+
+    if character == '\\' {
+      pieces = pieces.push(("string", index)).push(("escape", smaller(escapeEnd(chars, index), chars.length())))
+      index = pieces[pieces.length() - 1][1]
+    } else if character == '{' {
+      pieces = pieces.push(("string", index)).push(("interpolation", interpolationEnd(chars, index)))
+      index = pieces[pieces.length() - 1][1]
+    } else if character == '"' {
+      return pieces.push(("string", index + 1))
+    } else {
+      index = index + 1
+    }
+  }
+
+  pieces.push(("string", index))
+}
+
+/// The class and end of a Pudu line comment.
+fn puduLineComment(chars: &Array[Char], index: Int) -> Piece {
+  (if startsAt(chars, index, "///") && !startsAt(chars, index, "////") { "doc" } else { "comment" }, lineEnd(chars, index))
+}
+
+/// A Pudu character literal at an index, or nothing.
+fn characterEnd(chars: &Array[Char], index: Int) -> Option[Int] {
+  if isAt(chars, index + 1, '\\') && isAt(chars, index + 3, '\'') { return Some(index + 4) }
+  if !isAt(chars, index + 1, '\'') && !isAt(chars, index + 1, '\n') && isAt(chars, index + 2, '\'') { return Some(index + 3) }
+
+  None
+}
+
+/// The next tokens of Pudu, classed as the playground classes them.
+fn puduStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if startsAt(chars, index, "//") { return [puduLineComment(chars, index)] }
+  if startsAt(chars, index, "/*") { return [("comment", blockCommentEnd(chars, index))] }
+  if character == '"' { return puduString(chars, index) }
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+
+  let literal = if character == '\'' { characterEnd(chars, index) } else { None }
+
+  if Option.isSome(&literal) { return [("string", Option.unwrapOr(literal, index + 1))] }
+
+  if Char.isDigit(character) { return [("number", numberEnd(chars, index))] }
+
+  if isWordStart(character) {
+    let stop = wordEnd(chars, index)
+
+    return [(puduWord(textOf(chars, index, stop), isAt(chars, stop, '(')), stop)]
+  }
+
+  if character == '@' && index + 1 < chars.length() && isWordStart(chars[index + 1]) { return [("label", wordEnd(chars, index + 1))] }
+
+  [operatorAt(chars, index)]
+}
+
+/// Whether nothing but blanks or a command separator comes before an index on its line.
+fn isCommandStart(chars: &Array[Char], index: Int) -> Bool {
+  var back = index - 1
+
+  while back >= 0 && (chars[back] == ' ' || chars[back] == '\t') { back = back - 1 }
+
+  back < 0 || chars[back] == '\n' || chars[back] == '|' || chars[back] == ';' || chars[back] == '&'
+}
+
+/// Where a run of shell text ends.
+fn shellRunEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while stop < chars.length() && !SHELL_STOPS.contains(chars[stop]) { stop = stop + 1 }
+
+  larger(stop, index + 1)
+}
+
+/// The class of a run of shell text.
+fn shellRun(chars: &Array[Char], index: Int, word: Str) -> Str {
+  if isCommandStart(chars, index) { return if SHELL_WORDS.contains(word) { "keyword" } else { "function" } }
+  if word.startsWith("-") && word.length() > 1 { return "constant" }
+
+  if word.chars().filter(|one: Char| !Char.isDigit(one)).isEmpty() { "number" } else { "" }
+}
+
+/// The next tokens of a shell command.
+fn shellStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+  if character == '#' && (index == 0 || isBlank(chars[index - 1])) { return [("comment", lineEnd(chars, index))] }
+  if character == '"' || character == '\'' { return [("string", quotedEnd(chars, index))] }
+  if startsAt(chars, index, "&&") || startsAt(chars, index, "||") { return [("operator", index + 2)] }
+  if SHELL_STOPS.contains(character) { return [("operator", index + 1)] }
+
+  let stop = shellRunEnd(chars, index)
+  let run = textOf(chars, index, stop)
+
+  [(if run.startsWith("$") { "label" } else { shellRun(chars, index, run) }, stop)]
+}
+
+/// The next tokens of a TOML document.
+fn tomlStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+  if character == '#' { return [("comment", lineEnd(chars, index))] }
+  if character == '"' || character == '\'' { return [("string", quotedEnd(chars, index))] }
+  if character == '[' { return [("type", lineEnd(chars, index))] }
+  if character == '=' { return [("operator", index + 1)] }
+  if Char.isDigit(character) { return [("number", numberEnd(chars, index))] }
+
+  var stop = index
+
+  while stop < chars.length() && !isBlank(chars[stop]) && chars[stop] != '=' { stop = stop + 1 }
+
+  let word = textOf(chars, index, larger(stop, index + 1))
+
+  [(if LITERALS.contains(word) { "literal" } else if isAt(chars, afterSpaces(chars, stop), '=') { "function" } else { "" }, larger(stop, index + 1))]
+}
+
+/// The next tokens of a JSON document.
+fn jsonStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+
+  if character == '"' {
+    let stop = quotedEnd(chars, index)
+
+    return [(if isAt(chars, afterSpaces(chars, stop), ':') { "function" } else { "string" }, stop)]
+  }
+
+  if Char.isDigit(character) || character == '-' { return [("number", numberEnd(chars, index))] }
+
+  if isWordStart(character) {
+    let stop = wordEnd(chars, index)
+
+    return [(if LITERALS.contains(textOf(chars, index, stop)) { "literal" } else { "" }, stop)]
+  }
+
+  [("", index + 1)]
+}
+
+/// Where a run of style name characters ends.
+fn styleNameEnd(chars: &Array[Char], index: Int) -> Int {
+  var stop = index
+
+  while stop < chars.length() && (isWordPart(chars[stop]) || chars[stop] == '-') { stop = stop + 1 }
+
+  larger(stop, index + 1)
+}
+
+/// The class of a style name given what follows it.
+fn styleName(chars: &Array[Char], index: Int, stop: Int) -> Str {
+  if startsAt(chars, index, "--") { return "label" }
+  if isAt(chars, afterSpaces(chars, stop), ':') && !isAt(chars, afterSpaces(chars, stop) + 1, ':') { return "function" }
+
+  ""
+}
+
+/// The next tokens of a stylesheet.
+fn cssStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+  if startsAt(chars, index, "/*") { return [("comment", blockCommentEnd(chars, index))] }
+  if character == '"' || character == '\'' { return [("string", quotedEnd(chars, index))] }
+  if character == '@' { return [("keyword", styleNameEnd(chars, index + 1))] }
+  if character == '.' || character == '#' { return [("type", styleNameEnd(chars, index + 1))] }
+  if Char.isDigit(character) { return [("number", styleNameEnd(chars, index))] }
+  if isWordStart(character) || character == '-' {
+    let stop = styleNameEnd(chars, index)
+
+    return [(styleName(chars, index, stop), stop)]
+  }
+
+  [("operator", index + 1)]
+}
+
+/// The next tokens of a script.
+fn scriptStep(chars: &Array[Char], index: Int) -> Array[Piece] {
+  let character = chars[index]
+
+  if isBlank(character) { return [("", blankEnd(chars, index))] }
+  if startsAt(chars, index, "//") { return [("comment", lineEnd(chars, index))] }
+  if startsAt(chars, index, "/*") { return [("comment", blockCommentEnd(chars, index))] }
+  if character == '"' || character == '\'' || character == '`' { return [("string", quotedEnd(chars, index))] }
+  if Char.isDigit(character) { return [("number", numberEnd(chars, index))] }
+
+  if isWordStart(character) || character == '$' {
+    let stop = larger(wordEnd(chars, index), index + 1)
+    let word = textOf(chars, index, stop)
+
+    return [(if SCRIPT_WORDS.contains(word) { "keyword" } else if LITERALS.contains(word) { "literal" } else if Char.isUpper(character) { "type" } else if isAt(chars, stop, '(') { "function" } else { "" }, stop)]
+  }
+
+  [operatorAt(chars, index)]
+}
+
+/// Text made safe to place in markup.
+export fn escaped(text: Str) -> Str { text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;") }
+
+/// One token as markup.
+fn written(kind: Str, text: Str) -> Str {
+  if text.isEmpty() { return "" }
+  if kind.isEmpty() { return escaped(text) }
+
+  "<span class=\"tok-" + kind + "\">" + escaped(text) + "</span>"
+}
+
+/// Source in a language as colored markup, or plain escaped text for a language with no scanner.
+export fn paint(language: Str, text: Str) -> Str {
+  if !knows(language) { return escaped(text) }
+
+  let step = Option.unwrapOr(SCANNERS.get(language.toLower()), puduStep)
+  let chars = text.chars()
+  var out: Array[Str] = []
+  var index = 0
+
+  while index < chars.length() {
+    for (kind, stop) in step(&chars, index) {
+      out = out.push(written(kind, textOf(&chars, index, stop)))
+      index = larger(stop, index)
+    }
+  }
+
+  out.join("")
+}
+
+/// Whether a language has a scanner.
+export fn knows(language: Str) -> Bool { Option.isSome(&SCANNERS.get(language.toLower())) }

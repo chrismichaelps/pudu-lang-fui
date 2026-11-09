@@ -5,6 +5,7 @@ import Std.Html.Build as H
 import PuduLangFui.Components.Patterns.Chart as Chart
 import PuduLangFui.Components.Patterns.Sidebar as Sidebar
 import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -12,13 +13,16 @@ import PuduLangFui.Domain.Css as Css
 export type Stat = { caption: Str, figure: Str }
 
 /** @Fui.Blocks.Dashboard.Link — one navigation entry */
-export type Link = { caption: Str, target: Str, active: Bool }
+export type Link = { caption: Str, target: Str, active: Bool, icon: Option[Icon.Glyph] }
 
 /// A headline figure.
 export fn stat(caption: Str, figure: Str) -> Stat { Stat{caption: caption, figure: figure} }
 
 /// A navigation entry.
-export fn link(caption: Str, target: Str, active: Bool = false) -> Link { Link{caption: caption, target: target, active: active} }
+export fn link(caption: Str, target: Str, active: Bool = false) -> Link { Link{caption: caption, target: target, active: active, icon: None} }
+
+/// A navigation entry led by an icon.
+export fn linked(glyph: Icon.Glyph, caption: Str, target: Str, active: Bool = false) -> Link { Link{caption: caption, target: target, active: active, icon: Some(glyph)} }
 
 /// One figure's card.
 fn statCard(one: &Stat) -> H.Node {
@@ -27,14 +31,19 @@ fn statCard(one: &Stat) -> H.Node {
 
 /// One navigation entry.
 fn navEntry(one: &Link) -> H.Node {
-  Sidebar.menuItem().holding([Sidebar.menuButton(one.target, one.active).says(one.caption)])
+  let label = H.span().says(one.caption)
+
+  Sidebar.menuItem().holding([Sidebar.menuButton(one.target, one.active).holding(match one.icon {
+          case Some(glyph) => [Icon.icon(glyph), label]
+          case None => [label]
+        })])
 }
 
 /// A shell with navigation, figures, and a chart over the given content.
 export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: Array[Chart.Series], content: H.Node) -> H.Node {
   Sidebar.provider("dashboard-sidebar").holding([
       Sidebar.sidebar().holding([
-          Sidebar.header().says(title),
+          Sidebar.header().holding([Core.part("dashboard-brand").says(title)]),
           Sidebar.content().holding([Sidebar.group().holding([Sidebar.menu().holding(links.map(|one: Link| navEntry(&one)))])])
         ]),
       Sidebar.inset().holding([
@@ -52,6 +61,7 @@ export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: A
 export fn style() -> Css.Block {
   Css.block("dashboard", [
       Css.base("display: flex; flex-direction: column; gap: $space-4; padding: $space-4"),
+      Css.slot("dashboard-brand", "padding: $space-2 $space-3; font-weight: $weight-semibold"),
       Css.slot("dashboard-bar", "display: flex; align-items: center; gap: $space-2"),
       Css.slot("dashboard-stats", "display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: $space-4")
     ])

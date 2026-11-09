@@ -11,6 +11,20 @@ function currentMode() {
   return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+var CANVAS_SMALLEST = 560;
+var CANVAS_HEIGHT = 640;
+
+function fitCanvas(frame, holder) {
+  var width = Number(holder.getAttribute("data-canvas"));
+  var scale = Math.min(1, holder.clientWidth / width);
+
+  holder.classList.add("is-canvas");
+  frame.style.width = width + "px";
+  frame.style.height = CANVAS_HEIGHT + "px";
+  frame.style.transform = "scale(" + scale + ")";
+  holder.style.height = Math.round(CANVAS_HEIGHT * scale) + "px";
+}
+
 function fit(frame) {
   var page = frame.contentDocument;
 
@@ -19,6 +33,14 @@ function fit(frame) {
   var holder = frame.parentElement;
 
   page.documentElement.setAttribute("data-mode", currentMode());
+
+  if (holder.hasAttribute("data-canvas") && holder.clientWidth >= CANVAS_SMALLEST) {
+    fitCanvas(frame, holder);
+    return;
+  }
+
+  holder.classList.remove("is-canvas");
+  frame.style.width = frame.style.transform = "";
 
   if (holder.classList.contains("fui-home")) {
     frame.style.height = "0";
@@ -31,25 +53,26 @@ function fit(frame) {
     return;
   }
 
+  frame.style.height = "";
   holder.style.height = page.documentElement.scrollHeight + "px";
 }
 
-document.querySelectorAll(".fui-preview, .fui-home").forEach(function (holder) {
-  var link = holder.querySelector("a");
-  var frame = document.createElement("iframe");
-
-  if (!link) return;
-
-  frame.title = link.textContent;
-  frame.src = link.href;
-
-  if (holder.classList.contains("fui-home")) frame.setAttribute("scrolling", "no");
-
+document.querySelectorAll(".fui-preview iframe, .fui-home iframe").forEach(function (frame) {
   frame.addEventListener("load", function () {
     fit(frame);
     setTimeout(function () { fit(frame); }, 300);
   });
-  holder.replaceChild(frame, link);
+
+  if (frame.contentDocument && frame.contentDocument.readyState === "complete") fit(frame);
+});
+
+/* Parent rows open and close their section; their own pages are one level down. */
+document.querySelectorAll(".toc .has-children > a").forEach(function (link) {
+  link.setAttribute("aria-expanded", String(link.parentElement.classList.contains("expanded")));
+  link.addEventListener("click", function (event) {
+    event.preventDefault();
+    link.setAttribute("aria-expanded", String(link.parentElement.classList.toggle("expanded")));
+  });
 });
 
 new MutationObserver(function () {
@@ -57,7 +80,7 @@ new MutationObserver(function () {
 }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
 addEventListener("resize", function () {
-  document.querySelectorAll(".fui-home iframe").forEach(fit);
+  document.querySelectorAll(".fui-home iframe, .fui-preview[data-canvas] iframe").forEach(fit);
 });
 
 /* Keeps the phone menus exclusive, and closes them from outside. */
@@ -84,10 +107,6 @@ document.addEventListener("click", function (event) {
     closePanel(pair);
   });
 });
-
-if (document.querySelector('pre code[class*="lang-"]')) {
-  import(new URL("highlight/main.js", document.currentScript.src).href);
-}
 
 if (document.querySelector(".fui-create")) {
   import(new URL("create/main.js", document.currentScript.src).href);

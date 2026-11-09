@@ -12,6 +12,7 @@ website/build.sh ../pudu-lang-docgen
 | Path | Purpose |
 | --- | --- |
 | `Previews.pudu` | Demonstrations of every item, and the generator for `docs/components`, `docs/elements`, `docs/blocks`, and `docs/previews`. |
+| `Finish.pudu` | Colors every code sample and folds each preview into its page after the site is built. |
 | `docs/index.md` | The home page. |
 | `docs/guides/` | Written guides. |
 | `docgen.json` | Site configuration. |

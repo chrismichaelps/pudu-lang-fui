@@ -1,0 +1,177 @@
+/** @Fui.Website.Finish.Module — completes every built page, so the browser has nothing to compute */
+module Finish
+
+import Std.Io as Io
+import Std.Result as Result
+import PuduLangFui.Utils.Paint as Paint
+
+/// The folder holding the built site.
+const SITE: Str = "website/_site"
+
+/// The folder holding previews with their look inlined.
+const STATIC_PREVIEWS: Str = "website/.cache/previews"
+
+/// The folders that hold pages.
+const FOLDERS: Array[Str] = ["", "/components", "/elements", "/blocks", "/guides"]
+
+/// What opens a code sample.
+const CODE_OPEN: Str = "<code class=\"lang-"
+
+/// What closes a code sample.
+const CODE_CLOSE: Str = "</code>"
+
+/// What opens each kind of preview placeholder, and the attributes its frame carries.
+const HOLDERS: Array[(Str, Str)] = [("fui-preview", ""), ("fui-home", " scrolling=\"no\"")]
+
+/// Previews drawn as a whole application window, scaled to fit.
+const CANVASES: Set[Str] = setOf(["dashboard", "sidebar"])
+
+/// The caching rules of the assets that rarely change.
+const HEADERS: Str = "/_assets/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/public/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/previews/looks/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n/favicon.png\n  Cache-Control: public, max-age=86400\n/logo.png\n  Cache-Control: public, max-age=86400\n"
+
+/// How the generator's script reveals the current page in the tree, which also scrolls the page.
+const TREE_REVEAL: Str = "active.scrollIntoView(\{ block: \"center\" \});"
+
+/// A reveal that scrolls only the tree.
+const TREE_SCROLL: Str = "var box = toc.closest(\".sidebar-inner\"); box.scrollTop += active.getBoundingClientRect().top - box.getBoundingClientRect().top - box.clientHeight / 2;"
+
+/// The text before and after the first separator, or nothing without one.
+fn around(text: Str, separator: Str) -> Option[(Str, Str)] {
+  let parts = text.split(separator)
+
+  if parts.length() < 2 { return None }
+
+  Some((parts[0], text.drop(parts[0].length() + separator.length())))
+}
+
+/// Markup with its tags removed and its entities restored.
+fn plainOf(markup: Str) -> Str {
+  let parts = markup.split("<")
+  var out: Array[Str] = [parts[0]]
+  var index = 1
+
+  while index < parts.length() {
+    out = out.push(match around(parts[index], ">") {
+        case Some((_tag, after)) => after
+        case None => parts[index]
+      })
+    index = index + 1
+  }
+
+  out.join("").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#39;", "'").replace("&amp;", "&")
+}
+
+/// A page with every code sample colored for its language.
+fn paintedCode(page: Str) -> Str {
+  let parts = page.split(CODE_OPEN)
+  var out: Array[Str] = [parts[0]]
+  var index = 1
+
+  while index < parts.length() {
+    let piece = match around(parts[index], "\">") {
+      case None => CODE_OPEN + parts[index]
+      case Some((language, rest)) => match around(rest, CODE_CLOSE) {
+        case None => CODE_OPEN + parts[index]
+        case Some((inner, after)) => CODE_OPEN + language + "\">" + (if Paint.knows(language) { Paint.paint(language, plainOf(inner)) } else { inner }) + CODE_CLOSE + after
+      }
+    }
+
+    out = out.push(piece)
+    index = index + 1
+  }
+
+  out.join("")
+}
+
+/// A preview's name from its link.
+fn nameOf(target: Str) -> Str {
+  let parts = target.split("/")
+
+  parts[parts.length() - 1].replace(".html", "")
+}
+
+/// The frame standing for a preview, its document inside it.
+fn frameOf(name: Str, attributes: Str) -> Str {
+  let document = Result.unwrapOr(Io.read(STATIC_PREVIEWS + "/" + name + ".html"), "")
+
+  "<iframe title=\"" + name + " preview\"" + attributes + " srcdoc=\"" + document.replace("&", "&amp;").replace("\"", "&quot;") + "\"></iframe>"
+}
+
+/// A page with its placeholders of one kind replaced by frames.
+fn embedded(page: Str, holder: Str, attributes: Str) -> Str {
+  let opening = "<div class=\"" + holder + "\"><a href=\""
+  let parts = page.split(opening)
+  var out: Array[Str] = [parts[0]]
+  var index = 1
+
+  while index < parts.length() {
+    let piece = match around(parts[index], "\"") {
+      case None => opening + parts[index]
+      case Some((target, rest)) => match around(rest, "</a>") {
+        case None => opening + parts[index]
+        case Some((_caption, after)) => {
+          let name = nameOf(target)
+          let canvas = if CANVASES.contains(name) { " data-canvas=\"1100\"" } else { "" }
+
+          "<div class=\"" + holder + "\"" + canvas + ">" + frameOf(name, attributes) + after
+        }
+      }
+    }
+
+    out = out.push(piece)
+    index = index + 1
+  }
+
+  out.join("")
+}
+
+/// A page with its samples colored and its previews in place.
+fn finished(page: Str) -> Str {
+  var done = paintedCode(page)
+
+  for (holder, attributes) in HOLDERS { done = embedded(done, holder, attributes) }
+
+  done
+}
+
+/// Finishes every page of a folder; answers how many could not be written.
+fn finishFolder(folder: Str) -> Int {
+  let directory = SITE + folder
+  var failures = 0
+
+  for name in Result.unwrapOr(Io.list(directory), []) {
+    if name.endsWith(".html") {
+      let path = directory + "/" + name
+
+      match Io.write(path, finished(Result.unwrapOr(Io.read(path), ""))) {
+        case Ok(_) => {}
+        case Err(problem) => {
+          let _said = Io.writeErrorLine(path + ": " + problem)
+
+          failures = failures + 1
+        }
+      }
+    }
+  }
+
+  failures
+}
+
+/// Finishes the site and writes its caching rules.
+fn main() -> Int {
+  var failures = 0
+
+  for folder in FOLDERS { failures = failures + finishFolder(folder) }
+
+  let script = SITE + "/_assets/site.js"
+
+  match Io.write(script, Result.unwrapOr(Io.read(script), "").replace(TREE_REVEAL, TREE_SCROLL)) {
+    case Ok(_) => {}
+    case Err(_) => { failures = failures + 1 }
+  }
+
+  match Io.write(SITE + "/_headers", HEADERS) {
+    case Ok(_) => failures
+    case Err(_) => failures + 1
+  }
+}

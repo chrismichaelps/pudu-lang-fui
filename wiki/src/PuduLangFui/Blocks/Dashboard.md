@@ -22,13 +22,15 @@ An application home with sidebar, stats, chart, and table.
 ### Signatures
 
 ```pudu
-export type Stat = { caption: Str, figure: Str }
+export type Stat =
 
-export type Link = { caption: Str, target: Str, active: Bool }
+export type Link =
 
 export fn stat(caption: Str, figure: Str) -> Stat
 
 export fn link(caption: Str, target: Str, active: Bool = false) -> Link
+
+export fn linked(glyph: Icon.Glyph, caption: Str, target: Str, active: Bool = false) -> Link
 
 export fn dashboard(title: Str, links: Array[Link], stats: Array[Stat], trend: Array[Chart.Series], content: H.Node) -> H.Node
 

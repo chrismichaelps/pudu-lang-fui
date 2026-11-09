@@ -14,7 +14,8 @@ tags: [changelog]
 - The Create page is an inspector of its own design, on the site's theme.
 - Agent elements share one disclosure from the trace, and their demonstrations read as conversations.
 - The home page opens straight into the component mosaic.
-- Code samples on the site are coloured by language, with Pudu painted the same way as the playground.
+- Code samples are coloured by language at build time, with Pudu painted the same way as the playground, and every preview arrives inside its page.
+- Parent rows of the documentation tree open and close their section.
 - The prompt reacts to focus rather than hover, send waits for text, and model pickers are menus.
 - The site gained its own identity: a two-column hero, a broader mosaic that fades under a blur, solid phone menus with a backdrop, and a mark and icon of its own.
 

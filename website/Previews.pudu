@@ -510,14 +510,18 @@ fn demoSheet() -> H.Node {
 }
 
 fn demoSidebar() -> H.Node {
-  Sidebar.provider("demo-sidebar").css("inline-size", "100%").css("min-block-size", "24rem").css("overflow", "hidden").holding([
+  Sidebar.provider("demo-sidebar").css("margin", "calc(var(--fui-space-6) * -1)").css("inline-size", "calc(100% + var(--fui-space-12))").css("min-block-size", "100dvh").css("overflow", "hidden").holding([
       Sidebar.sidebar().holding([
           Sidebar.content().holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
                       Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
                       Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
                     ])])])
         ]),
-      Sidebar.inset().css("padding", "var(--fui-space-4)").holding([Sidebar.trigger("demo-sidebar")])
+      Sidebar.inset().css("padding", "var(--fui-space-4)").holding([
+          Sidebar.trigger("demo-sidebar"),
+          H.div().css("display", "grid").css("grid-template-columns", "repeat(3, 1fr)").css("gap", "var(--fui-space-4)").css("margin-block-start", "var(--fui-space-4)").holding([Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem"), Skeleton.skeleton().css("block-size", "8rem")]),
+          Skeleton.skeleton().css("block-size", "20rem").css("margin-block-start", "var(--fui-space-4)")
+        ])
     ])
 }
 
@@ -629,7 +633,7 @@ fn demoTool() -> H.Node { Turn.turn("Which package managers are installed?", [Tr
 
 fn demoTurn() -> H.Node { column("30rem", [Turn.turn("How do I add a settings dialog?", [H.p().css("margin", "0").says("Run fui add dialog, then open it from the gear icon in the header.")])]) }
 
-fn demoDashboard() -> H.Node { H.div().css("inline-size", "100%").css("block-size", "36rem").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.link("Overview", "#", true), Dashboard.link("Reports", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))]) }
+fn demoDashboard() -> H.Node { H.div().css("margin", "calc(var(--fui-space-6) * -1)").css("inline-size", "calc(100% + var(--fui-space-12))").css("block-size", "100dvh").css("overflow", "hidden").holding([Dashboard.dashboard("Acme", [Dashboard.linked(Icon.Globe, "Overview", "#", true), Dashboard.linked(Icon.List, "Reports", "#"), Dashboard.linked(Icon.User, "Customers", "#"), Dashboard.linked(Icon.Folder, "Projects", "#"), Dashboard.linked(Icon.Settings, "Settings", "#")], [Dashboard.stat("Revenue", "$4,200"), Dashboard.stat("Users", "312")], [Chart.series("Visits", [1.0, 3.0, 2.0, 6.0])], H.p().says("Recent activity."))]) }
 
 fn demoLogin() -> H.Node { column("24rem", [Login.login("#", &[])]) }
 
@@ -845,7 +849,15 @@ const DEMO_SCRIPT: Str = "document.addEventListener('submit', function (event) \
 /// The look the reference pages show; the home page shows the default look.
 const DOCS_LOOK: Str = "classic"
 
-/// The stylesheet a preview's look comes from; the Create page swaps it.
+/// Where previews with their look inlined are written; the site builder folds them into the pages.
+const STATIC_PREVIEWS: Str = "website/.cache/previews"
+
+/// A preview page with only the look rules it uses inside it.
+fn staticPage(title: Str, look: Str, body: H.Node, blocks: &Array[Css.Block]) -> Str {
+  Fui.document(&Fui.page(title, Theme.defaults().look(Option.unwrapOr(Looks.named(look), [])), *blocks).inHead([H.script().raw(DEMO_SCRIPT)]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
+}
+
+/// The stylesheet link of a look.
 fn lookLink(name: Str) -> H.Node { H.tag("link").at("rel", "stylesheet").id("fui-look").href("looks/" + name + ".css") }
 
 /// A list of text as JSON.
@@ -928,6 +940,7 @@ fn main() -> Int {
       }
       case Some(build) => {
         if !saved(DOCS + "/previews/" + item.name + ".html", previewPage(item.name, if folder == "elements" { Looks.DEFAULT } else { DOCS_LOOK }, build(), &blocks)) { failures = failures + 1 }
+        if !saved(STATIC_PREVIEWS + "/" + item.name + ".html", staticPage(item.name, if folder == "elements" { Looks.DEFAULT } else { DOCS_LOOK }, build(), &blocks)) { failures = failures + 1 }
         if !saved(DOCS + "/" + folder + "/" + item.name + ".md", pageOf(&item, sourceOf(&program, item.name), &surface)) { failures = failures + 1 }
       }
     }
@@ -941,6 +954,8 @@ fn main() -> Int {
   }
 
   failures = failures + writeCreateAssets(&registry.items.map(|item: Item.Item| item.name))
+
+  if !saved(STATIC_PREVIEWS + "/home.html", staticPage("Home", Looks.DEFAULT, demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
 
   if !saved(DOCS + "/previews/home.html", previewPage("Home", Looks.DEFAULT, demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
 
