@@ -34,3 +34,7 @@ document.querySelectorAll(".fui-preview, .fui-home").forEach(function (holder) {
 new MutationObserver(function () {
   document.querySelectorAll(".fui-preview iframe, .fui-home iframe").forEach(fit);
 }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+if (document.querySelector(".fui-create")) {
+  import(new URL("create/main.js", document.currentScript.src).href);
+}

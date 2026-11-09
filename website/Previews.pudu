@@ -3,6 +3,7 @@ module Previews
 
 import Std.Html.Build as H
 import Std.Io as Io
+import Std.Json as Json
 import Std.Map as Map
 import Std.Option as Option
 import Std.Path as Path
@@ -85,6 +86,9 @@ import PuduLangFui.Components.Primitives.Toggle as Toggle
 import PuduLangFui.Components.Primitives.Tooltip as Tooltip
 import PuduLangFui.Components.Primitives.Typeset as Typeset
 import PuduLangFui.Components.Primitives.Typography as Typography
+import PuduLangFui.Constants.Cli as Constant
+import PuduLangFui.Constants.DesignOptions as Options
+import PuduLangFui.Constants.Swatches as Swatches
 import PuduLangFui.Core.Styling as Style
 import PuduLangFui.Domain.Css as Css
 import PuduLangFui.Elements.ChainOfThought as ChainOfThought
@@ -110,6 +114,8 @@ import PuduLangFui.Elements.Tool as Tool
 import PuduLangFui.Elements.Turn as Turn
 import PuduLangFui as Fui
 import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Theme.Looks.Catalog as Looks
+import PuduLangFui.Theme.Presets.Design as Design
 import PuduLangFui.Utils.Spelling as Spelling
 
 /** @Website.Previews.Customer — a row of the example table */
@@ -395,10 +401,15 @@ fn demoSheet() -> H.Node {
 }
 
 fn demoSidebar() -> H.Node {
-  Card.card().css("inline-size", "16rem").holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
-              Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
-              Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
-            ])])])
+  Sidebar.provider("demo-sidebar").css("inline-size", "100%").css("min-block-size", "24rem").css("overflow", "hidden").holding([
+      Sidebar.sidebar().holding([
+          Sidebar.content().holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
+                      Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
+                      Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
+                    ])])])
+        ]),
+      Sidebar.inset().css("padding", "var(--fui-space-4)").holding([Sidebar.trigger("demo-sidebar")])
+    ])
 }
 
 fn demoSkeleton() -> H.Node { column("16rem", [Skeleton.skeleton().css("block-size", "1rem"), Skeleton.skeleton().css("block-size", "1rem").css("inline-size", "60%")]) }
@@ -545,7 +556,7 @@ fn saved(path: Str, text: Str) -> Bool {
 
 /// A standalone preview page holding one demonstration.
 fn previewPage(title: Str, body: H.Node, blocks: &Array[Css.Block]) -> Str {
-  Fui.document(&Fui.page(title, Theme.defaults(), *blocks), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
+  Fui.document(&Fui.page(title, Theme.defaults().look([]), *blocks).inHead([lookLink()]), H.main().css("display", "flex").css("min-block-size", "100vh").css("align-items", "center").css("justify-content", "center").css("padding", "var(--fui-space-6)").holding([body]))
 }
 
 /// The text between a demonstration's signature and its end.
@@ -600,6 +611,67 @@ fn tocOf(items: &Array[Item.Item]) -> Str {
   lines.join("\n") + "\n"
 }
 
+/// The stylesheet a preview's look comes from; the Create page swaps it.
+fn lookLink() -> H.Node { H.tag("link").at("rel", "stylesheet").id("fui-look").href("looks/" + Looks.DEFAULT + ".css") }
+
+/// A list of text as JSON.
+fn textList(values: &Array[Str]) -> Json.Json { Json.list(&values.map(|value: Str| Json.Text(value))) }
+
+/// The rules a menu choice adds, as a stylesheet.
+fn menuSheet(rules: &Array[Css.LookRule]) -> Json.Json { Json.Text(if rules.isEmpty() { "" } else { Css.renderLook(rules, &setOf([]), true) }) }
+
+/// Each named choice beside the sheet it adds.
+fn sheets(names: &Array[Str], build: fn(Str) -> Array[Css.LookRule]) -> Json.Json {
+  Json.object(&names.map(|name: Str| {
+        let rules = build(name)
+
+        (name, menuSheet(&rules))
+      }))
+}
+
+/// A palette as JSON.
+fn swatchJson(name: Str) -> (Str, Json.Json) {
+  let rows = Option.unwrapOr(Swatches.SWATCHES.get(name), [])
+
+  (name, Json.list(&rows.map(|row: (Str, Str, Str)| textList(&[row[0], row[1], row[2]]))))
+}
+
+/// Everything the Create page offers.
+fn createData(items: &Array[Str]) -> Str {
+  let colors = Options.BASE_COLORS.concat(Options.ACCENT_COLORS)
+
+  Json.encodePretty(&Json.object(&[
+        ("code", Json.Text(Design.encode(&Design.initial()))),
+        ("looks", textList(&Looks.names())),
+        ("bases", textList(&Options.BASE_COLORS)),
+        ("accents", textList(&Options.ACCENT_COLORS)),
+        ("swatches", Json.object(&colors.map(|name: Str| swatchJson(name)))),
+        ("fonts", Json.list(&Options.FONTS.map(|font: (Str, Str, Str)| textList(&[font[0], font[1], font[2]])))),
+        ("radii", Json.list(&Options.RADII.map(|radius: (Str, Str)| textList(&[radius[0], radius[1]])))),
+        ("menus", sheets(&Options.MENU_COLORS, Design.menuColorRules)),
+        ("menuAccents", sheets(&Options.MENU_ACCENTS, Design.menuAccentRules)),
+        ("libraries", Json.list(&Options.ICON_LIBRARIES.map(|library: (Str, Str, Str)| textList(&[library[0], library[1], library[2]])))),
+        ("iconNames", Json.object(&Options.ICON_NAMES.map(|entry: (Str, Array[Str])| (entry[0], textList(&entry[1]))))),
+        ("iconService", Json.Text(Constant.ICON_SERVICE)),
+        ("items", textList(items))
+      ])) + "\n"
+}
+
+/// Writes each look's stylesheet and the Create page's data; answers how many failed.
+fn writeCreateAssets(items: &Array[Str]) -> Int {
+  var failures = 0
+
+  for name in Looks.names() {
+    let rules = Option.unwrapOr(Looks.named(name), [])
+
+    if !saved(DOCS + "/previews/looks/" + name + ".css", Css.renderLook(&rules, &setOf([]), true) + "\n") { failures = failures + 1 }
+  }
+
+  if !saved(DOCS + "/previews/create.json", createData(items)) { failures = failures + 1 }
+
+  failures
+}
+
 /// Writes every preview and page; answers the number of problems.
 fn main() -> Int {
   let registry = match Registry.load(".") {
@@ -633,6 +705,8 @@ fn main() -> Int {
 
     if !saved(DOCS + "/" + folder[1] + "/toc.yml", tocOf(&items)) { failures = failures + 1 }
   }
+
+  failures = failures + writeCreateAssets(&registry.items.map(|item: Item.Item| item.name))
 
   if !saved(DOCS + "/previews/home.html", previewPage("Home", demoHome(), &blocks).replace("min-block-size: 100vh; align-items: center; justify-content: center; padding: var(--fui-space-6)", "display: block")) { failures = failures + 1 }
 

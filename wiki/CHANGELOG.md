@@ -23,6 +23,11 @@ tags: [changelog]
 - Toast and drawer rebuilt to full behavior: measured stacking, timers, swipe, promise toasts, and
   pointer dragging with stops, nesting, and a shrinking page. Whole icon libraries install as modules
   ([[decisions/ADR-0010-icons-on-demand]]).
+- Eight looks as generated rule tables, applied in their own layer ([[decisions/ADR-0012-looks-as-data]]).
+- Charts redrawn: shaded columns, smooth monotone curves, and ring segments with separators.
+- The sidebar opens as a drawer with an overlay at phone width and closes from its toggle, the overlay,
+  or escape; the shortcut and the remembered state follow. Dialogs and sheets carry a close icon.
+- Design codes and the Create page: style, colors, fonts, icons, radius, and menu choices with a live preview.
 - Risk LOW: a new package with no callers. Depth is recorded on each module page.
 
 ## Referenced by

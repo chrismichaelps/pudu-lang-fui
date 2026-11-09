@@ -4,7 +4,9 @@ module PuduLangFui
 import Std.Html.Build as H
 import Std.Html as Html
 import Std.List as List
+import Std.Set as Set
 import PuduLangFui.Constants.Css as Constant
+import PuduLangFui.Constants.LookBase as LookBase
 import PuduLangFui.Domain.Css as Css
 import PuduLangFui.Domain.Slots as Slots
 import PuduLangFui.Theme.Build.Theme as Theme
@@ -57,9 +59,17 @@ export fn neededBy(view: &Html.Html, blocks: &Array[Css.Block]) -> Array[Css.Blo
   blocks.filter(|held: Css.Block| List.any(&held.slots, |slot: Str| used.contains(slot)))
 }
 
+/// The base layer with the variables every look composes.
+fn baseLayer() -> Str { Constant.BASE_LAYER + "\n@layer fui.base \{\n" + LookBase.INITIAL + "\n\}" }
+
+/// The stylesheet a rendered view needs.
+fn pageSheet(theme: &Theme.Theme, needed: &Array[Css.Block], used: &Set[Str]) -> Str {
+  [Constant.LAYER_ORDER, LookBase.FRAMES, baseLayer(), Theme.render(theme), Css.render(needed), Css.renderLook(&theme.look, used, false)].join("\n")
+}
+
 /// The whole stylesheet for a theme and these blocks.
 export fn stylesheet(theme: &Theme.Theme, blocks: &Array[Css.Block]) -> Str {
-  [Constant.LAYER_ORDER, Constant.BASE_LAYER, Theme.render(theme), Css.render(blocks)].join("\n")
+  [Constant.LAYER_ORDER, LookBase.FRAMES, baseLayer(), Theme.render(theme), Css.render(blocks), Css.renderLook(&theme.look, &setOf([]), true)].join("\n")
 }
 
 /// The behaviors of the blocks as one script's text, empty when there are none.
@@ -87,7 +97,7 @@ export fn document(given: &Page, body: H.Node) -> Str {
           H.meta().at("charset", "utf-8"),
           H.meta().name("viewport").at("content", "width=device-width, initial-scale=1"),
           H.tag("title").says(given.title),
-          H.style().raw(stylesheet(&given.theme, &needed))
+          H.style().raw(pageSheet(&given.theme, &needed, &Slots.used(&view)))
         ].concat(given.head)),
       H.body().holds(view).holding([tail])
     ])

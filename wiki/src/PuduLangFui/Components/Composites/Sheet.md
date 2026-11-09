@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Components/Composites/Sheet.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.6
+depth_score: 0.61
 depth_status: MEDIUM
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, medium]
@@ -43,7 +43,7 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
@@ -59,7 +59,7 @@ export fn style() -> Css.Block
 
 ## Depth
 
-DEPTH 0.6 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
+DEPTH 0.61 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Grill Log
 

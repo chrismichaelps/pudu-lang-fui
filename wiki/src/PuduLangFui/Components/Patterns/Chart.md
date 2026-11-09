@@ -22,15 +22,15 @@ Bar, line, area, and donut charts as inline SVG.
 ### Signatures
 
 ```pudu
-export type Kind = Bars | Lines | Areas | Donut
+export type Kind = Bars | Lines | Areas | Donut | Pie
 
 export type Series = { name: Str, values: Array[Float64] }
 
 export fn series(name: Str, values: Array[Float64]) -> Series
 
-export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node
-
 export fn labelled(kind: Kind, caption: Str, labels: Array[Str], all: Array[Series]) -> H.Node
+
+export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node
 
 export fn style() -> Css.Block
 ```
@@ -41,8 +41,10 @@ export fn style() -> Css.Block
 
 ## Algorithm
 
-1. A factory table maps the kind to its renderer
-2. every renderer maps values into one coordinate box and uses chart tokens.
+1. Bars are shaded columns
+2. lines and areas are smooth curves whose tangents flatten at turning points
+3. donuts and pies are real ring segments separated by the surface color
+4. each point carries a hover card.
 
 ## Negative Logic (Prohibited Paths)
 

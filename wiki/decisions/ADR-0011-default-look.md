@@ -15,4 +15,4 @@ aesthetic choice would make them, so the contrast audit passes in both modes.
 
 ## Referenced by
 
-[[CHANGELOG]] · [[decisions/_MOC]] · [[handoffs/2026-11-09-initial-system]]
+[[CHANGELOG]] · [[decisions/_MOC]]

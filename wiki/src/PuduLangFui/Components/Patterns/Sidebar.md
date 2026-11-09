@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Components/Patterns/Sidebar.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Components]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.58
+depth_score: 0.59
 depth_status: MEDIUM
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, medium]
@@ -29,6 +29,8 @@ export type Variant = Plain | Floating | Inset
 export fn provider(id: Str, collapsed: Bool = false) -> H.Node
 
 export fn trigger(id: Str) -> H.Node
+
+export fn overlay(id: Str) -> H.Node
 
 export fn sidebar() -> H.Node
 
@@ -77,13 +79,13 @@ export fn style() -> Css.Block
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Components/Primitives/Icon]] · [[src/PuduLangFui/Constants/SidebarScript]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
-1. A provider with a hidden checkbox
-2. `:has(:checked)` collapses the sidebar
-3. narrow windows make it a fixed overlay.
+1. A hidden checkbox holds the state
+2. at desktop width it collapses the panel, at phone width it opens a drawer over an overlay
+3. the toggle, the overlay, and escape all close the drawer.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -95,7 +97,7 @@ export fn style() -> Css.Block
 
 ## Depth
 
-DEPTH 0.58 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
+DEPTH 0.59 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Grill Log
 

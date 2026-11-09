@@ -66,7 +66,7 @@ fn inProject(project: Str, package: Str) -> Array[Test.Check] {
     Test.equals("init will not repeat", &again.status, &1),
     Test.that("the theme holds the preset", theme.contains("const PRESET: Str = \"harbor\"")),
     Test.equals("add succeeds", &added.status, &0),
-    Test.that("a dependency is added first", added.lines.length() == 2 && added.lines[0].contains("Button.pudu")),
+    Test.that("dependencies are added first", added.lines.length() == 3 && added.lines[2].contains("Dialog.pudu")),
     Test.that("the module is rewritten", dialog.contains("module Ui.Composites.Dialog")),
     Test.that("a sibling import is rewritten", dialog.contains("import Ui.Primitives.Button as Button")),
     Test.that("the core stays a dependency", button.contains("import PuduLangFui.Core.Styling as Core")),

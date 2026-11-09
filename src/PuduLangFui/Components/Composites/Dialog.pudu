@@ -3,6 +3,7 @@ module PuduLangFui.Components.Composites.Dialog
 
 import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -17,7 +18,15 @@ export fn close(id: Str, given: Button.Props) -> H.Node {
 }
 
 /// A modal named for assistive software.
-export fn dialog(id: Str, name: Str) -> H.Node { H.dialog().slot("dialog").id(id).at("closedby", "any").label(name) }
+export fn dialog(id: Str, name: Str) -> H.Node { plain(id, name).holding([closeIcon(id)]) }
+
+/// A modal without its close icon.
+export fn plain(id: Str, name: Str) -> H.Node { H.dialog().slot("dialog").id(id).at("closedby", "any").label(name) }
+
+/// The small control at the corner of a dialog.
+fn closeIcon(id: Str) -> H.Node {
+  Button.button(Button.props().variant(Button.Ghost).size(Button.IconSmall)).data("part", "dialog-close").label("Close").at("commandfor", id).at("command", "close").holding([Icon.icon(Icon.X)])
+}
 
 /// The dialog's opening.
 export fn header() -> H.Node { Core.part("dialog-header") }

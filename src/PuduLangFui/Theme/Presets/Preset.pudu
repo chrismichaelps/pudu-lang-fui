@@ -2,29 +2,34 @@
 module PuduLangFui.Theme.Presets.Preset
 
 import Std.Map as Map
+import Std.Option as Option
 import Std.Text as Text
 import PuduLangFui.Constants.Presets as Limits
 import PuduLangFui.Theme.Aspects.Spacing as Spacing
 import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Theme.Looks.Catalog as Looks
 import PuduLangFui.Utils.Numbers as Numbers
 import PuduLangFui.Utils.Spelling as Spelling
 
 /** @Fui.Theme.Preset.Preset — what a named look fixes */
-export type Preset = { hue: Int, chroma: Int, radius: Int, density: Spacing.Density }
+export type Preset = { hue: Int, chroma: Int, radius: Int, density: Spacing.Density, look: Str }
 
 /// Every named preset; chroma is in hundredths and radius in pixels.
 export const PRESETS: Map[Str, Preset] = mapOf([
-    ("graphite", Preset{hue: 0, chroma: 0, radius: 10, density: Spacing.Comfortable}),
-    ("harbor", Preset{hue: 250, chroma: 14, radius: 10, density: Spacing.Comfortable}),
-    ("moss", Preset{hue: 150, chroma: 10, radius: 8, density: Spacing.Comfortable}),
-    ("ember", Preset{hue: 35, chroma: 15, radius: 12, density: Spacing.Comfortable}),
-    ("orchid", Preset{hue: 310, chroma: 15, radius: 14, density: Spacing.Spacious}),
-    ("sand", Preset{hue: 75, chroma: 8, radius: 6, density: Spacing.Compact})
+    ("graphite", Preset{hue: 0, chroma: 0, radius: 10, density: Spacing.Comfortable, look: "gentle"}),
+    ("harbor", Preset{hue: 250, chroma: 14, radius: 10, density: Spacing.Comfortable, look: "gentle"}),
+    ("moss", Preset{hue: 150, chroma: 10, radius: 8, density: Spacing.Comfortable, look: "gentle"}),
+    ("ember", Preset{hue: 35, chroma: 15, radius: 12, density: Spacing.Comfortable, look: "gentle"}),
+    ("orchid", Preset{hue: 310, chroma: 15, radius: 14, density: Spacing.Spacious, look: "gentle"}),
+    ("sand", Preset{hue: 75, chroma: 8, radius: 6, density: Spacing.Compact, look: "gentle"})
   ])
 
 /// The theme a preset describes.
 export fn theme(preset: &Preset) -> Theme.Theme {
+  let look = Option.unwrapOr(Looks.named(preset.look), [])
+
   Theme.defaults()
+    .look(look)
     .brand(Numbers.floatOf(preset.hue), Numbers.floatOf(preset.chroma) / 100.0)
     .radius(show(preset.radius) + "px")
     .density(preset.density)
@@ -59,7 +64,7 @@ fn densityOf(name: Str) -> Result[Spacing.Density, Str] {
 export fn decode(code: Str) -> Result[Preset, Str] {
   let pieces = code.split("-")
 
-  if pieces.length() != Limits.CODE_PARTS { return Err(Limits.BAD_SHAPE) }
+  if pieces.length() != Limits.CODE_PARTS && pieces.length() != Limits.CODE_PARTS_WITH_LOOK { return Err(Limits.BAD_SHAPE) }
 
   let hue = numberAfter(pieces[0], "h") ?
   let chroma = numberAfter(pieces[1], "c") ?
@@ -70,12 +75,16 @@ export fn decode(code: Str) -> Result[Preset, Str] {
   if chroma < 0 || chroma > Limits.MAXIMUM_CHROMA { return Err(Limits.BAD_CHROMA) }
   if radius < 0 { return Err(Limits.BAD_RADIUS) }
 
-  Ok(Preset{hue: hue, chroma: chroma, radius: radius, density: density})
+  let look = if pieces.length() == Limits.CODE_PARTS_WITH_LOOK { pieces[4] } else { Looks.DEFAULT }
+
+  if Looks.named(look) == None { return Err("unknown look '" + look + "'") }
+
+  Ok(Preset{hue: hue, chroma: chroma, radius: radius, density: density, look: look})
 }
 
 /// The code that spells a preset.
 export fn encode(preset: &Preset) -> Str {
-  "h" + show(preset.hue) + "-c" + show(preset.chroma) + "-r" + show(preset.radius) + "-" + Spelling.kebab(show(preset.density))
+  "h" + show(preset.hue) + "-c" + show(preset.chroma) + "-r" + show(preset.radius) + "-" + Spelling.kebab(show(preset.density)) + "-" + preset.look
 }
 
 /// The preset a name or a code picks, or why neither applies.

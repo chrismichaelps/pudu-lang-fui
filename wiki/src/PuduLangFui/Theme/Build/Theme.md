@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui/Theme/Build/Theme.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Styling]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.76
+depth_score: 0.81
 depth_status: DEEP
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, deep]
@@ -30,7 +30,8 @@ export type Theme = {
   elevation: Elevation.Elevation,
   motion: Motion.Motion,
   iconography: Iconography.Iconography,
-  extra: Array[(Str, Str)]
+  extra: Array[(Str, Str)],
+  look: Array[Css.LookRule]
 }
 
 export fn defaults() -> Theme
@@ -54,6 +55,8 @@ export trait Tuning {
 
   fn iconStroke(self: &Self, value: Str) -> Self
 
+  fn look(self: &Self, rules: Array[Css.LookRule]) -> Self
+
   fn token(self: &Self, name: Str, value: Str) -> Self
 }
 
@@ -68,7 +71,7 @@ export fn renderScoped(theme: &Theme, selector: Str) -> Str
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Theme/Aspects/Elevation]] · [[src/PuduLangFui/Theme/Aspects/Iconography]] · [[src/PuduLangFui/Theme/Aspects/Motion]] · [[src/PuduLangFui/Theme/Aspects/Palette]] · [[src/PuduLangFui/Theme/Aspects/Shape]] · [[src/PuduLangFui/Theme/Aspects/Spacing]] · [[src/PuduLangFui/Theme/Aspects/Typography]] · [[src/PuduLangFui/Theme/Base/Tokens]]
+- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Theme/Aspects/Elevation]] · [[src/PuduLangFui/Theme/Aspects/Iconography]] · [[src/PuduLangFui/Theme/Aspects/Motion]] · [[src/PuduLangFui/Theme/Aspects/Palette]] · [[src/PuduLangFui/Theme/Aspects/Shape]] · [[src/PuduLangFui/Theme/Aspects/Spacing]] · [[src/PuduLangFui/Theme/Aspects/Typography]] · [[src/PuduLangFui/Theme/Base/Tokens]] · [[src/PuduLangFui/Theme/Looks/Gentle]]
 
 ## Algorithm
 
@@ -85,7 +88,7 @@ export fn renderScoped(theme: &Theme, selector: Str) -> Str
 
 ## Depth
 
-DEPTH 0.76 (DEEP). Part of [[subsystems/Styling]], under [[grammar/pudu]].
+DEPTH 0.81 (DEEP). Part of [[subsystems/Styling]], under [[grammar/pudu]].
 
 ## Grill Log
 
@@ -94,4 +97,4 @@ DEPTH 0.76 (DEEP). Part of [[subsystems/Styling]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui]] · [[src/PuduLangFui/Cli/Commands/Doctor]] · [[src/PuduLangFui/Theme/Build/_MOC]] · [[src/PuduLangFui/Theme/Presets/Preset]]
+[[src/PuduLangFui]] · [[src/PuduLangFui/Cli/Commands/Doctor]] · [[src/PuduLangFui/Theme/Build/_MOC]] · [[src/PuduLangFui/Theme/Presets/Design]] · [[src/PuduLangFui/Theme/Presets/Preset]]

@@ -27,7 +27,7 @@ fn main() -> Int {
       Test.that("a behavior ships with its component", coded.contains("<script>") && coded.contains("code-block-copy")),
       Test.that("tokens always ship", bare.contains("--fui-primary:")),
       Test.that("no slots means no component rules", !bare.contains("@layer fui.components \{")),
-      Test.that("the layer order is declared first", plain.contains("@layer fui.base, fui.tokens, fui.components;")),
+      Test.that("the layer order is declared first", plain.contains("@layer fui.base, fui.tokens, fui.components, fui.looks;")),
       Test.that("a mode can be forced", forced.contains("data-mode=\"dark\"")),
       Test.that("the direction is written", forced.contains("dir=\"rtl\"")),
       Test.that("the language is written", forced.contains("lang=\"ar\"")),

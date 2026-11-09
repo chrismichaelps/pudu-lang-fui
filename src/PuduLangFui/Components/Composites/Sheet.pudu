@@ -3,6 +3,7 @@ module PuduLangFui.Components.Composites.Sheet
 
 import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Icon as Icon
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -21,7 +22,12 @@ export fn close(id: Str, given: Button.Props) -> H.Node {
 
 /// A panel named for assistive software.
 export fn sheet(id: Str, name: Str, side: Side) -> H.Node {
-  H.dialog().slot("sheet").id(id).at("closedby", "any").label(name).data("side", Core.spelled(side))
+  H.dialog().slot("sheet").id(id).at("closedby", "any").label(name).data("side", Core.spelled(side)).holding([closeIcon(id)])
+}
+
+/// The small control at the corner of a sheet.
+fn closeIcon(id: Str) -> H.Node {
+  Button.button(Button.props().variant(Button.Ghost).size(Button.IconSmall)).data("part", "sheet-close").label("Close").at("commandfor", id).at("command", "close").holding([Icon.icon(Icon.X)])
 }
 
 /// The sheet's headline.

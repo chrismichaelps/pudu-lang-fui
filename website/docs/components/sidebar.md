@@ -18,10 +18,15 @@ fui add sidebar
 ## Usage
 
 ```pudu
-Card.card().css("inline-size", "16rem").holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
-            Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
-            Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
-          ])])])
+Sidebar.provider("demo-sidebar").css("inline-size", "100%").css("min-block-size", "24rem").css("overflow", "hidden").holding([
+    Sidebar.sidebar().holding([
+        Sidebar.content().holding([Sidebar.group().holding([Sidebar.groupLabel().says("Planning"), Sidebar.menu().holding([
+                    Sidebar.menuItem().holding([Sidebar.menuButton("#", true).holding([Icon.icon(Icon.File), H.words("Documents")])]),
+                    Sidebar.menuItem().holding([Sidebar.menuButton("#").holding([Icon.icon(Icon.Calendar), H.words("Calendar")])])
+                  ])])])
+      ]),
+    Sidebar.inset().css("padding", "var(--fui-space-4)").holding([Sidebar.trigger("demo-sidebar")])
+  ])
 ```
 
 ## API
@@ -31,6 +36,7 @@ export type Side = Start | End
 export type Variant = Plain | Floating | Inset
 export fn provider(id: Str, collapsed: Bool = false) -> H.Node
 export fn trigger(id: Str) -> H.Node
+export fn overlay(id: Str) -> H.Node
 export fn sidebar() -> H.Node
 export fn header() -> H.Node
 export fn content() -> H.Node

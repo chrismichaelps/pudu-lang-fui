@@ -1,0 +1,12 @@
+export const DATA_URL = new URL("../../previews/create.json", import.meta.url);
+export const PREVIEW_ROOT = new URL("../../previews/", import.meta.url);
+export const FONT_SERVICE = "https://fonts.googleapis.com/css2";
+export const FONT_WEIGHTS = "wght@400;500;600;700";
+export const CODE_SEPARATOR = ".";
+export const CODE_PARAMETER = "design";
+export const HOME_ITEM = "home";
+export const INHERIT = "inherit";
+export const FIELDS = ["look", "base", "theme", "chart", "icons", "font", "heading", "radius", "menu", "accent"];
+export const LOOK_TITLES = { gentle: "Gentle", soft: "Soft", sharp: "Sharp", round: "Round", compact: "Compact", classic: "Classic", editorial: "Editorial", standard: "Standard" };
+export const PANEL_GAP = 8;
+export const SCREEN_MARGIN = 12;

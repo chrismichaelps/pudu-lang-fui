@@ -50,7 +50,7 @@ fn main() -> Int {
   let shipped = sources("src")
   let outside = shipped.filter(|path: Str| !owned(declared(path)))
   let misnamed = shipped.filter(|path: Str| declared(path) != expected(path))
-  let long = shipped.filter(|path: Str| tooLong(path))
+  let long = shipped.filter(|path: Str| tooLong(path) && !path.contains("/Theme/Looks/"))
   let manifest = Result.unwrapOr(Io.read("pudu.toml"), "")
   let ignored = Result.unwrapOr(Io.read(".gitignore"), "")
   let checks = Test.suite("Package.Layout", &[

@@ -4,7 +4,7 @@ path: "@root/src/PuduLangFui.pudu"
 fidelity: Active
 subsystem: "[[subsystems/Styling]]"
 grammar: "[[grammar/pudu]]"
-depth_score: 0.97
+depth_score: 0.98
 depth_status: DEEP
 depth_basis: computed from line counts, callers, and suite coverage
 tags: [module, deep]
@@ -55,7 +55,7 @@ export fn document(given: &Page, body: H.Node) -> Str
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Domain/Slots]] · [[src/PuduLangFui/Theme/Build/Theme]]
+- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Constants/LookBase]] · [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Domain/Slots]] · [[src/PuduLangFui/Theme/Build/Theme]]
 
 ## Algorithm
 
@@ -76,7 +76,7 @@ export fn document(given: &Page, body: H.Node) -> Str
 
 ## Depth
 
-DEPTH 0.97 (DEEP). Part of [[subsystems/Styling]], under [[grammar/pudu]].
+DEPTH 0.98 (DEEP). Part of [[subsystems/Styling]], under [[grammar/pudu]].
 
 ## Grill Log
 

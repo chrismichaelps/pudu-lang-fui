@@ -3,6 +3,7 @@ module PuduLangFui.Components.Patterns.Sidebar
 
 import Std.Html.Build as H
 import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.SidebarScript as Script
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 
@@ -14,13 +15,16 @@ export type Variant = Plain | Floating | Inset
 
 /// An application shell; `collapsed` renders it closed.
 export fn provider(id: Str, collapsed: Bool = false) -> H.Node {
-  Core.part("sidebar-provider").holding([H.input().kind("checkbox").slot("sidebar-state").id(id).flagIf(collapsed, "checked").at("aria-hidden", "true").at("tabindex", "-1")])
+  Core.part("sidebar-provider").holding([H.input().kind("checkbox").slot("sidebar-state").id(id).flagIf(collapsed, "checked").at("aria-hidden", "true").at("tabindex", "-1"), overlay(id)])
 }
 
 /// A control that opens and closes the sidebar `id`.
 export fn trigger(id: Str) -> H.Node {
   H.labelFor().slot("sidebar-trigger").at("for", id).label("Toggle sidebar").holding([Icon.icon(Icon.Menu)])
 }
+
+/// What sits behind an open sidebar on a small screen; pressing it closes the sidebar `id`.
+export fn overlay(id: Str) -> H.Node { H.labelFor().slot("sidebar-overlay").at("for", id).at("aria-hidden", "true") }
 
 /// The side panel.
 export fn sidebar() -> H.Node { H.aside().slot("sidebar") }
@@ -92,6 +96,7 @@ export fn styled(side: Side, variant: Variant, icons: Bool) -> H.Node {
 /// The styles of a sidebar.
 export fn style() -> Css.Block {
   Css.block("sidebar-provider", [
+      Css.behavior(Script.LINES.join("\n")),
       Css.base("--sidebar-width: 16rem; display: flex; min-block-size: 100dvh; background: $background"),
       Css.slot("sidebar-state", "position: absolute; opacity: 0; pointer-events: none"),
       Css.slot("sidebar-trigger", "display: inline-flex; align-items: center; justify-content: center; inline-size: $control-sm; block-size: $control-sm; border-radius: $radius-md; cursor: pointer"),
@@ -99,8 +104,10 @@ export fn style() -> Css.Block {
       Css.slot("sidebar", "display: flex; flex-direction: column; flex-shrink: 0; inline-size: var(--sidebar-width); background: $sidebar; color: $sidebar-foreground; border-inline-end: $border-width solid $sidebar-border; transition: margin-inline-start $duration-slow $ease-standard"),
       Css.rule("[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"]", "margin-inline-start: calc(var(--sidebar-width) * -1)"),
       Css.rule("[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:focus-visible) [data-slot=\"sidebar-trigger\"]", "outline: 2px solid $ring"),
-      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar\"]", "position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 40; margin-inline-start: calc(var(--sidebar-width) * -1)"),
-      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"]", "margin-inline-start: 0"),
+      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar\"]", "position: fixed; inset-block: 0; inset-inline-start: 0; z-index: 50; inline-size: 18rem; margin-inline-start: -18rem"),
+      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar-provider\"]:has(> [data-slot=\"sidebar-state\"]:checked) > [data-slot=\"sidebar\"]", "margin-inline-start: 0; box-shadow: $shadow-xl"),
+      Css.slot("sidebar-overlay", "display: none; position: fixed; inset: 0; z-index: 40; background: $backdrop"),
+      Css.within("@media (max-width: 48rem)", "[data-slot=\"sidebar-state\"]:checked ~ [data-slot=\"sidebar-overlay\"]", "display: block"),
       Css.slot("sidebar-header", "display: flex; flex-direction: column; gap: $space-2; padding: $space-2"),
       Css.slot("sidebar-content", "display: flex; flex: 1; flex-direction: column; gap: $space-2; min-block-size: 0; overflow: auto"),
       Css.slot("sidebar-footer", "display: flex; flex-direction: column; gap: $space-2; padding: $space-2"),

@@ -248,7 +248,7 @@ fn overlays() -> Array[H.Node] {
             AlertDialog.footer().holding([AlertDialog.cancel("erase", outline).says("Keep it"), AlertDialog.cancel("erase", Button.props().variant(Button.Destructive)).says("Delete")])
           ]),
         Sheet.trigger("panel", outline).says("Sheet"),
-        Sheet.sheet("panel", "Filters", Sheet.End).holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list."), Sheet.footer().holding([Sheet.close("panel", outline).says("Close")])]),
+        Sheet.sheet("panel", "Filters", Sheet.End).holding([Sheet.header().holding([Sheet.title().says("Filters"), Sheet.description().says("Narrow the list.")]), Sheet.footer().holding([Sheet.close("panel", outline).says("Close")])]),
         Drawer.trigger("tray", outline).says("Drawer"),
         Drawer.drawer("tray", "Details", Drawer.props().snapPoints(["0.4", "1"]), [Drawer.header().holding([Drawer.title().says("Details"), Drawer.description().says("Drag down to settle or dismiss.")]), Drawer.footer().holding([Drawer.close("tray", outline).says("Close")])]),
         Popover.opens(Button.button(outline), "pop").says("Popover"),

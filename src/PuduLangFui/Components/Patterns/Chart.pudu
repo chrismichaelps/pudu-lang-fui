@@ -1,233 +1,406 @@
-/** @Fui.Chart.Component — charts as inline SVG */
+/** @Fui.Chart.Component — charts drawn on the server */
 module PuduLangFui.Components.Patterns.Chart
 
 import Std.Html.Build as H
 import Std.List as List
+import Std.Math.Float as Float
+import Std.Option as Option
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
 import PuduLangFui.Utils.Numbers as Numbers
 
 /** @Fui.Chart.Kind — how values are drawn */
-export type Kind = Bars | Lines | Areas | Donut
+export type Kind = Bars | Lines | Areas | Donut | Pie
 
 /** @Fui.Chart.Series — one named run of values */
 export type Series = { name: Str, values: Array[Float64] }
 
-/// The width of the drawing box.
-const WIDTH: Float64 = 600.0
+/** @Fui.Chart.Drawing — what a chart draws from */
+type Drawing = { caption: Str, labels: Array[Str], series: Array[Series] }
 
-/// The height of the drawing box.
-const HEIGHT: Float64 = 240.0
+/// The width of a line drawing's box.
+const WIDTH: Float64 = 100.0
+
+/// The height of a line drawing's box.
+const HEIGHT: Float64 = 86.0
+
+/// The side of a circular drawing's box.
+const CIRCLE: Float64 = 200.0
 
 /// How many chart colors the theme has.
 const SERIES_COLORS: Int = 5
 
-/// The outer radius of a donut.
-const DONUT_RADIUS: Float64 = 90.0
+/// The outer radius of a circular drawing.
+const OUTER_RADIUS: Float64 = 90.0
 
-/// How many grid intervals a chart draws.
-const GRID_LINES: Int = 4
+/// The inner radius of a donut.
+const DONUT_RADIUS: Float64 = 58.0
 
-/// The stroke width of a donut.
-const DONUT_WIDTH: Float64 = 36.0
+/// The tangent scale that keeps a curve between its points.
+const CURVE_TENSION: Float64 = 3.0
 
 /// The renderer each kind uses.
-const RENDERERS: Map[Str, fn(&Array[Series]) -> Array[H.Node]] = mapOf([
+const RENDERERS: Map[Str, fn(&Drawing) -> H.Node] = mapOf([
     ("bars", bars),
     ("lines", lines),
     ("areas", areas),
-    ("donut", donut)
+    ("donut", donut),
+    ("pie", pie)
   ])
 
 /// A named run of values.
 export fn series(name: Str, values: Array[Float64]) -> Series { Series{name: name, values: values} }
 
-/// The chart color of the series at an index.
+/// The chart color at an index.
 fn colorOf(index: Int) -> Str { "var(--fui-chart-" + show((index % SERIES_COLORS) + 1) + ")" }
-
-/// A shade for one bar of many, lightest first.
-fn shadeOf(index: Int, count: Int) -> Str {
-  let position = if count > 1 { index * (SERIES_COLORS - 1) / (count - 1) } else { 0 }
-
-  colorOf(position)
-}
 
 /// The largest value across every series, one when there is nothing to scale by.
 fn peakOf(all: &Array[Series]) -> Float64 {
   var peak = 0.0
 
   for item in all {
-    for value in item.values { if value > peak { peak = value } }
+    for value in item.values {
+      if value > peak { peak = value }
+    }
   }
 
   if peak > 0.0 { peak } else { 1.0 }
 }
 
-/// The height a value reaches.
-fn scaled(value: Float64, peak: Float64) -> Float64 { HEIGHT - value / peak * HEIGHT }
+/// A value as a reader sees it, without a trailing zero.
+fn figure(value: Float64) -> Str {
+  let written = show(value)
 
-/// One bar for every value of the first series.
-fn bars(all: &Array[Series]) -> Array[H.Node] {
-  let first = List.first(all)
+  if written.endsWith(".0") { written.take(written.length() - 2) } else { written }
+}
 
-  match first {
-    case None => []
+/// The label at an index, or empty text.
+fn labelAt(labels: &Array[Str], index: Int) -> Str { Option.unwrapOr(List.get(labels, index), "") }
+
+/// The hover card of a point: its label over a row per series.
+fn tooltip(labels: &Array[Str], all: &Array[Series], index: Int) -> H.Node {
+  var rows: Array[H.Node] = []
+  var position = 0
+
+  for item in all {
+    if index < item.values.length() {
+      rows = rows.push(Core.part("chart-tooltip-row").holding([
+            Core.inline("chart-swatch").css("background", colorOf(position)),
+            Core.inline("chart-tooltip-name").says(item.name),
+            Core.inline("chart-tooltip-value").says(figure(item.values[index]))
+          ]))
+    }
+
+    position = position + 1
+  }
+
+  let heading = labelAt(labels, index)
+
+  Core.part("chart-tooltip").holding([if heading.isEmpty() { H.nothing() } else { Core.part("chart-tooltip-label").says(heading) }].concat(rows))
+}
+
+/// One column of a bar chart.
+fn barColumn(drawing: &Drawing, item: &Series, index: Int, peak: Float64) -> H.Node {
+  let value = item.values[index]
+  let percent = Numbers.fixed(value / peak * 100.0) + "%"
+  let count = item.values.length()
+  let shade = if count > 1 { index * (SERIES_COLORS - 1) / (count - 1) } else { 0 }
+  let label = labelAt(&drawing.labels, index)
+
+  Core.part("chart-bar-column").holding([
+      Core.part("chart-bar").css("height", percent).css("background", colorOf(shade)),
+      if label.isEmpty() { H.nothing() } else { Core.inline("chart-bar-label").says(label) },
+      tooltip(&drawing.labels, &drawing.series, index)
+    ])
+}
+
+/// Rounded columns, shaded from the lightest chart color to the darkest.
+fn bars(drawing: &Drawing) -> H.Node {
+  match List.first(&drawing.series) {
+    case None => Core.part("chart-bars")
     case Some(item) => {
-      let peak = peakOf(all)
-      let count = item.values.length()
-      let slot = WIDTH / Numbers.floatOf(if count > 0 { count } else { 1 })
-      var shapes: Array[H.Node] = []
+      let peak = peakOf(&drawing.series)
+      var columns: Array[H.Node] = []
       var index = 0
 
-      for value in item.values {
-        let top = scaled(value, peak)
-
-        shapes = shapes.push(H.tag("rect").at("x", Numbers.fixed(Numbers.floatOf(index) * slot + slot * 0.15)).at("y", Numbers.fixed(top)).at("width", Numbers.fixed(slot * 0.7)).at("height", Numbers.fixed(HEIGHT - top)).at("rx", "8").at("fill", shadeOf(index, count)).holding([H.tag("title").says(item.name + ": " + show(value))]))
+      while index < item.values.length() {
+        columns = columns.push(barColumn(drawing, &item, index, peak))
         index = index + 1
       }
 
-      shapes
+      Core.part("chart-bars").role("img").label(drawing.caption).holding(columns)
     }
   }
 }
 
-/// The point list of one series.
-fn pointsOf(item: &Series, peak: Float64) -> Array[Str] {
-  let count = item.values.length()
+/// A point of a line drawing.
+fn pointAt(index: Int, count: Int, value: Float64, peak: Float64) -> (Float64, Float64) {
   let step = WIDTH / Numbers.floatOf(if count > 1 { count - 1 } else { 1 })
-  var points: Array[Str] = []
+
+  (Numbers.floatOf(index) * step, HEIGHT - value / peak * (HEIGHT - 4.0))
+}
+
+/// The slope between two points.
+fn slope(left: (Float64, Float64), right: (Float64, Float64)) -> Float64 { (right[1] - left[1]) / (right[0] - left[0]) }
+
+/// The tangent at each point, flat at turning points so the curve never overshoots.
+fn tangents(points: &Array[(Float64, Float64)]) -> Array[Float64] {
+  var found: Array[Float64] = []
+  var index = 0
+
+  while index < points.length() {
+    let last = points.length() - 1
+    let before = if index > 0 { slope(points[index - 1], points[index]) } else { slope(points[0], points[1]) }
+    let after = if index < last { slope(points[index], points[index + 1]) } else { before }
+
+    found = found.push(if before * after <= 0.0 { 0.0 } else { (before + after) / 2.0 })
+    index = index + 1
+  }
+
+  found
+}
+
+/// A number written for a path.
+fn pathNumber(value: Float64) -> Str { Numbers.fixed(value) }
+
+/// The curve through the points, as path commands after the first point.
+fn curveThrough(points: &Array[(Float64, Float64)]) -> Str {
+  if points.length() < 2 { return "" }
+
+  let slopes = tangents(points)
+  var written: Array[Str] = []
+  var index = 0
+
+  while index < points.length() - 1 {
+    let (x0, y0) = points[index]
+    let (x1, y1) = points[index + 1]
+    let reach = (x1 - x0) / CURVE_TENSION
+    let first = pathNumber(x0 + reach) + " " + pathNumber(y0 + reach * slopes[index])
+    let second = pathNumber(x1 - reach) + " " + pathNumber(y1 - reach * slopes[index + 1])
+
+    written = written.push("C" + first + " " + second + " " + pathNumber(x1) + " " + pathNumber(y1))
+    index = index + 1
+  }
+
+  written.join(" ")
+}
+
+/// The points of one series.
+fn pointsOf(item: &Series, peak: Float64) -> Array[(Float64, Float64)] {
+  var points: Array[(Float64, Float64)] = []
   var index = 0
 
   for value in item.values {
-    points = points.push(Numbers.fixed(Numbers.floatOf(index) * step) + "," + Numbers.fixed(scaled(value, peak)))
+    points = points.push(pointAt(index, item.values.length(), value, peak))
     index = index + 1
   }
 
   points
 }
 
-/// One polyline per series.
-fn lines(all: &Array[Series]) -> Array[H.Node] {
-  let peak = peakOf(all)
-  var shapes: Array[H.Node] = []
+/// Horizontal guide lines across a line drawing.
+fn grid() -> Array[H.Node] {
+  [21.5, 43.0, 64.5].map(|level: Float64| H.tag("line").slot("chart-grid").at("x1", "0").at("x2", pathNumber(WIDTH)).at("y1", pathNumber(level)).at("y2", pathNumber(level)).at("vector-effect", "non-scaling-stroke"))
+}
+
+/// The stroke of one series.
+fn strokePath(path: Str, index: Int) -> H.Node {
+  H.tag("path").slot("chart-line").at("d", path).css("stroke", colorOf(index)).at("vector-effect", "non-scaling-stroke")
+}
+
+/// The moved-to start of a series path.
+fn startOf(points: &Array[(Float64, Float64)]) -> Str { "M" + pathNumber(points[0][0]) + " " + pathNumber(points[0][1]) + " " }
+
+/// Hover regions over a line drawing, one per point.
+fn hoverColumns(drawing: &Drawing) -> H.Node {
+  let count = Option.unwrapOr(Option.map(List.first(&drawing.series), |item: Series| item.values.length()), 0)
+  var columns: Array[H.Node] = []
   var index = 0
 
-  for item in all {
-    shapes = shapes.push(H.tag("polyline").at("points", pointsOf(&item, peak).join(" ")).at("fill", "none").at("stroke", colorOf(index)).at("stroke-width", "2").holding([H.tag("title").says(item.name)]))
+  while index < count {
+    columns = columns.push(Core.part("chart-hit").holding([tooltip(&drawing.labels, &drawing.series, index)]))
     index = index + 1
   }
 
-  shapes
+  Core.part("chart-hits").holding(columns)
 }
 
-/// One filled shape per series.
-fn areas(all: &Array[Series]) -> Array[H.Node] {
-  let peak = peakOf(all)
+/// Labels spread under a line drawing.
+fn axisLabels(labels: &Array[Str]) -> H.Node {
+  if labels.isEmpty() { return H.nothing() }
+
+  Core.part("chart-axis").holding(labels.map(|label: Str| H.span().says(label)))
+}
+
+/// A line drawing's frame around its shapes.
+fn lineFrame(drawing: &Drawing, shapes: Array[H.Node]) -> H.Node {
+  Core.part("chart-frame").holding([
+      Core.part("chart-plot").holding([
+          H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 100 86").at("preserveAspectRatio", "none").role("img").label(drawing.caption).holding(grid().concat(shapes)),
+          hoverColumns(drawing)
+        ]),
+      axisLabels(&drawing.labels)
+    ])
+}
+
+/// One smooth line per series.
+fn lines(drawing: &Drawing) -> H.Node {
+  let peak = peakOf(&drawing.series)
   var shapes: Array[H.Node] = []
   var index = 0
 
-  for item in all {
-    let closed = ["0," + Numbers.fixed(HEIGHT)].concat(pointsOf(&item, peak)).concat([Numbers.fixed(WIDTH) + "," + Numbers.fixed(HEIGHT)])
+  for item in drawing.series {
+    let points = pointsOf(&item, peak)
 
-    shapes = shapes.push(H.tag("polygon").at("points", closed.join(" ")).at("fill", colorOf(index)).at("fill-opacity", "0.35").at("stroke", colorOf(index)).holding([H.tag("title").says(item.name)]))
+    if points.length() > 1 { shapes = shapes.push(strokePath(startOf(&points) + curveThrough(&points), index)) }
+
     index = index + 1
   }
 
-  shapes
+  lineFrame(drawing, shapes)
 }
 
-/// One arc per value of the first series.
-fn donut(all: &Array[Series]) -> Array[H.Node] {
-  match List.first(all) {
-    case None => []
+/// One soft area under a smooth line per series, the largest drawn first.
+fn areas(drawing: &Drawing) -> H.Node {
+  let peak = peakOf(&drawing.series)
+  var shapes: Array[H.Node] = []
+  var index = 0
+
+  for item in drawing.series {
+    let points = pointsOf(&item, peak)
+
+    if points.length() > 1 {
+      let curve = startOf(&points) + curveThrough(&points)
+      let closed = curve + " L" + pathNumber(WIDTH) + " " + pathNumber(HEIGHT) + " L0 " + pathNumber(HEIGHT) + " Z"
+
+      shapes = shapes.push(H.tag("path").slot("chart-area").at("d", closed).css("fill", colorOf(index)))
+      shapes = shapes.push(strokePath(curve, index))
+    }
+
+    index = index + 1
+  }
+
+  lineFrame(drawing, shapes)
+}
+
+/// A point on a circle, clockwise from the top.
+fn onCircle(radius: Float64, turn: Float64) -> Str {
+  let angle = turn * 2.0 * Float.pi() - Float.pi() / 2.0
+
+  pathNumber(CIRCLE / 2.0 + radius * Float.cos(angle)) + " " + pathNumber(CIRCLE / 2.0 + radius * Float.sin(angle))
+}
+
+/// The ring segment between two turns; an inner radius of zero makes a wedge.
+fn segment(start: Float64, end: Float64, inner: Float64) -> Str {
+  let sweep = if end - start > 0.5 { "1" } else { "0" }
+  let outer = "M" + onCircle(OUTER_RADIUS, start) + " A" + pathNumber(OUTER_RADIUS) + " " + pathNumber(OUTER_RADIUS) + " 0 " + sweep + " 1 " + onCircle(OUTER_RADIUS, end)
+
+  if inner <= 0.0 { return outer + " L" + pathNumber(CIRCLE / 2.0) + " " + pathNumber(CIRCLE / 2.0) + " Z" }
+
+  outer + " L" + onCircle(inner, end) + " A" + pathNumber(inner) + " " + pathNumber(inner) + " 0 " + sweep + " 0 " + onCircle(inner, start) + " Z"
+}
+
+/// A full circle cannot be one arc, so a lone value is drawn as two halves.
+fn segments(start: Float64, end: Float64, inner: Float64) -> Str {
+  if end - start < 0.9999 { return segment(start, end, inner) }
+
+  segment(0.0, 0.5, inner) + " " + segment(0.5, 1.0, inner)
+}
+
+/// The segments of a circular drawing with the given inner radius.
+fn circular(drawing: &Drawing, inner: Float64) -> H.Node {
+  match List.first(&drawing.series) {
+    case None => Core.part("chart-circle")
     case Some(item) => {
       var total = 0.0
 
       for value in item.values { total = total + value }
 
-      if total <= 0.0 { return [] }
+      if total <= 0.0 { return Core.part("chart-circle") }
 
-      let circumference = 2.0 * 3.14159265 * DONUT_RADIUS
       var shapes: Array[H.Node] = []
-      var offset = 0.0
+      var start = 0.0
       var index = 0
 
       for value in item.values {
-        let length = value / total * circumference
+        let end = start + value / total
 
-        shapes = shapes.push(H.tag("circle").at("cx", Numbers.fixed(WIDTH / 2.0)).at("cy", Numbers.fixed(HEIGHT / 2.0)).at("r", Numbers.fixed(DONUT_RADIUS)).at("fill", "none").at("stroke", colorOf(index)).at("stroke-width", Numbers.fixed(DONUT_WIDTH)).at("stroke-dasharray", Numbers.fixed(length) + " " + Numbers.fixed(circumference - length)).at("stroke-dashoffset", Numbers.fixed(0.0 - offset)).holding([H.tag("title").says(show(value))]))
-        offset = offset + length
+        if value > 0.0 {
+          shapes = shapes.push(H.tag("path").slot("chart-segment").at("d", segments(start, end, inner)).css("fill", colorOf(index)).holding([H.tag("title").says(labelAt(&drawing.labels, index) + ": " + figure(value))]))
+        }
+
+        start = end
         index = index + 1
       }
 
-      shapes
+      Core.part("chart-circle").holding([H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 200 200").role("img").label(drawing.caption).holding(shapes)])
     }
   }
 }
 
-/// A chart of the series, named for assistive software.
-export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node {
-  let render = Core.picked(&RENDERERS, kind, lines)
+/// A ring of segments separated by the surface behind them.
+fn donut(drawing: &Drawing) -> H.Node { circular(drawing, DONUT_RADIUS) }
 
-  Core.part("chart").holding([
-      H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 " + Numbers.fixed(WIDTH) + " " + Numbers.fixed(HEIGHT)).role("img").label(caption).holding(render(&all)),
-      legend(&all)
-    ])
-}
+/// Wedges separated by the surface behind them.
+fn pie(drawing: &Drawing) -> H.Node { circular(drawing, 0.0) }
 
-/// The names of the series, with their colors.
-fn legend(all: &Array[Series]) -> H.Node {
+/// The names of the series, shown when there is more than one, or of each slice of a circle.
+fn legend(names: &Array[Str]) -> H.Node {
+  if names.length() < 2 { return H.nothing() }
+
   var entries: Array[H.Node] = []
   var index = 0
 
-  for item in all {
-    entries = entries.push(Core.inline("chart-legend-item").holding([Core.inline("chart-swatch").css("background", colorOf(index)), H.words(item.name)]))
+  for name in names {
+    entries = entries.push(Core.inline("chart-legend-item").holding([Core.inline("chart-swatch").css("background", colorOf(index)), H.words(name)]))
     index = index + 1
   }
 
   Core.part("chart-legend").holding(entries)
 }
 
-/// Horizontal grid lines across the drawing.
-fn gridLines() -> Array[H.Node] {
-  var drawn: Array[H.Node] = []
-  var step = 0
-
-  while step <= GRID_LINES {
-    let height = Numbers.fixed(HEIGHT * Numbers.floatOf(step) / Numbers.floatOf(GRID_LINES))
-
-    drawn = drawn.push(H.tag("line").slot("chart-grid").at("x1", "0").at("x2", Numbers.fixed(WIDTH)).at("y1", height).at("y2", height))
-    step = step + 1
-  }
-
-  drawn
-}
-
-/// Labels under the drawing.
-fn axisLabels(labels: &Array[Str]) -> H.Node {
-  Core.part("chart-axis").holding(labels.map(|label: Str| H.span().says(label)))
-}
-
-/// A chart with grid lines and labels under it.
+/// A chart with labels along its axis, or naming the slices of a circle.
 export fn labelled(kind: Kind, caption: Str, labels: Array[Str], all: Array[Series]) -> H.Node {
   let render = Core.picked(&RENDERERS, kind, lines)
+  let drawing = Drawing{caption: caption, labels: labels, series: all}
+  let circle = kind == Donut || kind == Pie
 
-  Core.part("chart").holding([
-      H.tag("svg").slot("chart-canvas").at("viewBox", "0 0 " + Numbers.fixed(WIDTH) + " " + Numbers.fixed(HEIGHT)).role("img").label(caption).holding(gridLines().concat(render(&all))),
-      axisLabels(&labels),
-      legend(&all)
-    ])
+  Core.part("chart").data("kind", Core.spelled(kind)).holding([render(&drawing), legend(if circle { &labels } else { &all.map(|item: Series| item.name) })])
 }
+
+/// A chart of the series, named for assistive software.
+export fn chart(kind: Kind, caption: Str, all: Array[Series]) -> H.Node { labelled(kind, caption, [], all) }
 
 /// The styles of a chart.
 export fn style() -> Css.Block {
   Css.block("chart", [
-      Css.base("display: flex; flex-direction: column; gap: $space-3"),
-      Css.slot("chart-canvas", "display: block; inline-size: 100%; block-size: auto"),
-      Css.slot("chart-legend", "display: flex; flex-wrap: wrap; justify-content: center; gap: $space-4; font-size: $text-xs; color: $muted-foreground"),
-      Css.slot("chart-legend-item", "display: inline-flex; align-items: center; gap: $space-1"),
-      Css.slot("chart-swatch", "inline-size: $space-2; block-size: $space-2; border-radius: $radius-xs"),
-      Css.slot("chart-grid", "stroke: $border; stroke-width: 1; stroke-dasharray: 3 3"),
-      Css.slot("chart-axis", "display: flex; justify-content: space-between; font-size: $text-xs; color: $muted-foreground")
+      Css.base("display: flex; flex-direction: column; gap: $space-3; inline-size: 100%; font-size: $text-xs"),
+      Css.slot("chart-bars", "display: flex; align-items: flex-end; gap: $space-3; inline-size: 100%; block-size: 200px"),
+      Css.slot("chart-bar-column", "position: relative; display: flex; flex: 1; flex-direction: column; justify-content: flex-end; gap: $space-2; block-size: 100%; min-inline-size: 0"),
+      Css.slot("chart-bar", "min-block-size: $space-2; border-radius: $radius-lg; transition: opacity $duration-fast $ease-standard"),
+      Css.slot("chart-bar-label", "text-align: center; color: $muted-foreground"),
+      Css.slot("chart-frame", "display: flex; flex-direction: column; gap: $space-2"),
+      Css.slot("chart-plot", "position: relative; aspect-ratio: 1 / 0.35"),
+      Css.slot("chart-canvas", "display: block; inline-size: 100%; block-size: 100%"),
+      Css.slot("chart-grid", "stroke: color-mix(in oklab, $border 50%, transparent); stroke-width: 1"),
+      Css.slot("chart-line", "fill: none; stroke-width: 1.5"),
+      Css.slot("chart-area", "opacity: 0.28; stroke: none"),
+      Css.slot("chart-hits", "position: absolute; inset: 0; display: flex"),
+      Css.slot("chart-hit", "position: relative; flex: 1"),
+      Css.slot("chart-axis", "display: flex; justify-content: space-between; color: $muted-foreground"),
+      Css.slot("chart-circle", "display: flex; justify-content: center"),
+      Css.rule("[data-slot=\"chart-circle\"] [data-slot=\"chart-canvas\"]", "aspect-ratio: 1; inline-size: auto; max-block-size: 250px"),
+      Css.slot("chart-segment", "stroke: $card; stroke-width: 5; stroke-linejoin: round; transition: opacity $duration-fast $ease-standard"),
+      Css.slotWhen("chart-segment", ":hover", "opacity: 0.85"),
+      Css.slot("chart-tooltip", "position: absolute; inset-block-end: calc(100% + $space-1); inset-inline-start: 50%; translate: -50% 0; z-index: 10; display: grid; gap: calc($unit * 1.5); min-inline-size: 8rem; padding: calc($unit * 1.5) calc($unit * 2.5); background: $popover; color: $popover-foreground; border-radius: $radius-xl; box-shadow: 0 0 0 1px color-mix(in oklab, $foreground 5%, transparent), $shadow-lg; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity $duration-fast $ease-standard"),
+      Css.rule(":is([data-slot=\"chart-bar-column\"], [data-slot=\"chart-hit\"]):hover > [data-slot=\"chart-tooltip\"]", "opacity: 1; visibility: visible"),
+      Css.rule("[data-slot=\"chart-hit\"]:hover", "background: linear-gradient(to right, transparent calc(50% - 0.5px), $border calc(50% - 0.5px), $border calc(50% + 0.5px), transparent calc(50% + 0.5px))"),
+      Css.slot("chart-tooltip-label", "font-weight: $weight-medium"),
+      Css.slot("chart-tooltip-row", "display: flex; align-items: center; gap: calc($unit * 1.5)"),
+      Css.slot("chart-tooltip-name", "color: $muted-foreground"),
+      Css.slot("chart-tooltip-value", "margin-inline-start: auto; font-family: $font-mono; font-weight: $weight-medium; font-variant-numeric: tabular-nums"),
+      Css.slot("chart-legend", "display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: $space-4; padding-block-start: $space-3; color: $muted-foreground"),
+      Css.slot("chart-legend-item", "display: inline-flex; align-items: center; gap: calc($unit * 1.5)"),
+      Css.slot("chart-swatch", "flex-shrink: 0; inline-size: $space-2; block-size: $space-2; border-radius: 2px")
     ])
 }

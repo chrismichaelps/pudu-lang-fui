@@ -184,3 +184,34 @@ export fn render(blocks: &Array[Block]) -> Str {
 
   if animations.isEmpty() { layer } else { animations.join("\n") + "\n" + layer }
 }
+
+/** @Fui.Domain.Css.LookRule — a slot, selector, declarations, and any at-rule */
+export type LookRule = (Str, Str, Str, Str)
+
+/// One look rule written out.
+fn renderLookRule(entry: &LookRule) -> Str {
+  var written = entry[1] + " \{ " + entry[2] + "; \}"
+
+  if entry[3].isEmpty() { return written }
+
+  let conditions = entry[3].split(Constant.LOOK_CONDITION_SEPARATOR)
+  var index = conditions.length() - 1
+
+  while index >= 0 {
+    written = conditions[index] + " \{ " + written + " \}"
+    index = index - 1
+  }
+
+  written
+}
+
+/// The look's rules for the slots given, or every rule when none are given.
+export fn renderLook(rules: &Array[LookRule], slots: &Set[Str], everything: Bool) -> Str {
+  var written: Array[Str] = []
+
+  for entry in rules {
+    if everything || slots.contains(entry[0]) { written = written.push(renderLookRule(&entry)) }
+  }
+
+  "@layer " + Constant.LOOK_LAYER + " \{\n" + written.join("\n") + "\n\}"
+}

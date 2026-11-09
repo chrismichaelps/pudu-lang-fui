@@ -10,7 +10,28 @@ import PuduLangFui.Theme.Aspects.Palette as Palette
 import PuduLangFui.Theme.Aspects.Spacing as Spacing
 import PuduLangFui.Theme.Audit.Contrast as Contrast
 import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Theme.Looks.Catalog as Looks
+import PuduLangFui.Theme.Presets.Design as Design
 import PuduLangFui.Theme.Presets.Preset as Preset
+
+/// How many times a piece of text appears.
+fn occurrences(text: &Str, piece: Str) -> Int { text.split(piece).length() - 1 }
+
+/// Whether every selector of a look closes what it opens, so no rule swallows those after it.
+fn balancedLook(name: Str) -> Bool {
+  match Looks.named(name) {
+    case None => false
+    case Some(rules) => {
+      var balanced = true
+
+      for rule in rules {
+        if occurrences(&rule[1], "(") != occurrences(&rule[1], ")") { balanced = false }
+      }
+
+      balanced
+    }
+  }
+}
 
 /// The value of a token, or nothing.
 fn valueOf(theme: &Theme.Theme, name: Str) -> Option[Str] {
@@ -54,9 +75,21 @@ fn sweepFindings() -> Array[Str] {
 fn main() -> Int {
   let base = Theme.defaults()
   let tuned = base.radius("0").density(Spacing.Compact).fonts("Inter", "Serif").textBase("15px").iconStroke("1.5").token("brand-glow", "red")
-  let code = "h264-c14-r10-compact"
+  let code = "h264-c14-r10-compact-gentle"
   let unreadable = Palette.Palette{..Palette.derived(0.0, 0.0), foreground: Color.pair(Color.oklch(1.0, 0.0, 0.0), Color.oklch(0.16, 0.0, 0.0))}
   let checks = Test.suite("Theme", &[
+      Test.that("a design code round-trips", Design.decode(Design.encode(&Design.initial())) == Ok(Design.initial())),
+      Test.that("a design code needs every part", Result.isErr(&Design.decode("gentle.neutral"))),
+      Test.that("a design code refuses an unknown part", Result.isErr(&Design.decode("gentle.neutral.neutral.neutral.lucide.nope.inherit.default.default.subtle"))),
+      Test.that("a chosen theme colors the primary", Theme.render(&Design.theme(&Design.Design{..Design.initial(), theme: "blue"})).contains("--fui-primary: light-dark(")),
+      Test.that("a chart color reaches the charts", Theme.render(&Design.theme(&Design.Design{..Design.initial(), chart: "rose"})).contains("--fui-chart-1: light-dark(")),
+      Test.that("an inverted menu is dark", Design.menuColorRules("inverted")[0][2].contains("color-scheme: dark")),
+      Test.that("a default menu adds nothing", Design.menuColorRules("default").isEmpty()),
+      Test.that("a bold accent adds a rule", !Design.menuAccentRules("bold").isEmpty()),
+      Test.that("a preset name still picks a theme", Result.isOk(&Design.themeFor("graphite"))),
+      Test.that("a design code picks a theme", Result.isOk(&Design.themeFor(Design.encode(&Design.initial())))),
+      Test.that("every look is well formed", Looks.names().filter(|name: Str| !balancedLook(name)).isEmpty()),
+      Test.that("an unknown look is absent", Looks.named("missing") == None),
       Test.that("a color token comes from its field", valueOf(&base, "primary-foreground") != None),
       Test.that("a digit field keeps its number", valueOf(&base, "chart-1") != None),
       Test.equals("the radius sets the base", &valueOf(&tuned, "radius"), &Some("0")),

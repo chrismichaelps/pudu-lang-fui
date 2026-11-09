@@ -1,0 +1,34 @@
+/** @Fui.Theme.Looks.Catalog.Module — every look by name */
+module PuduLangFui.Theme.Looks.Catalog
+
+import Std.Map as Map
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Theme.Looks.Classic as Classic
+import PuduLangFui.Theme.Looks.Compact as Compact
+import PuduLangFui.Theme.Looks.Editorial as Editorial
+import PuduLangFui.Theme.Looks.Gentle as Gentle
+import PuduLangFui.Theme.Looks.Round as Round
+import PuduLangFui.Theme.Looks.Sharp as Sharp
+import PuduLangFui.Theme.Looks.Soft as Soft
+import PuduLangFui.Theme.Looks.Standard as Standard
+
+/// The default look.
+export const DEFAULT: Str = "gentle"
+
+/// Every look by its name.
+const LOOKS: Map[Str, Array[Css.LookRule]] = mapOf([
+    ("soft", Soft.RULES),
+    ("sharp", Sharp.RULES),
+    ("round", Round.RULES),
+    ("compact", Compact.RULES),
+    ("classic", Classic.RULES),
+    ("gentle", Gentle.RULES),
+    ("editorial", Editorial.RULES),
+    ("standard", Standard.RULES)
+  ])
+
+/// The rules of a named look, if there is one.
+export fn named(name: Str) -> Option[Array[Css.LookRule]] { LOOKS.get(name) }
+
+/// Every look's name.
+export fn names() -> Array[Str] { Map.keys(&LOOKS) }

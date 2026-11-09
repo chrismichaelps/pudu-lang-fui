@@ -1,0 +1,126 @@
+/** @Fui.Constants.DesignOptions.Module — every choice a design can make */
+module PuduLangFui.Constants.DesignOptions
+
+/// The neutrals a palette starts from.
+export const BASE_COLORS: Array[Str] = ["neutral", "stone", "zinc", "mauve", "olive", "mist", "taupe"]
+
+/// The colors a theme or chart can take beyond the neutrals.
+export const ACCENT_COLORS: Array[Str] = ["amber", "blue", "cyan", "emerald", "fuchsia", "green", "indigo", "lime", "orange", "pink", "purple", "red", "rose", "sky", "teal", "violet", "yellow"]
+
+/// The families on offer, as value, title, and kind.
+export const FONTS: Array[(Str, Str, Str)] = [
+  ("geist", "Geist", "sans"),
+  ("inter", "Inter", "sans"),
+  ("noto-sans", "Noto Sans", "sans"),
+  ("nunito-sans", "Nunito Sans", "sans"),
+  ("figtree", "Figtree", "sans"),
+  ("roboto", "Roboto", "sans"),
+  ("raleway", "Raleway", "sans"),
+  ("dm-sans", "DM Sans", "sans"),
+  ("public-sans", "Public Sans", "sans"),
+  ("outfit", "Outfit", "sans"),
+  ("oxanium", "Oxanium", "sans"),
+  ("manrope", "Manrope", "sans"),
+  ("space-grotesk", "Space Grotesk", "sans"),
+  ("montserrat", "Montserrat", "sans"),
+  ("ibm-plex-sans", "IBM Plex Sans", "sans"),
+  ("source-sans-3", "Source Sans 3", "sans"),
+  ("instrument-sans", "Instrument Sans", "sans"),
+  ("jetbrains-mono", "JetBrains Mono", "mono"),
+  ("geist-mono", "Geist Mono", "mono"),
+  ("noto-serif", "Noto Serif", "serif"),
+  ("roboto-slab", "Roboto Slab", "serif"),
+  ("merriweather", "Merriweather", "serif"),
+  ("lora", "Lora", "serif"),
+  ("playfair-display", "Playfair Display", "serif"),
+  ("eb-garamond", "EB Garamond", "serif"),
+  ("instrument-serif", "Instrument Serif", "serif")
+]
+
+/// The heading choice that follows the body family.
+export const INHERIT: Str = "inherit"
+
+/// The radius choices, as name and value; an empty value keeps the look's own.
+export const RADII: Array[(Str, Str)] = [("default", ""), ("none", "0"), ("small", "0.45rem"), ("medium", "0.625rem"), ("large", "0.875rem")]
+
+/// The radius choice that keeps the look's own.
+export const DEFAULT_RADIUS: Str = "default"
+
+/// How menus are colored.
+export const MENU_COLORS: Array[Str] = ["default", "inverted", "default-translucent", "inverted-translucent"]
+
+/// How a highlighted menu entry is marked.
+export const MENU_ACCENTS: Array[Str] = ["subtle", "bold"]
+
+/// The icon libraries, as value, title, and collection prefix.
+export const ICON_LIBRARIES: Array[(Str, Str, Str)] = [("lucide", "Lucide", "lucide"), ("tabler", "Tabler", "tabler"), ("phosphor", "Phosphor", "ph"), ("remix", "Remix", "ri"), ("huge", "Huge", "hugeicons")]
+
+/// Each glyph's name in each icon library, in library order; empty where a library has no match.
+export const ICON_NAMES: Array[(Str, Array[Str])] = [
+  ("alert", ["triangle-alert", "alert-triangle", "warning", "alert-line", "alert-02"]),
+  ("arrow-down", ["arrow-down", "arrow-down", "arrow-down", "arrow-down-line", "arrow-down-02"]),
+  ("arrow-left", ["arrow-left", "arrow-left", "arrow-left", "arrow-left-line", "arrow-left-02"]),
+  ("arrow-right", ["arrow-right", "arrow-right", "arrow-right", "arrow-right-line", "arrow-right-02"]),
+  ("arrow-up", ["arrow-up", "arrow-up", "arrow-up", "arrow-up-line", "arrow-up-02"]),
+  ("book", ["book", "book", "book", "book-line", "book-02"]),
+  ("bot", ["bot", "robot", "robot", "robot-line", "bot"]),
+  ("calendar", ["calendar", "calendar", "calendar", "calendar-line", "calendar-03"]),
+  ("check", ["check", "check", "check", "check-line", "tick-02"]),
+  ("chevron-down", ["chevron-down", "chevron-down", "caret-down", "arrow-down-s-line", "arrow-down-01"]),
+  ("chevron-left", ["chevron-left", "chevron-left", "caret-left", "arrow-left-s-line", "arrow-left-01"]),
+  ("chevron-right", ["chevron-right", "chevron-right", "caret-right", "arrow-right-s-line", "arrow-right-01"]),
+  ("chevron-up", ["chevron-up", "chevron-up", "caret-up", "arrow-up-s-line", "arrow-up-01"]),
+  ("circle", ["circle", "circle", "circle", "circle-line", "circle"]),
+  ("clock", ["clock", "clock", "clock", "time-line", "clock-01"]),
+  ("code-brackets", ["code", "code", "code", "code-line", "code"]),
+  ("copy", ["copy", "copy", "copy", "file-copy-line", "copy-01"]),
+  ("edit", ["pencil", "pencil", "pencil", "pencil-line", "pencil-edit-01"]),
+  ("error-circle", ["circle-x", "circle-x", "x-circle", "close-circle-line", "cancel-circle"]),
+  ("external", ["external-link", "external-link", "arrow-square-out", "external-link-line", "link-square-02"]),
+  ("file", ["file", "file", "file", "file-line", "file-01"]),
+  ("flag", ["flag", "flag", "flag", "flag-line", "flag-02"]),
+  ("folder", ["folder", "folder", "folder", "folder-line", "folder-01"]),
+  ("globe", ["globe", "world", "globe", "global-line", "globe-02"]),
+  ("grip", ["grip-vertical", "grip-vertical", "dots-six-vertical", "draggable", "drag-drop-vertical"]),
+  ("image", ["image", "photo", "image", "image-line", "image-01"]),
+  ("info", ["info", "info-circle", "info", "information-line", "information-circle"]),
+  ("link", ["link", "link", "link", "link", "link-01"]),
+  ("list", ["list", "list", "list-bullets", "list-unordered", "left-to-right-list-bullet"]),
+  ("menu", ["menu", "menu-2", "list", "menu-line", "menu-01"]),
+  ("minus", ["minus", "minus", "minus", "subtract-line", "minus-sign"]),
+  ("moon", ["moon", "moon", "moon", "moon-line", "moon-02"]),
+  ("more", ["ellipsis", "dots", "dots-three", "more-line", "more-horizontal"]),
+  ("paperclip", ["paperclip", "paperclip", "paperclip", "attachment-line", "attachment-01"]),
+  ("plus", ["plus", "plus", "plus", "add-line", "plus-sign"]),
+  ("search", ["search", "search", "magnifying-glass", "search-line", "search-01"]),
+  ("send", ["send", "send", "paper-plane-tilt", "send-plane-line", "sent"]),
+  ("settings", ["settings", "settings", "gear", "settings-line", "settings-01"]),
+  ("spark", ["sparkles", "sparkles", "sparkle", "sparkling-line", "sparkles"]),
+  ("star", ["star", "star", "star", "star-line", "star"]),
+  ("stop", ["square", "square", "stop", "stop-line", "stop"]),
+  ("success", ["circle-check", "circle-check", "check-circle", "checkbox-circle-line", "checkmark-circle-02"]),
+  ("sun", ["sun", "sun", "sun", "sun-line", "sun-03"]),
+  ("terminal", ["terminal", "terminal-2", "terminal", "terminal-line", "command-line"]),
+  ("trash", ["trash-2", "trash", "trash", "delete-bin-line", "delete-02"]),
+  ("user", ["user", "user", "user", "user-line", "user"]),
+  ("wrench", ["wrench", "tool", "wrench", "tools-line", "wrench-01"]),
+  ("x", ["x", "x", "x", "close-line", "cancel-01"])
+]
+
+/// What separates the parts of a design code.
+export const CODE_SEPARATOR: Str = "."
+
+/// How many parts a design code has.
+export const CODE_PARTS: Int = 10
+
+/// The slots a menu's coloring reaches.
+export const MENU_SLOTS: Array[Str] = ["dropdown-menu", "context-menu", "menubar-menu"]
+
+/// The declarations of an inverted menu.
+export const MENU_INVERTED: Str = "color-scheme: dark"
+
+/// The declarations of a translucent menu.
+export const MENU_TRANSLUCENT: Str = "background-color: color-mix(in oklab, var(--fui-popover) 70%, transparent); backdrop-filter: blur(40px) saturate(150%)"
+
+/// The declarations of a boldly highlighted menu.
+export const MENU_BOLD: Str = "--fui-accent: var(--fui-primary); --fui-accent-foreground: var(--fui-primary-foreground)"

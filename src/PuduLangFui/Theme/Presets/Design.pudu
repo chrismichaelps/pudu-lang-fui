@@ -1,0 +1,174 @@
+/** @Fui.Theme.Design.Module — a complete set of design choices and its code */
+module PuduLangFui.Theme.Presets.Design
+
+import Std.List as List
+import Std.Option as Option
+import PuduLangFui.Constants.DesignOptions as Options
+import PuduLangFui.Constants.Swatches as Swatches
+import PuduLangFui.Domain.Css as Css
+import PuduLangFui.Theme.Build.Theme as Theme
+import PuduLangFui.Theme.Looks.Catalog as Looks
+import PuduLangFui.Theme.Presets.Preset as Preset
+
+/** @Fui.Theme.Design.Design — what the design chooses */
+export type Design = {
+  look: Str,
+  base: Str,
+  theme: Str,
+  chart: Str,
+  icons: Str,
+  font: Str,
+  heading: Str,
+  radius: Str,
+  menu: Str,
+  accent: Str
+}
+
+/// The design a project starts from.
+export fn initial() -> Design {
+  Design {
+    look: Looks.DEFAULT,
+    base: "neutral",
+    theme: "neutral",
+    chart: "neutral",
+    icons: "lucide",
+    font: "geist",
+    heading: Options.INHERIT,
+    radius: Options.DEFAULT_RADIUS,
+    menu: "default",
+    accent: "subtle"
+  }
+}
+
+/// The first items of tuples.
+fn firsts(entries: &Array[(Str, Str)]) -> Array[Str] { entries.map(|entry: (Str, Str)| entry[0]) }
+
+/// Every family's value.
+fn fontValues() -> Array[Str] { Options.FONTS.map(|entry: (Str, Str, Str)| entry[0]) }
+
+/// Every color a theme or chart may take.
+fn colors() -> Array[Str] { Options.BASE_COLORS.concat(Options.ACCENT_COLORS) }
+
+/// The name and allowed values of each part of a code, in order.
+fn parts() -> Array[(Str, Array[Str])] {
+  [
+    ("look", Looks.names()),
+    ("base color", Options.BASE_COLORS),
+    ("theme", colors()),
+    ("chart color", colors()),
+    ("icon library", Options.ICON_LIBRARIES.map(|entry: (Str, Str, Str)| entry[0])),
+    ("font", fontValues()),
+    ("heading font", [Options.INHERIT].concat(fontValues())),
+    ("radius", firsts(&Options.RADII)),
+    ("menu color", Options.MENU_COLORS),
+    ("menu accent", Options.MENU_ACCENTS)
+  ]
+}
+
+/// Why a code's part is refused, if it is.
+fn refusal(words: &Array[Str]) -> Option[Str] {
+  let allowed = parts()
+  var index = 0
+
+  for part in allowed {
+    if !part[1].contains(words[index]) { return Some("unknown " + part[0] + " '" + words[index] + "'") }
+
+    index = index + 1
+  }
+
+  None
+}
+
+/// The design a code such as `gentle.neutral.blue.blue.lucide.geist.inherit.default.default.subtle` spells, or why it spells none.
+export fn decode(code: Str) -> Result[Design, Str] {
+  let words = code.split(Options.CODE_SEPARATOR)
+
+  if words.length() != Options.CODE_PARTS { return Err("a design code has " + show(Options.CODE_PARTS) + " parts") }
+  if let Some(problem) = refusal(&words) { return Err(problem) }
+
+  Ok(Design{look: words[0], base: words[1], theme: words[2], chart: words[3], icons: words[4], font: words[5], heading: words[6], radius: words[7], menu: words[8], accent: words[9]})
+}
+
+/// The code that spells a design.
+export fn encode(design: &Design) -> Str {
+  [design.look, design.base, design.theme, design.chart, design.icons, design.font, design.heading, design.radius, design.menu, design.accent].join(Options.CODE_SEPARATOR)
+}
+
+/// A palette's tokens, none when it is unknown.
+fn swatch(name: Str) -> Array[(Str, Str, Str)] { Option.unwrapOr(Swatches.SWATCHES.get(name), []) }
+
+/// Whether a token belongs to the charts.
+fn isChart(entry: &(Str, Str, Str)) -> Bool { entry[0].startsWith("chart-") }
+
+/// The tokens of the design, each later entry overriding an earlier one of the same name.
+fn colorTokens(design: &Design) -> Array[(Str, Str, Str)] {
+  swatch(design.base)
+    .concat(swatch(design.theme).filter(|entry: (Str, Str, Str)| !isChart(&entry)))
+    .concat(swatch(design.chart).filter(|entry: (Str, Str, Str)| isChart(&entry)))
+}
+
+/// The rule of one declaration list on every menu slot.
+fn menuRules(declarations: Str) -> Array[Css.LookRule] {
+  Options.MENU_SLOTS.map(|slot: Str| (slot, "[data-slot=\"" + slot + "\"]", declarations, ""))
+}
+
+/// The rules a menu color adds.
+export fn menuColorRules(color: Str) -> Array[Css.LookRule] {
+  let inverted = if color.startsWith("inverted") { menuRules(Options.MENU_INVERTED) } else { [] }
+  let translucent = if color.endsWith("translucent") { menuRules(Options.MENU_TRANSLUCENT) } else { [] }
+
+  inverted.concat(translucent)
+}
+
+/// The rules a menu accent adds.
+export fn menuAccentRules(accent: Str) -> Array[Css.LookRule] {
+  if accent == "bold" { menuRules(Options.MENU_BOLD) } else { [] }
+}
+
+/// A family as a stack, by its title.
+fn stackOf(value: Str) -> Str {
+  match List.find(&Options.FONTS, |entry: (Str, Str, Str)| entry[0] == value) {
+    case Some(entry) => {
+      let fallback = if entry[2] == "sans" { "sans-serif" } else { entry[2] }
+
+      "'" + entry[1] + "', " + (if fallback == "mono" { "monospace" } else { fallback })
+    }
+    case None => "sans-serif"
+  }
+}
+
+/// The value of a radius choice, empty when the look's own stays.
+fn radiusValue(name: Str) -> Str {
+  match List.find(&Options.RADII, |entry: (Str, Str)| entry[0] == name) {
+    case Some(entry) => entry[1]
+    case None => ""
+  }
+}
+
+/// The theme a design describes.
+export fn theme(design: &Design) -> Theme.Theme {
+  let sans = stackOf(design.font)
+  let heading = if design.heading == Options.INHERIT { sans } else { stackOf(design.heading) }
+  let rules = Option.unwrapOr(Looks.named(design.look), []).concat(menuColorRules(design.menu)).concat(menuAccentRules(design.accent))
+  let shaped = if radiusValue(design.radius).isEmpty() { Theme.defaults() } else { Theme.defaults().radius(radiusValue(design.radius)) }
+  var built = shaped.look(rules).fonts(sans, heading)
+
+  for entry in colorTokens(design) {
+    built = built.token(entry[0], "light-dark(" + entry[1] + ", " + entry[2] + ")")
+  }
+
+  built
+}
+
+/// The theme a preset name, preset code, or design code picks, or why none applies.
+export fn themeFor(picked: Str) -> Result[Theme.Theme, Str] {
+  if picked.contains(Options.CODE_SEPARATOR) {
+    let design = decode(picked) ?
+
+    return Ok(theme(&design))
+  }
+
+  let preset = Preset.named(picked) ?
+
+  Ok(Preset.theme(&preset))
+}

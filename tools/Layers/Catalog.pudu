@@ -18,6 +18,7 @@ export const RANKS: Map[Str, Int] = mapOf([
     ("Core", 3),
     ("Cli/Model", 3),
     ("Theme/Base", 3),
+    ("Theme/Looks", 3),
     ("Theme/Aspects", 4),
     ("Theme/Audit", 5),
     ("Theme/Build", 5),
@@ -41,11 +42,12 @@ export const ALLOWED: Map[Str, Set[Str]] = mapOf([
     ("Domain", #{"Constants", "Utils", "Domain"}),
     ("Core", #{"Constants", "Utils", "Core"}),
     ("Cli/Model", #{"Constants", "Utils", "Domain", "Cli/Model"}),
+    ("Theme/Looks", #{"Domain", "Theme/Looks"}),
     ("Theme/Base", #{"Constants", "Utils", "Domain", "Theme/Base"}),
     ("Theme/Aspects", #{"Constants", "Utils", "Domain", "Theme/Base", "Theme/Aspects"}),
     ("Theme/Audit", #{"Constants", "Domain", "Theme/Aspects"}),
-    ("Theme/Build", #{"Constants", "Theme/Base", "Theme/Aspects"}),
-    ("Theme/Presets", #{"Constants", "Utils", "Theme/Aspects", "Theme/Build"}),
+    ("Theme/Build", #{"Constants", "Domain", "Theme/Base", "Theme/Aspects", "Theme/Looks"}),
+    ("Theme/Presets", #{"Constants", "Utils", "Domain", "Theme/Aspects", "Theme/Build", "Theme/Looks", "Theme/Presets"}),
     ("Root", #{"Constants", "Domain", "Theme/Build"}),
     ("Components/Primitives", #{"Constants", "Utils", "Domain", "Core"}),
     ("Components/Composites", #{"Constants", "Utils", "Domain", "Core", "Components/Primitives"}),
@@ -60,7 +62,7 @@ export const ALLOWED: Map[Str, Set[Str]] = mapOf([
 
 /// Folders that may not import effectful standard modules.
 export const PURE: Set[Str] = #{
-  "Constants", "Utils", "Domain", "Core", "Cli/Model", "Theme/Base", "Theme/Aspects", "Theme/Audit", "Theme/Build",
+  "Constants", "Utils", "Domain", "Core", "Cli/Model", "Theme/Base", "Theme/Looks", "Theme/Aspects", "Theme/Audit", "Theme/Build",
   "Theme/Presets", "Root", "Components/Primitives", "Components/Composites", "Components/Patterns", "Elements", "Blocks", "Catalog"
 }
 

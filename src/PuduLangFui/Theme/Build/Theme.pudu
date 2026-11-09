@@ -2,6 +2,7 @@
 module PuduLangFui.Theme.Build.Theme
 
 import PuduLangFui.Constants.Css as Constant
+import PuduLangFui.Domain.Css as Css
 import PuduLangFui.Theme.Aspects.Elevation as Elevation
 import PuduLangFui.Theme.Aspects.Iconography as Iconography
 import PuduLangFui.Theme.Aspects.Motion as Motion
@@ -10,6 +11,7 @@ import PuduLangFui.Theme.Aspects.Shape as Shape
 import PuduLangFui.Theme.Aspects.Spacing as Spacing
 import PuduLangFui.Theme.Aspects.Typography as Typography
 import PuduLangFui.Theme.Base.Tokens as Tokens
+import PuduLangFui.Theme.Looks.Gentle as Gentle
 
 /** @Fui.Theme.Theme.Theme — the seven design aspects */
 export type Theme = {
@@ -20,7 +22,8 @@ export type Theme = {
   elevation: Elevation.Elevation,
   motion: Motion.Motion,
   iconography: Iconography.Iconography,
-  extra: Array[(Str, Str)]
+  extra: Array[(Str, Str)],
+  look: Array[Css.LookRule]
 }
 
 /// A neutral theme with comfortable density.
@@ -33,7 +36,8 @@ export fn defaults() -> Theme {
     elevation: Elevation.defaults(),
     motion: Motion.of(Motion.Snappy),
     iconography: Iconography.defaults(),
-    extra: []
+    extra: [],
+    look: Gentle.RULES
   }
 }
 
@@ -66,6 +70,9 @@ export trait Tuning {
   /// Sets the icon stroke width.
   fn iconStroke(self: &Self, value: Str) -> Self
 
+  /// Replaces every part's appearance with a look.
+  fn look(self: &Self, rules: Array[Css.LookRule]) -> Self
+
   /// Adds or overrides any token.
   fn token(self: &Self, name: Str, value: Str) -> Self
 }
@@ -96,6 +103,8 @@ impl Tuning for Theme {
   fn iconStroke(self: &Self, value: Str) -> Self {
     Theme{..*self, iconography: Iconography.Iconography{..self.iconography, iconStroke: value}}
   }
+
+  fn look(self: &Self, rules: Array[Css.LookRule]) -> Self { Theme{..*self, look: rules} }
 
   fn token(self: &Self, name: Str, value: Str) -> Self { Theme{..*self, extra: self.extra.push((name, value))} }
 }

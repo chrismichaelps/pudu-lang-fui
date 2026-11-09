@@ -28,11 +28,15 @@ export const SLOT_ATTRIBUTE: Str
 
 export const LAYER_ORDER: Str
 
+export const LOOK_LAYER: Str
+
 export const COMPONENT_LAYER: Str
 
 export const BASE_LAYER: Str
 
 export const FOCUS_RING: Str
+
+export const LOOK_CONDITION_SEPARATOR: Str
 ```
 
 ### Linkage

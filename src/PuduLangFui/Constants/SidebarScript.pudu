@@ -1,0 +1,27 @@
+/** @Fui.Constants.SidebarScript.Module — keyboard and persistence of a sidebar */
+module PuduLangFui.Constants.SidebarScript
+
+/// The script, one line per entry.
+export const LINES: Array[Str] = [
+  "(function () \{",
+  "  var COOKIE = 'sidebar_state', MAX_AGE = 604800, MOBILE = 768;",
+  "  function states() \{ return Array.prototype.slice.call(document.querySelectorAll('[data-slot=sidebar-state]')); \}",
+  "  function isMobile() \{ return innerWidth < MOBILE; \}",
+  "  function remember(state) \{ document.cookie = COOKIE + '=' + !state.checked + '; path=/; max-age=' + MAX_AGE; \}",
+  "  if (!isMobile()) \{",
+  "    var saved = document.cookie.split('; ').filter(function (entry) \{ return entry.indexOf(COOKIE + '=') === 0; \})[0];",
+  "    if (saved) states().forEach(function (state) \{ state.checked = saved.split('=')[1] === 'false'; \});",
+  "  \}",
+  "  document.addEventListener('change', function (event) \{",
+  "    if (event.target.matches('[data-slot=sidebar-state]') && !isMobile()) remember(event.target);",
+  "  \});",
+  "  document.addEventListener('keydown', function (event) \{",
+  "    var list = states();",
+  "    if (event.key === 'b' && (event.metaKey || event.ctrlKey)) \{",
+  "      event.preventDefault();",
+  "      list.forEach(function (state) \{ state.checked = !state.checked; if (!isMobile()) remember(state); \});",
+  "    \}",
+  "    if (event.key === 'Escape' && isMobile()) list.forEach(function (state) \{ state.checked = false; \});",
+  "  \});",
+  "\})();"
+]

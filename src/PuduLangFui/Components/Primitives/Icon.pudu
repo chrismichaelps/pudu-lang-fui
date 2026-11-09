@@ -77,7 +77,7 @@ export fn icon(glyph: Glyph) -> H.Node { sized(glyph, Medium) }
 export fn sized(glyph: Glyph, size: Size) -> H.Node {
   let drawing = Option.unwrapOr(GLYPHS.get(Core.spelled(glyph)), "")
 
-  H.Node{name: "svg", attributes: [("data-slot", "icon"), ("data-size", Core.spelled(size)), ("viewBox", "0 0 24 24"), ("aria-hidden", "true"), ("fill", "none"), ("stroke", "currentColor"), ("stroke-linecap", "round"), ("stroke-linejoin", "round")], children: []}.raw(drawing)
+  H.Node{name: "svg", attributes: [("data-slot", "icon"), ("data-icon", Core.spelled(glyph)), ("data-size", Core.spelled(size)), ("viewBox", "0 0 24 24"), ("aria-hidden", "true"), ("fill", "none"), ("stroke", "currentColor"), ("stroke-linecap", "round"), ("stroke-linejoin", "round")], children: []}.raw(drawing)
 }
 
 /// The styles of an icon.

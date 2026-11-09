@@ -2,7 +2,7 @@
 module PuduLangFui.Constants.Fonts
 
 /// The system font stack for running text.
-export const SANS: Str = "ui-sans-serif, system-ui, sans-serif"
+export const SANS: Str = "Geist, ui-sans-serif, system-ui, sans-serif"
 
 /// The system font stack for code.
-export const MONO: Str = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+export const MONO: Str = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"

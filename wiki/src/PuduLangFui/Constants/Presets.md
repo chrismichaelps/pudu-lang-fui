@@ -24,6 +24,8 @@ The limits and refusal messages of preset codes.
 ```pudu
 export const CODE_PARTS: Int
 
+export const CODE_PARTS_WITH_LOOK: Int
+
 export const MAXIMUM_HUE: Int
 
 export const MAXIMUM_CHROMA: Int

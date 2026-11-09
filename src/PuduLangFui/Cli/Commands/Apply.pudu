@@ -8,7 +8,7 @@ import PuduLangFui.Cli.Model.Config as Config
 import PuduLangFui.Cli.Model.Outcome as Outcome
 import PuduLangFui.Cli.Workspace.Project as Project
 import PuduLangFui.Constants.Cli as Constant
-import PuduLangFui.Theme.Presets.Preset as Preset
+import PuduLangFui.Theme.Presets.Design as Design
 
 /// The theme's text with its preset line replaced.
 export fn withPreset(text: Str, preset: Str) -> Str {
@@ -30,7 +30,7 @@ export fn run(context: &Context.Context) -> Outcome.Outcome {
 
   let picked = context.invocation.words[0]
 
-  if let Err(problem) = Preset.named(picked) { return Outcome.failed([problem]) }
+  if let Err(problem) = Design.themeFor(picked) { return Outcome.failed([problem]) }
 
   let project = match Project.load(context.directory) {
     case Ok(found) => found

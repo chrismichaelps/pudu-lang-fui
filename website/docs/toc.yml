@@ -8,5 +8,7 @@
   href: elements/
 - name: Blocks
   href: blocks/
+- name: Create
+  href: create.md
 - name: GitHub
   href: https://github.com/chrismichaelps/pudu-lang-fui

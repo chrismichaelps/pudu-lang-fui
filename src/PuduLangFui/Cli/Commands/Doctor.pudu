@@ -10,16 +10,16 @@ import PuduLangFui.Cli.Model.Outcome as Outcome
 import PuduLangFui.Cli.Workspace.Project as Project
 import PuduLangFui.Theme.Audit.Contrast as Contrast
 import PuduLangFui.Theme.Build.Theme as Theme
-import PuduLangFui.Theme.Presets.Preset as Preset
+import PuduLangFui.Theme.Presets.Design as Design
 
 /// Every token the default theme names.
 fn knownTokens() -> Set[Str] { setOf(Theme.tokens(&Theme.defaults()).map(|entry: (Str, Str)| entry[0])) }
 
 /// What the contrast audit finds in the project's preset.
 fn contrastProblems(preset: Str) -> Array[Str] {
-  match Preset.named(preset) {
+  match Design.themeFor(preset) {
     case Err(problem) => ["preset: " + problem]
-    case Ok(found) => Contrast.audit(&Preset.theme(&found).color).map(|finding: Contrast.Finding| "contrast: " + finding.pairing + " in " + finding.mode + " mode is " + show(finding.ratio))
+    case Ok(found) => Contrast.audit(&found.color).map(|finding: Contrast.Finding| "contrast: " + finding.pairing + " in " + finding.mode + " mode is " + show(finding.ratio))
   }
 }
 

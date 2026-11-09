@@ -8,7 +8,10 @@ export const TOKEN_PREFIX: Str = "--fui-"
 export const SLOT_ATTRIBUTE: Str = "data-slot"
 
 /// The order of the cascade layers.
-export const LAYER_ORDER: Str = "@layer fui.base, fui.tokens, fui.components;"
+export const LAYER_ORDER: Str = "@layer fui.base, fui.tokens, fui.components, fui.looks;"
+
+/// The layer a look's rules are written into, which follows the components.
+export const LOOK_LAYER: Str = "fui.looks"
 
 /// The layer component rules are written into.
 export const COMPONENT_LAYER: Str = "fui.components"
@@ -18,3 +21,6 @@ export const BASE_LAYER: Str = "@layer fui.base \{\n[data-slot], [data-slot]::be
 
 /// The shared focus ring, for a condition's declarations.
 export const FOCUS_RING: Str = "outline: 2px solid transparent; border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"
+
+/// What separates the nested conditions of a look rule.
+export const LOOK_CONDITION_SEPARATOR: Str = " | "

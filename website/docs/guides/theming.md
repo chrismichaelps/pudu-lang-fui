@@ -22,6 +22,10 @@ Theme.defaults().brand(264.0, 0.14).radius("0.75rem").density(Spacing.Compact)
 | `iconStroke(value)` | Iconography | Sets the stroke width. |
 | `token(name, value)` | Any | Adds or overrides a token. |
 
+## Create
+
+The [Create page](../create.md) lets you choose a style, base color, theme, chart color, fonts, icon library, radius, and menu treatment against a live preview. It gives you a readable design code that `fui init --preset` and `fui apply` accept.
+
 ## Presets
 
 ```bash
