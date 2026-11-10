@@ -5,10 +5,10 @@ description: Add the package and set your project up.
 
 # Installation
 
-Add the package to a Pudu project:
+Add the package to a Pudu project. Name the version, since a release that is only days old is refused without it:
 
 ```bash
-pudu install @chrismichaelps/pudu-lang-fui
+pudu install @chrismichaelps/pudu-lang-fui@0.1.0
 ```
 
 Build the generator once, so `fui` is a command you can run:

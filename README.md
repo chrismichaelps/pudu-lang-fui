@@ -35,7 +35,7 @@ fn confirm() -> H.Node {
 ## Installing
 
 ```bash
-pudu install @chrismichaelps/pudu-lang-fui
+pudu install @chrismichaelps/pudu-lang-fui@0.1.0
 pudu build deps/@chrismichaelps/pudu-lang-fui/tools/Fui.pudu -o fui
 ./fui init
 ./fui add dialog

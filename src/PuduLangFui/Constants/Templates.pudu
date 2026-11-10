@@ -15,7 +15,7 @@ export const THEME: Array[Str] = [
   "/// This project's theme. Chain any tuning after the preset.",
   "export fn theme() -> Theme.Theme \{",
   "  match Design.themeFor(PRESET) \{",
-  "    case Ok(theme) => theme",
+  "    case Ok(found) => found",
   "    case Err(_) => Theme.defaults()",
   "  \}",
   "\}"

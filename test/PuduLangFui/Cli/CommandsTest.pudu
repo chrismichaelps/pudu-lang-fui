@@ -65,6 +65,7 @@ fn inProject(project: Str, package: Str) -> Array[Test.Check] {
     Test.equals("init succeeds", &set.status, &0),
     Test.equals("init will not repeat", &again.status, &1),
     Test.that("the theme holds the preset", theme.contains("const PRESET: Str = \"harbor\"")),
+    Test.that("the theme does not shadow its own function", theme.contains("case Ok(found) => found") && !theme.contains("Ok(theme)")),
     Test.equals("add succeeds", &added.status, &0),
     Test.that("dependencies are added first", added.lines.length() == 3 && added.lines[2].contains("Dialog.pudu")),
     Test.that("the module is rewritten", dialog.contains("module Ui.Composites.Dialog")),
