@@ -6,7 +6,7 @@ import Std.Html as Html
 import PuduLangFui.Core.Styling as Core
 
 /** @Fui.Core.Tree.Role — what a node is, whatever shows it */
-export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter
+export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter | Range
 
 /** @Fui.Core.Tree.Child — what a node holds, in order */
 export type Child = Words(Str) | Nested(Tree) | Markup(Html.Html)
@@ -16,6 +16,10 @@ export type Tree = { role: Role, part: Str, facts: Array[(Str, Str)], flags: Arr
 
 /// A node of `role` whose web form starts as `dress`.
 export fn of(role: Role, dress: H.Node) -> Tree { Tree{role: role, part: "", facts: [], flags: [], dress: dress, children: []} }
+
+/// The node with a fact a presenter reads that its web dress already says
+/// another way, such as a nested control's state or a plain attribute.
+export fn noted(node: &Tree, name: Str, value: Str) -> Tree { Tree{..*node, facts: node.facts.push((name, value))} }
 
 /// The node with `child` after what it already holds.
 export fn nests(node: &Tree, child: Tree) -> Tree { Tree{..*node, children: node.children.push(Nested(child))} }

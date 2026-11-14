@@ -3,12 +3,16 @@ module PuduLangFui.Components.Primitives.Textarea
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// A text area with the given name, identified by that name.
-export fn textarea(name: Str, invalid: Bool = false) -> H.Node {
-  H.textarea().slot("textarea").id(name).name(name).atIf(invalid, "aria-invalid", "true")
+/// A text area with the given name, identified by that name, as a tree node.
+export fn textareaTree(name: Str, invalid: Bool = false) -> Tree.Tree {
+  Tree.of(Tree.Field, H.textarea()).slot("textarea").id(name).name(name).atIf(invalid, "aria-invalid", "true")
 }
+
+/// A multi-line field with the given name, identified by that name.
+export fn textarea(name: Str, invalid: Bool = false) -> H.Node { Tree.web(&textareaTree(name, invalid)) }
 
 /// The styles of a text area.
 export fn style() -> Css.Block {

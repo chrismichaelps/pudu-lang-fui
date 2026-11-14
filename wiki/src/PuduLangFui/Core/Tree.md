@@ -25,13 +25,15 @@ the HTML presenter now and a native presenter later. See [[domain/Tree]] and
 ### Signatures
 
 ```pudu
-export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter
+export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter | Range
 
 export type Child = Words(Str) | Nested(Tree) | Markup(Html.Html)
 
 export type Tree = { role: Role, part: Str, facts: Array[(Str, Str)], flags: Array[Str], dress: H.Node, children: Array[Child] }
 
 export fn of(role: Role, dress: H.Node) -> Tree
+
+export fn noted(node: &Tree, name: Str, value: Str) -> Tree
 
 export fn nests(node: &Tree, child: Tree) -> Tree
 
@@ -41,6 +43,8 @@ impl H.Building for Tree
 
 impl Core.Styling for Tree
 ```
+
+`noted` records a fact for presenters without touching the web dress, for meaning the dress already expresses another way (a nested control's state, a plain attribute).
 
 `nests` is also a method through the Composing trait: `node.nests(child)`.
 
@@ -53,7 +57,7 @@ impl Core.Styling for Tree
 
 1. `of` builds a tree with the role, an empty part, no facts, no flags, no children, and the dress.
 2. Each building and styling call writes the dress in call order, exactly as on `H.Node`.
-3. `slot` also sets `part`. `data` also appends a fact. `flag`, `flagIf`, `disabled`, `checked`, and
+3. `slot` also sets `part`. `data` also appends a fact, and `noted` appends one without changing the dress. `flag`, `flagIf`, `disabled`, `checked`, and
    `required` also record a flag.
 4. `says` appends `Words`. `holds` and `holding` append `Markup`. `nests` appends `Nested`.
 5. `web` writes the dress with the children presented in order. `html()` is `web(...)` rendered as HTML.
@@ -78,7 +82,7 @@ Not yet measured. The module is active under [[subsystems/Components]], under [[
 
 test/PuduLangFui/Core/TreeTest.pudu holds 19 checks: a tree renders exactly as the same calls on an element; role, part, facts and flags are recorded; children keep their order and kind; conditional children are added only when held; every attribute, form and styling method keeps the element's spelling.
 
-test/PuduLangFui/Components/TreeFormsTest.pudu holds 23 checks: every tree form renders exactly as its element function and carries the role, part and facts a presenter reads.
+test/PuduLangFui/Components/TreeFormsTest.pudu holds 37 checks: every tree form renders exactly as its element function and carries the role, part and facts a presenter reads.
 
 ## Grill Log
 
@@ -96,7 +100,9 @@ test/PuduLangFui/Components/TreeFormsTest.pudu holds 23 checks: every tree form 
   **A:** The published compiler dispatches a trait method by the bare type name, so a second `Node`
   implementing the building trait would run the wrong implementation. `Std.Html.Build` already has
   `Node`. _Rejected:_ relying on a compiler fix that is not released.
+- **Q:** Why `noted` instead of recording meaning through the chain?
+  **A:** Recording through the chain writes an attribute, which would change the HTML; some meaning is already in the dress in another form. _Rejected:_ an extra data attribute for each such fact.
 
 ## Referenced by
 
-[[src/PuduLangFui/Core/_MOC]] · [[domain/Tree]] · [[decisions/ADR-0013-one-tree-many-presenters]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Label]] · [[src/PuduLangFui/Components/Primitives/Badge]] · [[src/PuduLangFui/Components/Primitives/Separator]] · [[src/PuduLangFui/Components/Primitives/Switch]] · [[src/PuduLangFui/Components/Primitives/Checkbox]] · [[src/PuduLangFui/Components/Primitives/Progress]] · [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Components/Primitives/Card]] · [[handoffs/2026-11-14-one-tree]]
+[[src/PuduLangFui/Core/_MOC]] · [[domain/Tree]] · [[decisions/ADR-0013-one-tree-many-presenters]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Label]] · [[src/PuduLangFui/Components/Primitives/Badge]] · [[src/PuduLangFui/Components/Primitives/Separator]] · [[src/PuduLangFui/Components/Primitives/Switch]] · [[src/PuduLangFui/Components/Primitives/Checkbox]] · [[src/PuduLangFui/Components/Primitives/Progress]] · [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Components/Primitives/Card]] · [[src/PuduLangFui/Components/Primitives/Skeleton]] · [[src/PuduLangFui/Components/Primitives/Textarea]] · [[src/PuduLangFui/Components/Primitives/Kbd]] · [[src/PuduLangFui/Components/Primitives/AspectRatio]] · [[src/PuduLangFui/Components/Primitives/Slider]] · [[src/PuduLangFui/Components/Primitives/Toggle]] · [[src/PuduLangFui/Components/Primitives/Avatar]] · [[src/PuduLangFui/Components/Primitives/Empty]] · [[handoffs/2026-11-14-one-tree]]

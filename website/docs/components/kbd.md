@@ -27,8 +27,14 @@ H.div().css("display", "flex").css("flex-direction", "column").css("align-items"
 ## API
 
 ```pudu
-/// One key with the given caption.
+/// One key with the given caption, as a tree node.
+export fn keyTree(caption: Str) -> Tree.Tree
+
+/// A key showing `caption`.
 export fn key(caption: Str) -> H.Node
+
+/// Keys pressed together, as a tree node.
+export fn groupTree() -> Tree.Tree
 
 /// Keys pressed together.
 export fn group() -> H.Node

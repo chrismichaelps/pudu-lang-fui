@@ -7,7 +7,7 @@ tags: [changelog]
 
 ## 2026-11-14 — Core tree
 
-- Core/Tree: the neutral tree with the building and styling chains; Button answers tree forms and its element functions are their web views, with every preview unchanged. Label, Badge, Separator, Switch, Checkbox, Progress, Input and Card answer tree forms too; the roles add Divider and Meter. Refs #1.
+- Core/Tree: the neutral tree with the building and styling chains; Button answers tree forms and its element functions are their web views, with every preview unchanged. Label, Badge, Separator, Switch, Checkbox, Progress, Input and Card answer tree forms too; the roles add Divider and Meter. Skeleton, Textarea, Kbd, AspectRatio, Slider, Toggle, Avatar and Empty answer tree forms; `Tree.noted` records meaning the web dress expresses another way; the roles add Range. Refs #1.
 
 ## 2026-11-14 — One tree, many presenters
 

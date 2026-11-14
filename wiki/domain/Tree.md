@@ -9,7 +9,7 @@ aliases: [Tree]
 - **Definition:** The value a component's tree form answers: a record of what the component means,
   built once per call and read by every presenter. Implemented as `PuduLangFui.Core.Tree.Tree`.
 - **Role:** The kind of control or content the tree is, one of action, text, heading, group, field,
-  switch, choice, image, link, region, divider, or meter.
+  switch, choice, image, link, region, divider, meter, or range (an adjustable value).
 - **Part:** The [[domain/Slot]] name of the tree, set by `slot`.
 - **Facts:** The data values of the tree, such as [[domain/Variant]] and size, as name and value pairs
   set by `data`.

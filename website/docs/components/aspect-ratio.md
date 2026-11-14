@@ -24,7 +24,10 @@ AspectRatio.aspectRatio("16 / 9").css("inline-size", "24rem").css("background", 
 ## API
 
 ```pudu
-/// A frame of the given width-to-height ratio, written as in `16 / 9`.
+/// A frame of the given width-to-height ratio, written as in `16 / 9`, as a tree node.
+export fn aspectRatioTree(ratio: Str) -> Tree.Tree
+
+/// A frame keeping `ratio`, such as `16 / 9`.
 export fn aspectRatio(ratio: Str) -> H.Node
 
 /// The styles of a frame.

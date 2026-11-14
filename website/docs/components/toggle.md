@@ -33,6 +33,9 @@ export type Size = Small | Medium | Large
 /// A toggle of the given size.
 export fn sized(toggled: H.Node, size: Size) -> H.Node
 
+/// A toggle submitting `value` under `name` while pressed, as a tree node.
+export fn toggleTree(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> Tree.Tree
+
 /// A toggle submitting `value` under `name` while pressed.
 export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node
 

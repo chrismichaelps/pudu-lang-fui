@@ -23,7 +23,7 @@ the HTML is identical by construction. Retiring the `H.Node` names is a later de
 component has a tree form.
 
 A tree holds what it means: a role (action, text, heading, group, field, switch, choice, image, link,
-region, divider, meter), its part (the slot), its facts (the data values such as variant and size), its flags, and its
+region, divider, meter, or range, an adjustable value), its part (the slot), its facts (the data values such as variant and size), its flags, and its
 children in order (words, nested trees, or markup). It also holds a web dress: the element and
 attributes the HTML presenter writes, in the order they were set.
 

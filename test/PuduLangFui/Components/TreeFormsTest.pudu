@@ -4,15 +4,23 @@ module PuduLangFui.Components.TreeFormsTest
 import Std.Html.Build as H
 import Std.Io as Io
 import Std.Test as Test
+import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
+import PuduLangFui.Components.Primitives.Avatar as Avatar
 import PuduLangFui.Components.Primitives.Badge as Badge
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Card as Card
 import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Empty as Empty
 import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Kbd as Kbd
 import PuduLangFui.Components.Primitives.Label as Label
 import PuduLangFui.Components.Primitives.Progress as Progress
 import PuduLangFui.Components.Primitives.Separator as Separator
+import PuduLangFui.Components.Primitives.Skeleton as Skeleton
+import PuduLangFui.Components.Primitives.Slider as Slider
 import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Components.Primitives.Toggle as Toggle
 import PuduLangFui.Core.Tree as Tree
 
 /// A tree form's web view, rendered.
@@ -47,6 +55,20 @@ fn main() -> Int {
       Test.equals("a card tree is a group with its size", &meaning(Card.sizedTree(Card.Compact)), &("Group card " + show([("size", "compact")]))),
       Test.equals("a card title is a heading", &show(Card.titleTree().role), &"Heading"),
       Test.equals("a card description is text", &show(Card.descriptionTree().role), &"Text"),
+      Test.equals("an avatar tree renders as the avatar", &web(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small)), &H.render(&Avatar.avatar("/a.png", "Ada", "AL", Avatar.Small))),
+      Test.equals("an avatar tree is an image holding its fallback and image", &(show(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small).role) + " " + show(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small).children.length())), &"Image 2"),
+      Test.equals("initials render as themselves", &web(Avatar.initialsTree("AL", "Ada", Avatar.Large)), &H.render(&Avatar.initials("AL", "Ada", Avatar.Large))),
+      Test.equals("avatar parts render as their elements", &(web(Avatar.groupTree()) + web(Avatar.badgeTree()) + web(Avatar.countTree("+3"))), &(H.render(&Avatar.group()) + H.render(&Avatar.badge()) + H.render(&Avatar.count("+3")))),
+      Test.equals("a skeleton tree renders as the placeholder", &web(Skeleton.skeletonTree()), &H.render(&Skeleton.skeleton())),
+      Test.equals("a textarea tree renders as the textarea", &web(Textarea.textareaTree("notes", true)), &H.render(&Textarea.textarea("notes", true))),
+      Test.equals("a key tree renders as the key", &(web(Kbd.keyTree("K")) + web(Kbd.groupTree())), &(H.render(&Kbd.key("K")) + H.render(&Kbd.group()))),
+      Test.equals("an aspect ratio tree renders as the frame", &web(AspectRatio.aspectRatioTree("16 / 9")), &H.render(&AspectRatio.aspectRatio("16 / 9"))),
+      Test.equals("a slider tree renders as the slider", &web(Slider.sliderTree("volume", 30, 0, 50)), &H.render(&Slider.slider("volume", 30, 0, 50))),
+      Test.equals("a slider tree is a range noting its value and bounds", &meaning(Slider.sliderTree("volume", 30, 0, 50)), &("Range slider " + show([("value", "30"), ("minimum", "0"), ("maximum", "50")]))),
+      Test.equals("a toggle tree renders as the toggle", &web(Toggle.toggleTree("bold", "on", true, Toggle.Outline)), &H.render(&Toggle.toggle("bold", "on", true, Toggle.Outline))),
+      Test.equals("a toggle tree notes whether it is pressed", &meaning(Toggle.toggleTree("bold", "on", true, Toggle.Outline)), &("Switch toggle " + show([("variant", "outline"), ("pressed", "true")]))),
+      Test.equals("empty parts render as their elements", &(web(Empty.emptyTree()) + web(Empty.headerTree()) + web(Empty.mediaTree()) + web(Empty.titleTree()) + web(Empty.descriptionTree()) + web(Empty.contentTree())), &(H.render(&Empty.empty()) + H.render(&Empty.header()) + H.render(&Empty.media()) + H.render(&Empty.title()) + H.render(&Empty.description()) + H.render(&Empty.content()))),
+      Test.equals("an empty title is a heading", &show(Empty.titleTree().role), &"Heading"),
       Test.equals("card parts render as their elements", &(web(Card.headerTree()) + web(Card.actionTree()) + web(Card.contentTree()) + web(Card.footerTree())), &(H.render(&Card.header()) + H.render(&Card.action()) + H.render(&Card.content()) + H.render(&Card.footer())))
     ])
   let report = Test.run(&checks)

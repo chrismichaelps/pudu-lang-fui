@@ -112,7 +112,7 @@ fn main() -> Int {
   let shared = [
     Test.that("search finds by description", search.lines.length() >= 2),
     Test.that("view prints source", view.lines[0].contains("module PuduLangFui.Components.Primitives.Kbd")),
-    Test.that("docs print the surface", docs.lines.contains("export fn group() -> H.Node \{ Core.inline(\"kbd-group\") \}")),
+    Test.that("docs print the surface", docs.lines.contains("export fn group() -> H.Node \{ Tree.web(&groupTree()) \}")),
     Test.equals("docs need a name", &unnamed.status, &1),
     Test.equals("presets are listed", &presets.lines.length(), &6),
     Test.that("a code is decoded", decoded.lines[0] == "hue 264"),

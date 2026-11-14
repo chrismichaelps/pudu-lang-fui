@@ -27,7 +27,10 @@ H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fu
 ## API
 
 ```pudu
-/// A placeholder, sized by the caller with `.css` or a class.
+/// A placeholder, sized by the caller with `.css` or a class, as a tree node.
+export fn skeletonTree() -> Tree.Tree
+
+/// A placeholder shown while content loads.
 export fn skeleton() -> H.Node
 
 /// The styles of a placeholder.

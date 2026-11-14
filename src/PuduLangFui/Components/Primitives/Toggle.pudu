@@ -3,6 +3,7 @@ module PuduLangFui.Components.Primitives.Toggle
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Toggle.Variant — how a toggle is drawn */
@@ -14,12 +15,17 @@ export type Size = Small | Medium | Large
 /// A toggle of the given size.
 export fn sized(toggled: H.Node, size: Size) -> H.Node { toggled.data("size", Core.spelled(size)) }
 
-/// A toggle submitting `value` under `name` while pressed.
-export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node {
-  H.labelFor().slot("toggle").data("variant", Core.spelled(variant)).holding([
+/// A toggle submitting `value` under `name` while pressed, as a tree node.
+export fn toggleTree(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> Tree.Tree {
+  let made = Tree.of(Tree.Switch, H.labelFor()).slot("toggle").data("variant", Core.spelled(variant)).holding([
       H.input().kind("checkbox").name(name).value(value).flagIf(pressed, "checked")
     ])
+
+  Tree.noted(&made, "pressed", if pressed { "true" } else { "false" })
 }
+
+/// A toggle submitting `value` under `name` while pressed.
+export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node { Tree.web(&toggleTree(name, value, pressed, variant)) }
 
 /// The styles of a toggle.
 export fn style() -> Css.Block {
