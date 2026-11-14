@@ -13,6 +13,8 @@ node a chain for attributes and content.
 
 ## Decision
 
+Extended by [[decisions/ADR-0013-one-tree-many-presenters]]: each component also answers a tree form; its `H.Node` functions are views of it.
+
 A component takes its `Props` record, or a closed choice when it has one prop, and answers an `H.Node`. Content and attributes are
 added with the standard chain: `Button.button(Button.props().size(Button.Small)).id("x").says("Go")`.
 A [[domain/Part]] with nothing to configure takes no argument.
@@ -36,4 +38,4 @@ Predicted: a typical call fits one line. Actual is measured by the examples.
 
 ## Referenced by
 
-[[decisions/_MOC]] · [[grammar/pudu]] · [[handoffs/2026-11-09-initial-system]] · [[subsystems/Components]]
+[[decisions/_MOC]] · [[decisions/ADR-0013-one-tree-many-presenters]] · [[grammar/pudu]] · [[handoffs/2026-11-09-initial-system]] · [[subsystems/Components]] · [[src/PuduLangFui/Core/Tree]]

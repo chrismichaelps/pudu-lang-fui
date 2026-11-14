@@ -13,4 +13,4 @@ aliases: [Props, Prop]
 
 ## Referenced by
 
-[[domain/Component]] · [[domain/_MOC]]
+[[domain/Component]] · [[domain/_MOC]] · [[domain/Tree]]

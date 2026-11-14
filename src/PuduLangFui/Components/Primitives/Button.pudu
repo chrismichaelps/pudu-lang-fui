@@ -3,6 +3,7 @@ module PuduLangFui.Components.Primitives.Button
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Button.Variant — how loud a button reads */
@@ -37,25 +38,34 @@ impl Configuring for Props {
   fn disabled(self: &Self) -> Self { Props{..*self, disabled: true} }
 }
 
-/// The slot and data attributes a node needs to read as a button.
-fn dressed(node: H.Node, given: &Props) -> H.Node {
+/// The part and facts a node needs to read as a button.
+fn dressed(node: Tree.Tree, given: &Props) -> Tree.Tree {
   node.slot("button").data("variant", Core.spelled(given.variant)).data("size", Core.spelled(given.size))
 }
 
-/// A button that does nothing until something is attached to it.
-export fn button(given: Props) -> H.Node {
-  dressed(H.button().kind("button"), &given).flagIf(given.disabled, "disabled")
+/// A button that does nothing until something is attached to it, as a tree node.
+export fn buttonTree(given: Props) -> Tree.Tree {
+  dressed(Tree.of(Tree.Action, H.button().kind("button")), &given).flagIf(given.disabled, "disabled")
 }
+
+/// A button that submits its form, as a tree node.
+export fn submitTree(given: Props) -> Tree.Tree {
+  dressed(Tree.of(Tree.Action, H.button().submit()), &given).flagIf(given.disabled, "disabled")
+}
+
+/// A link that reads as a button, as a tree node.
+export fn linkTree(target: Str, given: Props) -> Tree.Tree {
+  dressed(Tree.of(Tree.Link, H.a().href(target)), &given).atIf(given.disabled, "aria-disabled", "true")
+}
+
+/// A button that does nothing until something is attached to it.
+export fn button(given: Props) -> H.Node { Tree.web(&buttonTree(given)) }
 
 /// A button that submits its form.
-export fn submit(given: Props) -> H.Node {
-  dressed(H.button().submit(), &given).flagIf(given.disabled, "disabled")
-}
+export fn submit(given: Props) -> H.Node { Tree.web(&submitTree(given)) }
 
 /// A link that reads as a button.
-export fn link(target: Str, given: Props) -> H.Node {
-  dressed(H.a().href(target), &given).atIf(given.disabled, "aria-disabled", "true")
-}
+export fn link(target: Str, given: Props) -> H.Node { Tree.web(&linkTree(target, given)) }
 
 /// The styles of a button.
 export fn style() -> Css.Block {

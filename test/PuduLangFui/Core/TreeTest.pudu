@@ -1,0 +1,58 @@
+/** @Test.Core.TreeTest.Suite — a tree renders as its chain would, and keeps its meaning */
+module PuduLangFui.Core.TreeTest
+
+import Std.Html.Build as H
+import Std.Html as Html
+import Std.Io as Io
+import Std.Result as Result
+import Std.Test as Test
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
+
+/// The same calls on an element.
+fn plain() -> H.Node {
+  H.button().kind("button").slot("button").data("variant", "primary").css("color", "red").flag("disabled").id("go").says("Go")
+}
+
+/// The same calls on a tree.
+fn tree() -> Tree.Tree {
+  Tree.of(Tree.Action, H.button()).kind("button").slot("button").data("variant", "primary").css("color", "red").flag("disabled").id("go").says("Go")
+}
+
+/// A tree's web form, rendered.
+fn rendered(node: Tree.Tree) -> Str { H.render(&Tree.web(&node)) }
+
+/// Runs the suite.
+fn main() -> Int {
+  let built = tree()
+  let inner = Tree.of(Tree.Text, H.span()).slot("label").says("Inner")
+  let mixed = Tree.of(Tree.Group, H.div()).says("a").nests(inner).holds(Html.text("b")).holding([H.em().says("c")]).raw("<i>d</i>")
+  let checks = Test.suite("Core.Tree", &[
+      Test.equals("a tree renders as the same calls on an element", &rendered(built), &H.render(&plain())),
+      Test.equals("html is the web form", &Html.render(&built.html()), &H.render(&plain())),
+      Test.equals("a node keeps its role", &show(built.role), &"Action"),
+      Test.equals("a slot is the part", &built.part, &"button"),
+      Test.equals("data are facts in order", &show(Tree.of(Tree.Text, H.span()).data("a", "1").data("b", "2").facts), &show([("a", "1"), ("b", "2")])),
+      Test.equals("a flag is recorded", &built.flags, &["disabled"]),
+      Test.equals("required, disabled and checked are flags", &Tree.of(Tree.Field, H.input()).required().disabled().checked().flags, &["required", "disabled", "checked"]),
+      Test.equals("a false flagIf records nothing", &Tree.of(Tree.Field, H.input()).flagIf(false, "disabled").flags, &[]),
+      Test.equals("a held flagIf records the flag", &Tree.of(Tree.Field, H.input()).flagIf(true, "disabled").flags, &["disabled"]),
+      Test.equals("children keep their order and kind", &rendered(mixed), &"<div>a<span data-slot=\"label\">Inner</span>b<em>c</em><i>d</i></div>"),
+      Test.equals("a nested node stays a tree", &mixed.children.length(), &5),
+      Test.equals("a false when adds nothing", &rendered(Tree.of(Tree.Group, H.div()).when(false, H.p())), &"<div></div>"),
+      Test.equals("a held when adds the element", &rendered(Tree.of(Tree.Group, H.div()).when(true, H.p())), &"<div><p></p></div>"),
+      Test.equals("a built child is built only when held", &rendered(Tree.of(Tree.Group, H.div()).whenBuilt(true, || H.hr())), &"<div><hr /></div>"),
+      Test.equals("attributes keep the element's spelling", &rendered(Tree.of(Tree.Link, H.a()).href("/x").title("t").target("_self").rel("next").lang("es").label("L").role("link")), &H.render(&H.a().href("/x").title("t").target("_self").rel("next").lang("es").label("L").role("link"))),
+      Test.equals("form attributes keep the element's spelling", &rendered(Tree.of(Tree.Field, H.input()).name("n").value("v").placeholder("p").src("s").alt("a").class("c").at("x", "y")), &H.render(&H.input().name("n").value("v").placeholder("p").src("s").alt("a").class("c").at("x", "y"))),
+      Test.equals("form controls keep their spelling", &rendered(Tree.of(Tree.Region, H.form()).action("/a").method("post").submit().rows(2).cols(3)), &H.render(&H.form().action("/a").method("post").submit().rows(2).cols(3))),
+      Test.equals("styling keeps the element's spelling", &rendered(Tree.of(Tree.Group, H.div()).classes("a").token("radius", "0").atIf(true, "k", "v").atIf(false, "no", "no").anchors("a").anchoredTo("b")), &H.render(&H.div().classes("a").token("radius", "0").atIf(true, "k", "v").atIf(false, "no", "no").anchors("a").anchoredTo("b"))),
+      Test.that("a checked attribute is accepted", Result.isOk(&Tree.of(Tree.Group, H.div()).atChecked("title", "fine")))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

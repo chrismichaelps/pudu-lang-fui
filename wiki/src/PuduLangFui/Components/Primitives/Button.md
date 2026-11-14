@@ -40,6 +40,12 @@ export trait Configuring {
 
 impl Configuring for Props
 
+export fn buttonTree(given: Props) -> Tree.Tree
+
+export fn submitTree(given: Props) -> Tree.Tree
+
+export fn linkTree(target: Str, given: Props) -> Tree.Tree
+
 export fn button(given: Props) -> H.Node
 
 export fn submit(given: Props) -> H.Node
@@ -49,9 +55,15 @@ export fn link(target: Str, given: Props) -> H.Node
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`buttonTree`, `submitTree` and `linkTree` answer `Tree.Tree` (roles Action, Action and Link) with the
+part `button` and facts `variant` and `size`. `button`, `submit` and `link` are their web views:
+`button(given) = Tree.web(&buttonTree(given))`, and likewise for the other two.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 
