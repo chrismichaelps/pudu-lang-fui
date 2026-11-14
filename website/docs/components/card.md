@@ -27,6 +27,30 @@ loginCard(["Login to your account", "Enter your email below to login to your acc
 /// How much padding a card keeps.
 export type Size = Regular | Compact
 
+/// A card with regular padding, as a tree node.
+export fn cardTree() -> Tree.Tree
+
+/// A card with the given padding, as a tree node.
+export fn sizedTree(size: Size) -> Tree.Tree
+
+/// The card's opening: title, description, and any action, as a tree node.
+export fn headerTree() -> Tree.Tree
+
+/// The card's title, as a tree node.
+export fn titleTree() -> Tree.Tree
+
+/// Supporting text under the title, as a tree node.
+export fn descriptionTree() -> Tree.Tree
+
+/// A control placed at the end of the header, as a tree node.
+export fn actionTree() -> Tree.Tree
+
+/// The card's body, as a tree node.
+export fn contentTree() -> Tree.Tree
+
+/// The card's closing row, as a tree node.
+export fn footerTree() -> Tree.Tree
+
 /// A card with regular padding.
 export fn card() -> H.Node
 

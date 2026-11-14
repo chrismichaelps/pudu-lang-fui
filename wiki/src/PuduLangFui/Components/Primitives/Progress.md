@@ -22,14 +22,21 @@ Completion of a task.
 ### Signatures
 
 ```pudu
+export fn progressTree(value: Int, maximum: Int, caption: Str) -> Tree.Tree
+
 export fn progress(value: Int, maximum: Int, caption: Str) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`progressTree` answers `Tree.Tree` with the role Meter and the part `progress`. `progress` is its web
+view: `progress(value, maximum, caption) = Tree.web(&progressTree(value, maximum, caption))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

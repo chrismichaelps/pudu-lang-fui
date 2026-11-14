@@ -3,12 +3,16 @@ module PuduLangFui.Components.Primitives.Switch
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// A switch with the given name, identified by that name.
-export fn switcher(name: Str, on: Bool = false, disabled: Bool = false) -> H.Node {
-  H.input().slot("switch").kind("checkbox").role("switch").id(name).name(name).flagIf(on, "checked").flagIf(disabled, "disabled")
+/// A switch with the given name, identified by that name, as a tree node.
+export fn switcherTree(name: Str, on: Bool = false, disabled: Bool = false) -> Tree.Tree {
+  Tree.of(Tree.Switch, H.input()).slot("switch").kind("checkbox").role("switch").id(name).name(name).flagIf(on, "checked").flagIf(disabled, "disabled")
 }
+
+/// A switch with the given name, identified by that name.
+export fn switcher(name: Str, on: Bool = false, disabled: Bool = false) -> H.Node { Tree.web(&switcherTree(name, on, disabled)) }
 
 /// The styles of a switch.
 export fn style() -> Css.Block {

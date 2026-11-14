@@ -6,7 +6,7 @@ import Std.Html as Html
 import PuduLangFui.Core.Styling as Core
 
 /** @Fui.Core.Tree.Role — what a node is, whatever shows it */
-export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region
+export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter
 
 /** @Fui.Core.Tree.Child — what a node holds, in order */
 export type Child = Words(Str) | Nested(Tree) | Markup(Html.Html)

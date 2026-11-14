@@ -24,14 +24,21 @@ A small label in seven treatments.
 ```pudu
 export type Variant = Primary | Secondary | Outline | Ghost | Link | Destructive | Success | Warning | Info
 
+export fn badgeTree(variant: Variant) -> Tree.Tree
+
 export fn badge(variant: Variant) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`badgeTree` answers `Tree.Tree` with the role Text, the part `badge` and the fact `variant`. `badge` is
+its web view: `badge(variant) = Tree.web(&badgeTree(variant))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

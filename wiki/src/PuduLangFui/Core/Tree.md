@@ -25,7 +25,7 @@ the HTML presenter now and a native presenter later. See [[domain/Tree]] and
 ### Signatures
 
 ```pudu
-export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region
+export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter
 
 export type Child = Words(Str) | Nested(Tree) | Markup(Html.Html)
 
@@ -78,6 +78,8 @@ Not yet measured. The module is active under [[subsystems/Components]], under [[
 
 test/PuduLangFui/Core/TreeTest.pudu holds 19 checks: a tree renders exactly as the same calls on an element; role, part, facts and flags are recorded; children keep their order and kind; conditional children are added only when held; every attribute, form and styling method keeps the element's spelling.
 
+test/PuduLangFui/Components/TreeFormsTest.pudu holds 23 checks: every tree form renders exactly as its element function and carries the role, part and facts a presenter reads.
+
 ## Grill Log
 
 - **Q:** Why keep the dress instead of computing attributes from facts?
@@ -97,4 +99,4 @@ test/PuduLangFui/Core/TreeTest.pudu holds 19 checks: a tree renders exactly as t
 
 ## Referenced by
 
-[[src/PuduLangFui/Core/_MOC]] · [[domain/Tree]] · [[decisions/ADR-0013-one-tree-many-presenters]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[handoffs/2026-11-14-one-tree]]
+[[src/PuduLangFui/Core/_MOC]] · [[domain/Tree]] · [[decisions/ADR-0013-one-tree-many-presenters]] · [[src/PuduLangFui/Components/Primitives/Button]] · [[src/PuduLangFui/Components/Primitives/Label]] · [[src/PuduLangFui/Components/Primitives/Badge]] · [[src/PuduLangFui/Components/Primitives/Separator]] · [[src/PuduLangFui/Components/Primitives/Switch]] · [[src/PuduLangFui/Components/Primitives/Checkbox]] · [[src/PuduLangFui/Components/Primitives/Progress]] · [[src/PuduLangFui/Components/Primitives/Input]] · [[src/PuduLangFui/Components/Primitives/Card]] · [[handoffs/2026-11-14-one-tree]]

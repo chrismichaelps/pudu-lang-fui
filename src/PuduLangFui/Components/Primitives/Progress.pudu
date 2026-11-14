@@ -3,12 +3,16 @@ module PuduLangFui.Components.Primitives.Progress
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// A bar at `value` out of `maximum`, named for assistive software.
-export fn progress(value: Int, maximum: Int, caption: Str) -> H.Node {
-  H.progress().slot("progress").at("value", show(value)).at("max", show(maximum)).label(caption)
+/// A bar at `value` out of `maximum`, named for assistive software, as a tree node.
+export fn progressTree(value: Int, maximum: Int, caption: Str) -> Tree.Tree {
+  Tree.of(Tree.Meter, H.progress()).slot("progress").at("value", show(value)).at("max", show(maximum)).label(caption)
 }
+
+/// A bar at `value` out of `maximum`, named for assistive software.
+export fn progress(value: Int, maximum: Int, caption: Str) -> H.Node { Tree.web(&progressTree(value, maximum, caption)) }
 
 /// The styles of a bar.
 export fn style() -> Css.Block {

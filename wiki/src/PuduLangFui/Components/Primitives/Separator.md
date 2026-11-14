@@ -24,6 +24,10 @@ A divider, horizontal or vertical.
 ```pudu
 export type Orientation = Horizontal | Vertical
 
+export fn separatorTree(orientation: Orientation) -> Tree.Tree
+
+export fn decorativeTree(orientation: Orientation) -> Tree.Tree
+
 export fn separator(orientation: Orientation) -> H.Node
 
 export fn decorative(orientation: Orientation) -> H.Node
@@ -31,9 +35,15 @@ export fn decorative(orientation: Orientation) -> H.Node
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`separatorTree` and `decorativeTree` answer `Tree.Tree` with the role Divider, the part `separator` and
+the fact `orientation`. `separator` and `decorative` are their web views:
+`separator(orientation) = Tree.web(&separatorTree(orientation))`, and likewise for `decorative`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

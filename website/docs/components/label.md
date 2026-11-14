@@ -24,6 +24,9 @@ H.div().css("display", "flex").css("align-items", "center").css("gap", "var(--fu
 ## API
 
 ```pudu
+/// A label for the control with the given id, as a tree node.
+export fn labelTree(control: Str) -> Tree.Tree
+
 /// A label for the control with the given id.
 export fn label(control: Str) -> H.Node
 

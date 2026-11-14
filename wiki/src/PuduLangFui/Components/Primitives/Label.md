@@ -22,14 +22,21 @@ Names a form control.
 ### Signatures
 
 ```pudu
+export fn labelTree(control: Str) -> Tree.Tree
+
 export fn label(control: Str) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`labelTree` answers `Tree.Tree` with the role Text and the part `label`. `label` is its web view:
+`label(control) = Tree.web(&labelTree(control))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

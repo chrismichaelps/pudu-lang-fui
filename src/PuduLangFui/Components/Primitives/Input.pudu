@@ -3,6 +3,7 @@ module PuduLangFui.Components.Primitives.Input
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Input.Props — what a field can be told */
@@ -36,13 +37,16 @@ impl Configuring for Props {
   fn required(self: &Self) -> Self { Props{..*self, required: true} }
 }
 
-/// A field with the given name, identified by that name.
-export fn input(name: Str, given: Props) -> H.Node {
-  H.input().slot("input").id(name).name(name).kind(given.kind)
+/// A field with the given name, identified by that name, as a tree node.
+export fn inputTree(name: Str, given: Props) -> Tree.Tree {
+  Tree.of(Tree.Field, H.input()).slot("input").id(name).name(name).kind(given.kind)
     .atIf(given.invalid, "aria-invalid", "true")
     .flagIf(given.disabled, "disabled")
     .flagIf(given.required, "required")
 }
+
+/// A field with the given name, identified by that name.
+export fn input(name: Str, given: Props) -> H.Node { Tree.web(&inputTree(name, given)) }
 
 /// The styles of a field.
 export fn style() -> Css.Block {

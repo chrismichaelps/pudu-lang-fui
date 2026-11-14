@@ -22,14 +22,22 @@ An on and off control.
 ### Signatures
 
 ```pudu
+export fn switcherTree(name: Str, on: Bool = false, disabled: Bool = false) -> Tree.Tree
+
 export fn switcher(name: Str, on: Bool = false, disabled: Bool = false) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`switcherTree` answers `Tree.Tree` with the role Switch and the part `switch`. The flags `checked` and
+`disabled` are set only when the switch is on or disabled. `switcher` is its web view:
+`switcher(name, on, disabled) = Tree.web(&switcherTree(name, on, disabled))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

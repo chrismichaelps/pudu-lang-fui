@@ -28,14 +28,21 @@ export fn props() -> Props
 
 export trait Configuring {
 
+export fn checkboxTree(name: Str, given: Props) -> Tree.Tree
+
 export fn checkbox(name: Str, given: Props) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`checkboxTree` answers `Tree.Tree` with the role Choice and the part `checkbox`. `checkbox` is its web
+view: `checkbox(name, given) = Tree.web(&checkboxTree(name, given))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

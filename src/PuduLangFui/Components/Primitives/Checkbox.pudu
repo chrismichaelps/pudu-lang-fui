@@ -3,6 +3,7 @@ module PuduLangFui.Components.Primitives.Checkbox
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Checkbox.Props — what a checkbox can be told */
@@ -36,14 +37,17 @@ impl Configuring for Props {
   fn invalid(self: &Self) -> Self { Props{..*self, invalid: true} }
 }
 
-/// A checkbox with the given name, identified by that name.
-export fn checkbox(name: Str, given: Props) -> H.Node {
-  H.input().slot("checkbox").kind("checkbox").id(name).name(name)
+/// A checkbox with the given name, identified by that name, as a tree node.
+export fn checkboxTree(name: Str, given: Props) -> Tree.Tree {
+  Tree.of(Tree.Choice, H.input()).slot("checkbox").kind("checkbox").id(name).name(name)
     .flagIf(given.checked, "checked")
     .atIf(given.mixed, "aria-checked", "mixed")
     .flagIf(given.disabled, "disabled")
     .atIf(given.invalid, "aria-invalid", "true")
 }
+
+/// A checkbox with the given name, identified by that name.
+export fn checkbox(name: Str, given: Props) -> H.Node { Tree.web(&checkboxTree(name, given)) }
 
 /// The styles of a checkbox.
 export fn style() -> Css.Block {
