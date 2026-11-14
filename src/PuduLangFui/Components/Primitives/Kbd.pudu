@@ -3,13 +3,20 @@ module PuduLangFui.Components.Primitives.Kbd
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// One key with the given caption.
-export fn key(caption: Str) -> H.Node { H.tag("kbd").slot("kbd").says(caption) }
+/// One key with the given caption, as a tree node.
+export fn keyTree(caption: Str) -> Tree.Tree { Tree.of(Tree.Text, H.tag("kbd")).slot("kbd").says(caption) }
+
+/// A key showing `caption`.
+export fn key(caption: Str) -> H.Node { Tree.web(&keyTree(caption)) }
+
+/// Keys pressed together, as a tree node.
+export fn groupTree() -> Tree.Tree { Tree.of(Tree.Group, H.span()).slot("kbd-group") }
 
 /// Keys pressed together.
-export fn group() -> H.Node { Core.inline("kbd-group") }
+export fn group() -> H.Node { Tree.web(&groupTree()) }
 
 /// The styles of a key.
 export fn style() -> Css.Block {

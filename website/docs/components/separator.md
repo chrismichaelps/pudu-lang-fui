@@ -31,6 +31,12 @@ column("24rem", [
 /// Which way a divider runs.
 export type Orientation = Horizontal | Vertical
 
+/// A divider that separates content, as a tree node.
+export fn separatorTree(orientation: Orientation) -> Tree.Tree
+
+/// A divider with no meaning of its own, as a tree node.
+export fn decorativeTree(orientation: Orientation) -> Tree.Tree
+
 /// A divider that separates content.
 export fn separator(orientation: Orientation) -> H.Node
 

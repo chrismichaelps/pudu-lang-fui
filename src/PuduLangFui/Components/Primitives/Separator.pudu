@@ -3,20 +3,27 @@ module PuduLangFui.Components.Primitives.Separator
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Separator.Orientation — which way a divider runs */
 export type Orientation = Horizontal | Vertical
 
-/// A divider that separates content.
-export fn separator(orientation: Orientation) -> H.Node {
-  Core.part("separator").role("separator").at("aria-orientation", Core.spelled(orientation)).data("orientation", Core.spelled(orientation))
+/// A divider that separates content, as a tree node.
+export fn separatorTree(orientation: Orientation) -> Tree.Tree {
+  Tree.of(Tree.Divider, H.div()).slot("separator").role("separator").at("aria-orientation", Core.spelled(orientation)).data("orientation", Core.spelled(orientation))
 }
 
-/// A divider with no meaning of its own.
-export fn decorative(orientation: Orientation) -> H.Node {
-  Core.part("separator").role("none").data("orientation", Core.spelled(orientation))
+/// A divider with no meaning of its own, as a tree node.
+export fn decorativeTree(orientation: Orientation) -> Tree.Tree {
+  Tree.of(Tree.Divider, H.div()).slot("separator").role("none").data("orientation", Core.spelled(orientation))
 }
+
+/// A divider that separates content.
+export fn separator(orientation: Orientation) -> H.Node { Tree.web(&separatorTree(orientation)) }
+
+/// A divider with no meaning of its own.
+export fn decorative(orientation: Orientation) -> H.Node { Tree.web(&decorativeTree(orientation)) }
 
 /// The styles of a separator.
 export fn style() -> Css.Block {

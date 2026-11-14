@@ -22,14 +22,20 @@ Holds content at a width-to-height ratio.
 ### Signatures
 
 ```pudu
+export fn aspectRatioTree(ratio: Str) -> Tree.Tree
+
 export fn aspectRatio(ratio: Str) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`aspectRatioTree` answers `Tree.Tree` (role Group) with the part `aspect-ratio`. `aspectRatio` is its web view: `aspectRatio(ratio) = Tree.web(&aspectRatioTree(ratio))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

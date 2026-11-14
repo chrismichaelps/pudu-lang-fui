@@ -38,6 +38,9 @@ export fn props() -> Props
 /// One method per prop.
 export trait Configuring
 
+/// A checkbox with the given name, identified by that name, as a tree node.
+export fn checkboxTree(name: Str, given: Props) -> Tree.Tree
+
 /// A checkbox with the given name, identified by that name.
 export fn checkbox(name: Str, given: Props) -> H.Node
 

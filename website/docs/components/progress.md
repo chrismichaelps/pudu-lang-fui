@@ -24,6 +24,9 @@ column("20rem", [Progress.progress(66, 100, "Upload")])
 ## API
 
 ```pudu
+/// A bar at `value` out of `maximum`, named for assistive software, as a tree node.
+export fn progressTree(value: Int, maximum: Int, caption: Str) -> Tree.Tree
+
 /// A bar at `value` out of `maximum`, named for assistive software.
 export fn progress(value: Int, maximum: Int, caption: Str) -> H.Node
 

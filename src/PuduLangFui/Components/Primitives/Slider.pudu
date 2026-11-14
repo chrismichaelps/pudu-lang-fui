@@ -4,15 +4,20 @@ module PuduLangFui.Components.Primitives.Slider
 import Std.Html.Build as H
 import PuduLangFui.Constants.WidgetScripts as Script
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// A slider with the given name, between `minimum` and `maximum`, starting at `value`.
-export fn slider(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> H.Node {
+/// A slider with the given name, between `minimum` and `maximum`, starting at `value`, as a tree node.
+export fn sliderTree(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> Tree.Tree {
   let span = if maximum > minimum { maximum - minimum } else { 1 }
   let filled = (value - minimum) * 100 / span
+  let made = Tree.of(Tree.Range, H.input()).slot("slider").kind("range").id(name).name(name).value(show(value)).at("min", show(minimum)).at("max", show(maximum)).css("--slider-fill", show(filled) + "%")
 
-  H.input().slot("slider").kind("range").id(name).name(name).value(show(value)).at("min", show(minimum)).at("max", show(maximum)).css("--slider-fill", show(filled) + "%")
+  Tree.noted(&Tree.noted(&Tree.noted(&made, "value", show(value)), "minimum", show(minimum)), "maximum", show(maximum))
 }
+
+/// A slider with the given name, between `minimum` and `maximum`, starting at `value`.
+export fn slider(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> H.Node { Tree.web(&sliderTree(name, value, minimum, maximum)) }
 
 /// The styles of a slider; a look sets its track and thumb through the variables here.
 export fn style() -> Css.Block {

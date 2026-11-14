@@ -3,32 +3,48 @@ module PuduLangFui.Components.Primitives.Avatar
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Avatar.Size — how large an avatar sits */
 export type Size = Small | Medium | Large
 
-/// An avatar showing the image over the initials; a broken image reveals them.
-export fn avatar(source: Str, description: Str, letters: Str, size: Size) -> H.Node {
-  Core.inline("avatar").data("size", Core.spelled(size)).holding([
-      Core.inline("avatar-fallback").at("aria-hidden", "true").says(letters),
-      H.img().slot("avatar-image").src(source).alt(description).data("initials", letters)
-    ])
+/// An avatar showing the image over the initials; a broken image reveals them, as a tree node.
+export fn avatarTree(source: Str, description: Str, letters: Str, size: Size) -> Tree.Tree {
+  Tree.of(Tree.Image, H.span()).slot("avatar").data("size", Core.spelled(size))
+    .nests(Tree.of(Tree.Text, H.span()).slot("avatar-fallback").at("aria-hidden", "true").says(letters))
+    .nests(Tree.of(Tree.Image, H.img()).slot("avatar-image").src(source).alt(description).data("initials", letters))
 }
+
+/// An avatar with initials alone, named for assistive software, as a tree node.
+export fn initialsTree(text: Str, description: Str, size: Size) -> Tree.Tree {
+  Tree.of(Tree.Image, H.span()).slot("avatar").data("size", Core.spelled(size)).role("img").label(description)
+    .nests(Tree.of(Tree.Text, H.span()).slot("avatar-fallback").says(text))
+}
+
+/// An avatar showing the image over the initials; a broken image reveals them.
+export fn avatar(source: Str, description: Str, letters: Str, size: Size) -> H.Node { Tree.web(&avatarTree(source, description, letters, size)) }
 
 /// An avatar with initials alone, named for assistive software.
-export fn initials(text: Str, description: Str, size: Size) -> H.Node {
-  Core.inline("avatar").data("size", Core.spelled(size)).role("img").label(description).holding([Core.inline("avatar-fallback").says(text)])
-}
+export fn initials(text: Str, description: Str, size: Size) -> H.Node { Tree.web(&initialsTree(text, description, size)) }
+
+/// Avatars overlapping in a row, as a tree node.
+export fn groupTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("avatar-group") }
 
 /// Avatars overlapping in a row.
-export fn group() -> H.Node { Core.part("avatar-group") }
+export fn group() -> H.Node { Tree.web(&groupTree()) }
+
+/// A small status mark at the avatar's corner, as a tree node.
+export fn badgeTree() -> Tree.Tree { Tree.of(Tree.Text, H.span()).slot("avatar-badge") }
 
 /// A small status mark at the avatar's corner.
-export fn badge() -> H.Node { Core.inline("avatar-badge") }
+export fn badge() -> H.Node { Tree.web(&badgeTree()) }
+
+/// A count of avatars not shown, as a tree node.
+export fn countTree(text: Str) -> Tree.Tree { Tree.of(Tree.Text, H.span()).slot("avatar-count").says(text) }
 
 /// A count of avatars not shown.
-export fn count(text: Str) -> H.Node { Core.inline("avatar-count").says(text) }
+export fn count(text: Str) -> H.Node { Tree.web(&countTree(text)) }
 
 /// The styles of an avatar.
 export fn style() -> Css.Block {

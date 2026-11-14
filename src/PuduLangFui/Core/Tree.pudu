@@ -1,0 +1,187 @@
+/** @Fui.Core.Tree.Module — one component tree for every presenter */
+module PuduLangFui.Core.Tree
+
+import Std.Html.Build as H
+import Std.Html as Html
+import PuduLangFui.Core.Styling as Core
+
+/** @Fui.Core.Tree.Role — what a node is, whatever shows it */
+export type Role = Action | Text | Heading | Group | Field | Switch | Choice | Image | Link | Region | Divider | Meter | Range
+
+/** @Fui.Core.Tree.Child — what a node holds, in order */
+export type Child = Words(Str) | Nested(Tree) | Markup(Html.Html)
+
+/** @Fui.Core.Tree.Tree — a component's meaning, and the dress the web presenter writes */
+export type Tree = { role: Role, part: Str, facts: Array[(Str, Str)], flags: Array[Str], dress: H.Node, children: Array[Child] }
+
+/// A node of `role` whose web form starts as `dress`.
+export fn of(role: Role, dress: H.Node) -> Tree { Tree{role: role, part: "", facts: [], flags: [], dress: dress, children: []} }
+
+/// The node with a fact a presenter reads that its web dress already says
+/// another way, such as a nested control's state or a plain attribute.
+export fn noted(node: &Tree, name: Str, value: Str) -> Tree { Tree{..*node, facts: node.facts.push((name, value))} }
+
+/// The node with `child` after what it already holds.
+export fn nests(node: &Tree, child: Tree) -> Tree { Tree{..*node, children: node.children.push(Nested(child))} }
+
+/// The node as HTML elements: its dress holding its children in order.
+export fn web(node: &Tree) -> H.Node {
+  var out = node.dress
+
+  for child in node.children {
+    out = match child {
+      case Words(text) => out.says(text)
+      case Nested(inner) => out.holds(web(&inner).html())
+      case Markup(view) => out.holds(view)
+    }
+  }
+
+  out
+}
+
+/** @Fui.Core.Tree.Composing — adding nodes to a node */
+export trait Composing {
+  /// Adds a node after what this one holds.
+  fn nests(self: &Self, child: Tree) -> Self
+}
+
+impl Composing for Tree {
+  fn nests(self: &Self, child: Tree) -> Self { nests(self, child) }
+}
+
+/// The node wearing a changed dress.
+fn dressed(node: &Tree, dress: H.Node) -> Tree { Tree{..*node, dress: dress} }
+
+/// The node with one more child.
+fn appended(node: &Tree, child: Child) -> Tree { Tree{..*node, children: node.children.push(child)} }
+
+/// The node with `name` recorded as a flag beside its dress.
+fn flagged(node: &Tree, name: Str, dress: H.Node) -> Tree { Tree{..*node, flags: node.flags.push(name), dress: dress} }
+
+impl H.Building for Tree {
+  fn at(self: &Self, name: Str, value: Str) -> Self { dressed(self, self.dress.at(name, value)) }
+
+  fn atChecked(self: &Self, name: Str, value: Str) -> Result[Self, Html.Unsafe] {
+    let dress = self.dress.atChecked(name, value) ?
+
+    Ok(dressed(self, dress))
+  }
+
+  fn flag(self: &Self, name: Str) -> Self { flagged(self, name, self.dress.flag(name)) }
+
+  fn class(self: &Self, value: Str) -> Self { dressed(self, self.dress.class(value)) }
+
+  fn id(self: &Self, value: Str) -> Self { dressed(self, self.dress.id(value)) }
+
+  fn href(self: &Self, value: Str) -> Self { dressed(self, self.dress.href(value)) }
+
+  fn src(self: &Self, value: Str) -> Self { dressed(self, self.dress.src(value)) }
+
+  fn alt(self: &Self, value: Str) -> Self { dressed(self, self.dress.alt(value)) }
+
+  fn name(self: &Self, value: Str) -> Self { dressed(self, self.dress.name(value)) }
+
+  fn value(self: &Self, value: Str) -> Self { dressed(self, self.dress.value(value)) }
+
+  fn placeholder(self: &Self, value: Str) -> Self { dressed(self, self.dress.placeholder(value)) }
+
+  fn action(self: &Self, value: Str) -> Self { dressed(self, self.dress.action(value)) }
+
+  fn hrefTo(self: &Self, value: &Html.Destination) -> Self { dressed(self, self.dress.hrefTo(value)) }
+
+  fn srcFrom(self: &Self, value: &Html.Destination) -> Self { dressed(self, self.dress.srcFrom(value)) }
+
+  fn actionTo(self: &Self, value: &Html.Destination) -> Self { dressed(self, self.dress.actionTo(value)) }
+
+  fn hrefChecked(self: &Self, value: Str) -> Result[Self, Html.Unsafe] {
+    let dress = self.dress.hrefChecked(value) ?
+
+    Ok(dressed(self, dress))
+  }
+
+  fn srcChecked(self: &Self, value: Str) -> Result[Self, Html.Unsafe] {
+    let dress = self.dress.srcChecked(value) ?
+
+    Ok(dressed(self, dress))
+  }
+
+  fn actionChecked(self: &Self, value: Str) -> Result[Self, Html.Unsafe] {
+    let dress = self.dress.actionChecked(value) ?
+
+    Ok(dressed(self, dress))
+  }
+
+  fn method(self: &Self, value: Str) -> Self { dressed(self, self.dress.method(value)) }
+
+  fn rel(self: &Self, value: Str) -> Self { dressed(self, self.dress.rel(value)) }
+
+  fn lang(self: &Self, value: Str) -> Self { dressed(self, self.dress.lang(value)) }
+
+  fn title(self: &Self, value: Str) -> Self { dressed(self, self.dress.title(value)) }
+
+  fn target(self: &Self, value: Str) -> Self { dressed(self, self.dress.target(value)) }
+
+  fn role(self: &Self, value: Str) -> Self { dressed(self, self.dress.role(value)) }
+
+  fn rows(self: &Self, value: Int) -> Self { dressed(self, self.dress.rows(value)) }
+
+  fn cols(self: &Self, value: Int) -> Self { dressed(self, self.dress.cols(value)) }
+
+  fn kind(self: &Self, value: Str) -> Self { dressed(self, self.dress.kind(value)) }
+
+  fn submit(self: &Self) -> Self { dressed(self, self.dress.submit()) }
+
+  fn required(self: &Self) -> Self { flagged(self, "required", self.dress.required()) }
+
+  fn disabled(self: &Self) -> Self { flagged(self, "disabled", self.dress.disabled()) }
+
+  fn checked(self: &Self) -> Self { flagged(self, "checked", self.dress.checked()) }
+
+  fn label(self: &Self, value: Str) -> Self { dressed(self, self.dress.label(value)) }
+
+  fn data(self: &Self, name: Str, value: Str) -> Self {
+    Tree{..*self, facts: self.facts.push((name, value)), dress: self.dress.data(name, value)}
+  }
+
+  fn says(self: &Self, content: Str) -> Self { appended(self, Words(content)) }
+
+  fn raw(self: &Self, markup: Str) -> Self { appended(self, Markup(Html.trusted(markup))) }
+
+  fn holding(self: &Self, children: Array[H.Node]) -> Self {
+    var out = *self
+
+    for child in children {
+      out = appended(&out, Markup(child.html()))
+    }
+
+    out
+  }
+
+  fn holds(self: &Self, view: Html.Html) -> Self { appended(self, Markup(view)) }
+
+  fn when(self: &Self, condition: Bool, child: H.Node) -> Self { if condition { appended(self, Markup(child.html())) } else { *self } }
+
+  fn whenBuilt(self: &Self, condition: Bool, builder: fn() -> H.Node) -> Self {
+    if condition { appended(self, Markup(builder().html())) } else { *self }
+  }
+
+  fn html(self: &Self) -> Html.Html { web(self).html() }
+}
+
+impl Core.Styling for Tree {
+  fn classes(self: &Self, value: Str) -> Self { dressed(self, self.dress.classes(value)) }
+
+  fn token(self: &Self, name: Str, value: Str) -> Self { dressed(self, self.dress.token(name, value)) }
+
+  fn css(self: &Self, property: Str, value: Str) -> Self { dressed(self, self.dress.css(property, value)) }
+
+  fn slot(self: &Self, name: Str) -> Self { Tree{..*self, part: name, dress: self.dress.slot(name)} }
+
+  fn atIf(self: &Self, condition: Bool, name: Str, value: Str) -> Self { if condition { self.at(name, value) } else { *self } }
+
+  fn flagIf(self: &Self, condition: Bool, name: Str) -> Self { if condition { self.flag(name) } else { *self } }
+
+  fn anchors(self: &Self, id: Str) -> Self { dressed(self, self.dress.anchors(id)) }
+
+  fn anchoredTo(self: &Self, id: Str) -> Self { dressed(self, self.dress.anchoredTo(id)) }
+}

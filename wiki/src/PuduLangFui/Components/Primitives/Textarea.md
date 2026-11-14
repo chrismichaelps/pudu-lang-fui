@@ -22,14 +22,20 @@ Multi-line text that grows with its content.
 ### Signatures
 
 ```pudu
+export fn textareaTree(name: Str, invalid: Bool = false) -> Tree.Tree
+
 export fn textarea(name: Str, invalid: Bool = false) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`textareaTree` answers `Tree.Tree` (role Field) with the part `textarea`. `textarea` is its web view: `textarea(name, invalid) = Tree.web(&textareaTree(name, invalid))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

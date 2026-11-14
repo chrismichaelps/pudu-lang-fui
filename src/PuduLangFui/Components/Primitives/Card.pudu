@@ -3,37 +3,62 @@ module PuduLangFui.Components.Primitives.Card
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Card.Size — how much padding a card keeps */
 export type Size = Regular | Compact
 
+/// A card with regular padding, as a tree node.
+export fn cardTree() -> Tree.Tree { sizedTree(Regular) }
+
+/// A card with the given padding, as a tree node.
+export fn sizedTree(size: Size) -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("card").data("size", Core.spelled(size)) }
+
+/// The card's opening: title, description, and any action, as a tree node.
+export fn headerTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("card-header") }
+
+/// The card's title, as a tree node.
+export fn titleTree() -> Tree.Tree { Tree.of(Tree.Heading, H.div()).slot("card-title") }
+
+/// Supporting text under the title, as a tree node.
+export fn descriptionTree() -> Tree.Tree { Tree.of(Tree.Text, H.div()).slot("card-description") }
+
+/// A control placed at the end of the header, as a tree node.
+export fn actionTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("card-action") }
+
+/// The card's body, as a tree node.
+export fn contentTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("card-content") }
+
+/// The card's closing row, as a tree node.
+export fn footerTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("card-footer") }
+
 /// A card with regular padding.
-export fn card() -> H.Node { sized(Regular) }
+export fn card() -> H.Node { Tree.web(&cardTree()) }
 
 /// A card with the given padding.
-export fn sized(size: Size) -> H.Node { Core.part("card").data("size", Core.spelled(size)) }
+export fn sized(size: Size) -> H.Node { Tree.web(&sizedTree(size)) }
 
 /// The card's opening: title, description, and any action.
-export fn header() -> H.Node { Core.part("card-header") }
+export fn header() -> H.Node { Tree.web(&headerTree()) }
 
 /// The card's title, as a `div`.
-export fn title() -> H.Node { Core.part("card-title") }
+export fn title() -> H.Node { Tree.web(&titleTree()) }
 
 /// The card's title as a heading of the given node, such as `H.h2()`.
 export fn titled(heading: H.Node) -> H.Node { heading.slot("card-title") }
 
 /// Supporting text under the title.
-export fn description() -> H.Node { Core.part("card-description") }
+export fn description() -> H.Node { Tree.web(&descriptionTree()) }
 
 /// A control placed at the end of the header.
-export fn action() -> H.Node { Core.part("card-action") }
+export fn action() -> H.Node { Tree.web(&actionTree()) }
 
 /// The card's body.
-export fn content() -> H.Node { Core.part("card-content") }
+export fn content() -> H.Node { Tree.web(&contentTree()) }
 
 /// The card's closing row.
-export fn footer() -> H.Node { Core.part("card-footer") }
+export fn footer() -> H.Node { Tree.web(&footerTree()) }
 
 /// The styles of a card.
 export fn style() -> Css.Block {

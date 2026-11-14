@@ -42,6 +42,15 @@ export fn props() -> Props
 /// One method per prop.
 export trait Configuring
 
+/// A button that does nothing until something is attached to it, as a tree node.
+export fn buttonTree(given: Props) -> Tree.Tree
+
+/// A button that submits its form, as a tree node.
+export fn submitTree(given: Props) -> Tree.Tree
+
+/// A link that reads as a button, as a tree node.
+export fn linkTree(target: Str, given: Props) -> Tree.Tree
+
 /// A button that does nothing until something is attached to it.
 export fn button(given: Props) -> H.Node
 

@@ -22,14 +22,20 @@ A value along a range.
 ### Signatures
 
 ```pudu
+export fn sliderTree(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> Tree.Tree
+
 export fn slider(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`sliderTree` answers `Tree.Tree` (role Range) with the part `slider`, and notes the facts `value`, `minimum` and `maximum`; the web dress carries them as attributes. `slider` is its web view: `slider(name, value, minimum, maximum) = Tree.web(&sliderTree(name, value, minimum, maximum))`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Constants/WidgetScripts]] · [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

@@ -24,7 +24,10 @@ column("20rem", [Textarea.textarea("message").placeholder("Type your message her
 ## API
 
 ```pudu
-/// A text area with the given name, identified by that name.
+/// A text area with the given name, identified by that name, as a tree node.
+export fn textareaTree(name: Str, invalid: Bool = false) -> Tree.Tree
+
+/// A multi-line field with the given name, identified by that name.
 export fn textarea(name: Str, invalid: Bool = false) -> H.Node
 
 /// The styles of a text area.

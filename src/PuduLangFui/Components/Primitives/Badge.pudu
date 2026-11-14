@@ -3,15 +3,19 @@ module PuduLangFui.Components.Primitives.Badge
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
 /** @Fui.Badge.Variant — what a badge says about itself */
 export type Variant = Primary | Secondary | Outline | Ghost | Link | Destructive | Success | Warning | Info
 
-/// A small label.
-export fn badge(variant: Variant) -> H.Node {
-  Core.inline("badge").data("variant", Core.spelled(variant))
+/// A small label, as a tree node.
+export fn badgeTree(variant: Variant) -> Tree.Tree {
+  Tree.of(Tree.Text, H.span()).slot("badge").data("variant", Core.spelled(variant))
 }
+
+/// A small label.
+export fn badge(variant: Variant) -> H.Node { Tree.web(&badgeTree(variant)) }
 
 /// The styles of a badge.
 export fn style() -> Css.Block {

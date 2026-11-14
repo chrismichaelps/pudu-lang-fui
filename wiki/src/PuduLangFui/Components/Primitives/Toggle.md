@@ -28,14 +28,20 @@ export type Size = Small | Medium | Large
 
 export fn sized(toggled: H.Node, size: Size) -> H.Node
 
+export fn toggleTree(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> Tree.Tree
+
 export fn toggle(name: Str, value: Str, pressed: Bool = false, variant: Variant) -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`toggleTree` answers `Tree.Tree` (role Switch) with the part `toggle` and the fact `variant`, and notes `pressed` as `true` or `false`; the web dress carries it on the nested checkbox. `toggle` is its web view: `toggle(name, value, pressed, variant) = Tree.web(&toggleTree(name, value, pressed, variant))`. `sized` stays an element function.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

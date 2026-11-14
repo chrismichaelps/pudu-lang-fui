@@ -19,6 +19,7 @@ tags: [moc]
 - [[domain/Registry]] — Any Pudu package whose source tree has `Components`, `Elements`, or `Blocks` under
 - [[domain/Slot]] — The `data-slot` name every [[domain/Component]] and [[domain/Part]] renders. It is
 - [[domain/Theme]] — A value holding all seven [[domain/Aspect|aspects]]. It renders to custom
+- [[domain/Tree]] — The value a component answers: a role, part, facts, flags, ordered children, and a web dress, read by each presenter.
 - [[domain/Token]] — A named design value rendered as a `--fui-` custom property and written `$name` in
 - [[domain/Variant]] — A closed choice of a prop, declared as a sum type and rendered as a `data-`
 

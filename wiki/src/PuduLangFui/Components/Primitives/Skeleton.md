@@ -22,14 +22,20 @@ A placeholder while content loads.
 ### Signatures
 
 ```pudu
+export fn skeletonTree() -> Tree.Tree
+
 export fn skeleton() -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`skeletonTree` answers `Tree.Tree` (role Group) with the part `skeleton`. `skeleton` is its web view: `skeleton() = Tree.web(&skeletonTree())`.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

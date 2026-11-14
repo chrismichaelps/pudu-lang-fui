@@ -33,6 +33,9 @@ export fn props() -> Props
 /// One method per prop.
 export trait Configuring
 
+/// A field with the given name, identified by that name, as a tree node.
+export fn inputTree(name: Str, given: Props) -> Tree.Tree
+
 /// A field with the given name, identified by that name.
 export fn input(name: Str, given: Props) -> H.Node
 

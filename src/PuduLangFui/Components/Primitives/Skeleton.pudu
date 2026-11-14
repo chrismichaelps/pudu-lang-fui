@@ -3,10 +3,14 @@ module PuduLangFui.Components.Primitives.Skeleton
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
-/// A placeholder, sized by the caller with `.css` or a class.
-export fn skeleton() -> H.Node { Core.part("skeleton").at("aria-hidden", "true") }
+/// A placeholder, sized by the caller with `.css` or a class, as a tree node.
+export fn skeletonTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("skeleton").at("aria-hidden", "true") }
+
+/// A placeholder shown while content loads.
+export fn skeleton() -> H.Node { Tree.web(&skeletonTree()) }
 
 /// The styles of a placeholder.
 export fn style() -> Css.Block {

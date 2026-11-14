@@ -3,25 +3,44 @@ module PuduLangFui.Components.Primitives.Empty
 
 import Std.Html.Build as H
 import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Core.Tree as Tree
 import PuduLangFui.Domain.Css as Css
 
+/// An empty state, as a tree node.
+export fn emptyTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("empty") }
+
 /// An empty state.
-export fn empty() -> H.Node { Core.part("empty") }
+export fn empty() -> H.Node { Tree.web(&emptyTree()) }
+
+/// The icon or image of an empty state, as a tree node.
+export fn mediaTree() -> Tree.Tree { Tree.of(Tree.Image, H.div()).slot("empty-media") }
 
 /// The icon or image of an empty state.
-export fn media() -> H.Node { Core.part("empty-media") }
+export fn media() -> H.Node { Tree.web(&mediaTree()) }
+
+/// The empty state's headline, as a tree node.
+export fn titleTree() -> Tree.Tree { Tree.of(Tree.Heading, H.div()).slot("empty-title") }
 
 /// The empty state's headline.
-export fn title() -> H.Node { Core.part("empty-title") }
+export fn title() -> H.Node { Tree.web(&titleTree()) }
+
+/// What the empty state explains, as a tree node.
+export fn descriptionTree() -> Tree.Tree { Tree.of(Tree.Text, H.div()).slot("empty-description") }
 
 /// What the empty state explains.
-export fn description() -> H.Node { Core.part("empty-description") }
+export fn description() -> H.Node { Tree.web(&descriptionTree()) }
+
+/// What a reader can do next, as a tree node.
+export fn contentTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("empty-content") }
 
 /// What a reader can do next.
-export fn content() -> H.Node { Core.part("empty-content") }
+export fn content() -> H.Node { Tree.web(&contentTree()) }
+
+/// Title and description together, as a tree node.
+export fn headerTree() -> Tree.Tree { Tree.of(Tree.Group, H.div()).slot("empty-header") }
 
 /// Title and description together.
-export fn header() -> H.Node { Core.part("empty-header") }
+export fn header() -> H.Node { Tree.web(&headerTree()) }
 
 /// The styles of an empty state.
 export fn style() -> Css.Block {

@@ -1,0 +1,81 @@
+/** @Test.Components.TreeFormsTest.Suite — tree forms carry meaning and render as their elements */
+module PuduLangFui.Components.TreeFormsTest
+
+import Std.Html.Build as H
+import Std.Io as Io
+import Std.Test as Test
+import PuduLangFui.Components.Primitives.AspectRatio as AspectRatio
+import PuduLangFui.Components.Primitives.Avatar as Avatar
+import PuduLangFui.Components.Primitives.Badge as Badge
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Components.Primitives.Card as Card
+import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Empty as Empty
+import PuduLangFui.Components.Primitives.Input as Input
+import PuduLangFui.Components.Primitives.Kbd as Kbd
+import PuduLangFui.Components.Primitives.Label as Label
+import PuduLangFui.Components.Primitives.Progress as Progress
+import PuduLangFui.Components.Primitives.Separator as Separator
+import PuduLangFui.Components.Primitives.Skeleton as Skeleton
+import PuduLangFui.Components.Primitives.Slider as Slider
+import PuduLangFui.Components.Primitives.Switch as Switch
+import PuduLangFui.Components.Primitives.Textarea as Textarea
+import PuduLangFui.Components.Primitives.Toggle as Toggle
+import PuduLangFui.Core.Tree as Tree
+
+/// A tree form's web view, rendered.
+fn web(node: Tree.Tree) -> Str { H.render(&Tree.web(&node)) }
+
+/// What a presenter reads from a node: role, part and facts.
+fn meaning(node: Tree.Tree) -> Str { show(node.role) + " " + node.part + " " + show(node.facts) }
+
+/// Runs the suite.
+fn main() -> Int {
+  let pressed = Button.props().variant(Button.Destructive).size(Button.Small)
+  let checks = Test.suite("Components.TreeForms", &[
+      Test.equals("a button tree renders as the button", &web(Button.buttonTree(pressed)), &H.render(&Button.button(pressed))),
+      Test.equals("a button tree is an action with its variant and size", &meaning(Button.buttonTree(pressed)), &("Action button " + show([("variant", "destructive"), ("size", "small")]))),
+      Test.equals("a button link is a link", &show(Button.linkTree("/x", pressed).role), &"Link"),
+      Test.equals("a label tree renders as the label", &web(Label.labelTree("name")), &H.render(&Label.label("name"))),
+      Test.equals("a label tree is text", &meaning(Label.labelTree("name")), &("Text label " + show([]))),
+      Test.equals("a badge tree renders as the badge", &web(Badge.badgeTree(Badge.Success)), &H.render(&Badge.badge(Badge.Success))),
+      Test.equals("a badge tree is text with its variant", &meaning(Badge.badgeTree(Badge.Success)), &("Text badge " + show([("variant", "success")]))),
+      Test.equals("a separator tree renders as the separator", &web(Separator.separatorTree(Separator.Vertical)), &H.render(&Separator.separator(Separator.Vertical))),
+      Test.equals("a decorative separator renders as itself", &web(Separator.decorativeTree(Separator.Horizontal)), &H.render(&Separator.decorative(Separator.Horizontal))),
+      Test.equals("a separator tree is a divider", &meaning(Separator.separatorTree(Separator.Vertical)), &("Divider separator " + show([("orientation", "vertical")]))),
+      Test.equals("a switch tree renders as the switch", &web(Switch.switcherTree("alerts", true, true)), &H.render(&Switch.switcher("alerts", true, true))),
+      Test.equals("a switch tree is a switch with its flags", &Switch.switcherTree("alerts", true, true).flags, &["checked", "disabled"]),
+      Test.equals("a checkbox tree renders as the checkbox", &web(Checkbox.checkboxTree("terms", Checkbox.props())), &H.render(&Checkbox.checkbox("terms", Checkbox.props()))),
+      Test.equals("a checkbox tree is a choice", &show(Checkbox.checkboxTree("terms", Checkbox.props()).role), &"Choice"),
+      Test.equals("a progress tree renders as the bar", &web(Progress.progressTree(3, 10, "Upload")), &H.render(&Progress.progress(3, 10, "Upload"))),
+      Test.equals("a progress tree is a meter", &show(Progress.progressTree(3, 10, "Upload").role), &"Meter"),
+      Test.equals("an input tree renders as the input", &web(Input.inputTree("email", Input.props())), &H.render(&Input.input("email", Input.props()))),
+      Test.equals("an input tree is a field", &meaning(Input.inputTree("email", Input.props())), &("Field input " + show([]))),
+      Test.equals("a card tree renders as the card", &web(Card.cardTree()), &H.render(&Card.card())),
+      Test.equals("a card tree is a group with its size", &meaning(Card.sizedTree(Card.Compact)), &("Group card " + show([("size", "compact")]))),
+      Test.equals("a card title is a heading", &show(Card.titleTree().role), &"Heading"),
+      Test.equals("a card description is text", &show(Card.descriptionTree().role), &"Text"),
+      Test.equals("an avatar tree renders as the avatar", &web(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small)), &H.render(&Avatar.avatar("/a.png", "Ada", "AL", Avatar.Small))),
+      Test.equals("an avatar tree is an image holding its fallback and image", &(show(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small).role) + " " + show(Avatar.avatarTree("/a.png", "Ada", "AL", Avatar.Small).children.length())), &"Image 2"),
+      Test.equals("initials render as themselves", &web(Avatar.initialsTree("AL", "Ada", Avatar.Large)), &H.render(&Avatar.initials("AL", "Ada", Avatar.Large))),
+      Test.equals("avatar parts render as their elements", &(web(Avatar.groupTree()) + web(Avatar.badgeTree()) + web(Avatar.countTree("+3"))), &(H.render(&Avatar.group()) + H.render(&Avatar.badge()) + H.render(&Avatar.count("+3")))),
+      Test.equals("a skeleton tree renders as the placeholder", &web(Skeleton.skeletonTree()), &H.render(&Skeleton.skeleton())),
+      Test.equals("a textarea tree renders as the textarea", &web(Textarea.textareaTree("notes", true)), &H.render(&Textarea.textarea("notes", true))),
+      Test.equals("a key tree renders as the key", &(web(Kbd.keyTree("K")) + web(Kbd.groupTree())), &(H.render(&Kbd.key("K")) + H.render(&Kbd.group()))),
+      Test.equals("an aspect ratio tree renders as the frame", &web(AspectRatio.aspectRatioTree("16 / 9")), &H.render(&AspectRatio.aspectRatio("16 / 9"))),
+      Test.equals("a slider tree renders as the slider", &web(Slider.sliderTree("volume", 30, 0, 50)), &H.render(&Slider.slider("volume", 30, 0, 50))),
+      Test.equals("a slider tree is a range noting its value and bounds", &meaning(Slider.sliderTree("volume", 30, 0, 50)), &("Range slider " + show([("value", "30"), ("minimum", "0"), ("maximum", "50")]))),
+      Test.equals("a toggle tree renders as the toggle", &web(Toggle.toggleTree("bold", "on", true, Toggle.Outline)), &H.render(&Toggle.toggle("bold", "on", true, Toggle.Outline))),
+      Test.equals("a toggle tree notes whether it is pressed", &meaning(Toggle.toggleTree("bold", "on", true, Toggle.Outline)), &("Switch toggle " + show([("variant", "outline"), ("pressed", "true")]))),
+      Test.equals("empty parts render as their elements", &(web(Empty.emptyTree()) + web(Empty.headerTree()) + web(Empty.mediaTree()) + web(Empty.titleTree()) + web(Empty.descriptionTree()) + web(Empty.contentTree())), &(H.render(&Empty.empty()) + H.render(&Empty.header()) + H.render(&Empty.media()) + H.render(&Empty.title()) + H.render(&Empty.description()) + H.render(&Empty.content()))),
+      Test.equals("an empty title is a heading", &show(Empty.titleTree().role), &"Heading"),
+      Test.equals("card parts render as their elements", &(web(Card.headerTree()) + web(Card.actionTree()) + web(Card.contentTree()) + web(Card.footerTree())), &(H.render(&Card.header()) + H.render(&Card.action()) + H.render(&Card.content()) + H.render(&Card.footer())))
+    ])
+  let report = Test.run(&checks)
+
+  for failure in Test.failuresOf(&report) {
+    let _reported = Io.writeErrorLine(failure)
+  }
+
+  Test.report(&report)
+}

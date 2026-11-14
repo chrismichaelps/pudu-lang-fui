@@ -22,24 +22,40 @@ What a view shows when it has nothing.
 ### Signatures
 
 ```pudu
+export fn emptyTree() -> Tree.Tree
+
 export fn empty() -> H.Node
+
+export fn mediaTree() -> Tree.Tree
 
 export fn media() -> H.Node
 
+export fn titleTree() -> Tree.Tree
+
 export fn title() -> H.Node
+
+export fn descriptionTree() -> Tree.Tree
 
 export fn description() -> H.Node
 
+export fn contentTree() -> Tree.Tree
+
 export fn content() -> H.Node
+
+export fn headerTree() -> Tree.Tree
 
 export fn header() -> H.Node
 
 export fn style() -> Css.Block
 ```
 
+### Tree forms
+
+`emptyTree` (Group, part `empty`), `headerTree` (Group, `empty-header`), `mediaTree` (Image, `empty-media`), `titleTree` (Heading, `empty-title`), `descriptionTree` (Text, `empty-description`) and `contentTree` (Group, `empty-content`) answer `Tree.Tree`. Each function without `Tree` is its web view: `empty() = Tree.web(&emptyTree())`, and likewise for the others.
+
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Domain/Css]]
+- **Requires:** [[src/PuduLangFui/Core/Styling]] · [[src/PuduLangFui/Core/Tree]] · [[src/PuduLangFui/Domain/Css]]
 
 ## Algorithm
 

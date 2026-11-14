@@ -134,7 +134,7 @@ out of step or without a handoff for work in flight. Never name a concept withou
 
 ## Product scope
 
-A complete component system for server-rendered Pudu programs.
+A complete component system for Pudu programs, rendered as HTML on the web and as platform controls on phones from one component tree ([[decisions/ADR-0013-one-tree-many-presenters]]).
 
 | Area | Contents |
 | --- | --- |

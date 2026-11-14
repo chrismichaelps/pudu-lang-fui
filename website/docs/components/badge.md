@@ -27,6 +27,9 @@ H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-sp
 /// What a badge says about itself.
 export type Variant = Primary | Secondary | Outline | Ghost | Link | Destructive | Success | Warning | Info
 
+/// A small label, as a tree node.
+export fn badgeTree(variant: Variant) -> Tree.Tree
+
 /// A small label.
 export fn badge(variant: Variant) -> H.Node
 

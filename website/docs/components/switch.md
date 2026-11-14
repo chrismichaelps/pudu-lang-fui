@@ -24,6 +24,9 @@ Field.oriented(Field.Horizontal, false).css("inline-size", "fit-content").holdin
 ## API
 
 ```pudu
+/// A switch with the given name, identified by that name, as a tree node.
+export fn switcherTree(name: Str, on: Bool = false, disabled: Bool = false) -> Tree.Tree
+
 /// A switch with the given name, identified by that name.
 export fn switcher(name: Str, on: Bool = false, disabled: Bool = false) -> H.Node
 
