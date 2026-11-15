@@ -19,7 +19,7 @@ checks on stderr.
 | Generator | `test/PuduLangFui/Cli/**` | module rewriting, dependency closure, add, diff, apply, build, and refusal on real temporary trees |
 | Package | `test/Package/*` | layout and vault parity |
 | Layers | `tools/Layers.pudu`, `tools/LayersTest.pudu` | every import points down and no cycle exists |
-| Mutation | [[tools/Mutate]] | suites notice single-point changes to the pure layers |
+| Mutation | [[tools/Mutate]] | suites notice single-point changes to the pure layers; runs weekly and on demand in CI, not on pull requests, since a run takes over an hour |
 | Examples | `examples/*.pudu`, run by CI | documented programs compile and answer 0 |
 
 The gallery example renders every component to one page, which is exercised in a real browser
