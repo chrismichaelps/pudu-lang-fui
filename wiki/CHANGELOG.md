@@ -5,6 +5,17 @@ tags: [changelog]
 
 # Changelog
 
+## 2026-11-15 — Platform-style controls (#3)
+
+- Nine controls added: stepper, segmented control, search field, chip, section header, toolbar, action sheet, image, and page control.
+- Each sits on the spacing unit, with 44-pixel hit targets on coarse pointers.
+- Only the stepper carries a script.
+- Avatars no longer clip their status mark.
+- Density units are whole pixels (3, 4, 5), switches and checks sit on the pixel grid, and fractional sizes in the looks are rounded.
+- Shared look rules add keyboard focus where a part had none, pressed feedback on buttons, and a 44-pixel hit area on coarse pointers.
+- The base layer smooths text and removes the tap highlight.
+- Mutation testing runs weekly and on demand instead of on every pull request.
+
 ## 2026-11-09 — Prerendered Create page and release readiness
 
 - API sections list each declaration under its source comment.

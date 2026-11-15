@@ -1,0 +1,45 @@
+/** @Fui.Chip.Component — a compact label that may be chosen or removed */
+module PuduLangFui.Components.Composites.Chip
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A chip that is only read.
+export fn chip() -> H.Node { Core.inline("chip") }
+
+/// A chip of the group `name` that can be chosen.
+export fn choice(name: Str, value: Str, chosen: Bool = false) -> H.Node {
+  let box = H.input().kind("checkbox").name(name).value(value).flagIf(chosen, "checked")
+
+  H.labelFor().slot("chip").data("kind", "choice").holding([box])
+}
+
+/// The button at a chip's end that removes it, named for assistive software.
+export fn remove(caption: Str) -> H.Node {
+  let button = H.button().kind("button").slot("chip-remove").label(caption)
+
+  button.holding([Icon.sized(Icon.X, Icon.Small)])
+}
+
+/// The styles of a chip.
+export fn style() -> Css.Block {
+  let chosen = ":has(> input:checked)"
+
+  Css.block("chip", [
+      Css.base("--chip-remove: calc($unit * 5); display: inline-flex; align-items: center; gap: $space-1; block-size: calc($unit * 7); padding-inline: $space-3; background: $muted; color: $foreground; border: $border-width solid transparent; border-radius: $radius-full; font-size: $text-sm; font-weight: $weight-medium; line-height: 1; white-space: nowrap; user-select: none"),
+      Css.variant("kind", "choice", "cursor: pointer; transition: background-color $duration-fast $ease-standard, color $duration-fast $ease-standard"),
+      Css.rule("[data-slot=\"chip\"] > input", "position: absolute; opacity: 0; pointer-events: none"),
+      Css.when("[data-kind=\"choice\"]:hover", "background: color-mix(in oklab, $foreground 10%, $muted)"),
+      Css.when(chosen, "background: $primary; color: $primary-foreground"),
+      Css.when(chosen + ":hover", "background: color-mix(in oklab, $primary 90%, $foreground)"),
+      Css.when(":has(> input:focus-visible)", "outline: 2px solid $ring; outline-offset: 2px"),
+      Css.when(":has(> input:disabled)", "opacity: 0.5; cursor: not-allowed"),
+      Css.when(":has(> [data-slot=\"chip-remove\"])", "padding-inline-end: $space-1"),
+      Css.slot("chip-remove", "display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; inline-size: var(--chip-remove); block-size: var(--chip-remove); padding: 0; border: 0; border-radius: $radius-full; background: transparent; color: inherit; opacity: 0.6; cursor: pointer; outline: none; transition: opacity $duration-fast $ease-standard, background-color $duration-fast $ease-standard"),
+      Css.slotWhen("chip-remove", ":hover", "opacity: 1; background: color-mix(in oklab, currentColor 14%, transparent)"),
+      Css.slotWhen("chip-remove", ":focus-visible", "opacity: 1; box-shadow: 0 0 0 2px $ring"),
+      Css.within("@media (pointer: coarse)", "[data-slot=\"chip\"]", "--chip-remove: 1.75rem; block-size: 2.25rem")
+    ])
+}

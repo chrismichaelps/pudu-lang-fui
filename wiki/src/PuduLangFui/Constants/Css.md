@@ -46,6 +46,7 @@ export const LOOK_CONDITION_SEPARATOR: Str
 ## Algorithm
 
 1. Constants only.
+2. The base layer also sets text rendering, removes the tap highlight, and gives any focused part a ring unless its component or look draws its own.
 
 ## Negative Logic (Prohibited Paths)
 
@@ -62,7 +63,7 @@ DEPTH 0.52 (MEDIUM). Part of [[subsystems/Styling]], under [[grammar/pudu]].
 ## Grill Log
 
 - **Q:** Why is the base layer so small?
-  **A:** It sets only box sizing, page color, and reduced motion. _Rationale:_ a component system must not restyle a project's own markup. _Rejected:_ a full reset.
+  **A:** It sets box sizing, page color and text rendering, reduced motion, the tap highlight, and a fallback focus ring that any component or look overrides. _Rationale:_ a component system must not restyle a project's own markup. _Rejected:_ a full reset.
 
 ## Referenced by
 

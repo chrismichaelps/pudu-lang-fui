@@ -28,6 +28,8 @@
   href: hover-card.md
 - name: Icon
   href: icon.md
+- name: Image
+  href: image.md
 - name: Input
   href: input.md
 - name: Item
@@ -40,6 +42,8 @@
   href: marker.md
 - name: Native Select
   href: native-select.md
+- name: Page Control
+  href: page-control.md
 - name: Popover
   href: popover.md
 - name: Progress
@@ -50,6 +54,10 @@
   href: resizable.md
 - name: Scroll Area
   href: scroll-area.md
+- name: Section Header
+  href: section-header.md
+- name: Segmented Control
+  href: segmented-control.md
 - name: Separator
   href: separator.md
 - name: Skeleton
@@ -66,6 +74,8 @@
   href: textarea.md
 - name: Toggle
   href: toggle.md
+- name: Toolbar
+  href: toolbar.md
 - name: Tooltip
   href: tooltip.md
 - name: Typeset
@@ -74,6 +84,8 @@
   href: typography.md
 - name: Accordion
   href: accordion.md
+- name: Action Sheet
+  href: action-sheet.md
 - name: Alert Dialog
   href: alert-dialog.md
 - name: Attachment
@@ -84,6 +96,8 @@
   href: calendar.md
 - name: Carousel
   href: carousel.md
+- name: Chip
+  href: chip.md
 - name: Code Block
   href: code-block.md
 - name: Combobox
@@ -110,12 +124,16 @@
   href: navigation-menu.md
 - name: Pagination
   href: pagination.md
+- name: Search Field
+  href: search-field.md
 - name: Select
   href: select.md
 - name: Sheet
   href: sheet.md
 - name: Spinner
   href: spinner.md
+- name: Stepper
+  href: stepper.md
 - name: Toast
   href: toast.md
 - name: Toggle Group

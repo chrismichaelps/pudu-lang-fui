@@ -50,6 +50,8 @@ DEPTH 1.0 (DEEP). Part of [[subsystems/Distribution]], under [[grammar/pudu]].
 
 - **Q:** Which layers?
   **A:** `--pure` covers Domain, Utils, and Cli/Model. _Rationale:_ these hold the logic; components are data. _Rejected:_ mutating style text.
+- **Q:** Run it on every pull request?
+  **A:** No; weekly and on demand from the `ci` workflow. _Rationale:_ a run takes over an hour and would hold every change. _Rejected:_ a per-pull-request gate.
 
 ## Referenced by
 

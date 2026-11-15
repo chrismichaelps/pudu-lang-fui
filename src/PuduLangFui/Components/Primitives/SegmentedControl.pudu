@@ -1,0 +1,37 @@
+/** @Fui.SegmentedControl.Component — one choice among a few */
+module PuduLangFui.Components.Primitives.SegmentedControl
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The track holding the segments, named for assistive software.
+export fn control(caption: Str) -> H.Node { Core.part("segmented-control").role("radiogroup").label(caption) }
+
+/// A segment of the group `name`.
+export fn segment(name: Str, value: Str, chosen: Bool = false) -> H.Node {
+  let radio = H.input().kind("radio").name(name).value(value).flagIf(chosen, "checked")
+
+  H.labelFor().slot("segmented-control-segment").holding([radio])
+}
+
+/// The styles of a segmented control.
+export fn style() -> Css.Block {
+  let part = "[data-slot=\"segmented-control-segment\"]"
+  let chosen = ":has(> input:checked)"
+
+  Css.block("segmented-control", [
+      Css.base("--segmented-inset: 2px; display: inline-grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); align-items: stretch; block-size: $control-md; padding: var(--segmented-inset); background: $muted; border-radius: $radius-lg; isolation: isolate"),
+      Css.slot("segmented-control-segment", "position: relative; display: inline-flex; align-items: center; justify-content: center; gap: $space-1; min-inline-size: calc($unit * 14); padding-inline: $space-3; border-radius: calc($radius-lg - var(--segmented-inset)); color: $foreground; font-size: $text-sm; font-weight: $weight-medium; line-height: 1; white-space: nowrap; cursor: pointer; user-select: none; transition: background-color $duration-base $ease-standard, box-shadow $duration-base $ease-standard, color $duration-fast $ease-standard"),
+      Css.rule(part + " > input", "position: absolute; opacity: 0; pointer-events: none"),
+      Css.rule(part + " + " + part + "::before", "content: ''; position: absolute; inset-inline-start: 0; inset-block: 25%; inline-size: 1px; background: $border; transition: opacity $duration-fast $ease-standard"),
+      Css.rule(part + chosen + "::before", "opacity: 0"),
+      Css.rule(part + chosen + " + " + part + "::before", "opacity: 0"),
+      Css.slotWhen("segmented-control-segment", chosen, "z-index: 1; background: $background; box-shadow: $shadow-sm, 0 0 0 0.5px color-mix(in oklab, $foreground 8%, transparent)"),
+      Css.slotWhen("segmented-control-segment", ":active:not(" + chosen + ")", "color: $muted-foreground"),
+      Css.slotWhen("segmented-control-segment", ":has(> input:focus-visible)", "outline: 2px solid $ring; outline-offset: 1px"),
+      Css.slotWhen("segmented-control-segment", ":has(> input:disabled)", "opacity: 0.5; cursor: not-allowed"),
+      Css.within("@media (pointer: coarse)", "[data-slot=\"segmented-control\"]", "block-size: 2.75rem"),
+      Css.within("@media (prefers-reduced-motion: reduce)", part, "transition: none")
+    ])
+}

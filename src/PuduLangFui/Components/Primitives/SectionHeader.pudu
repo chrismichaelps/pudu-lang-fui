@@ -1,0 +1,27 @@
+/** @Fui.SectionHeader.Component — a small heading over a group */
+module PuduLangFui.Components.Primitives.SectionHeader
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The row over a group.
+export fn header() -> H.Node { Core.part("section-header") }
+
+/// The group's heading.
+export fn title() -> H.Node { H.h3().slot("section-header-title") }
+
+/// What sits at the row's end, such as a link to the whole group.
+export fn action() -> H.Node { Core.part("section-header-action") }
+
+/// The styles of a section header.
+export fn style() -> Css.Block {
+  Css.block("section-header", [
+      Css.base("display: flex; align-items: baseline; justify-content: space-between; gap: $space-3; min-block-size: calc($unit * 7); padding-inline: $space-4; padding-block: $space-2 $space-1"),
+      Css.slot("section-header-title", "flex: 1; min-inline-size: 0; margin: 0; overflow: hidden; color: $muted-foreground; font-size: $text-xs; font-weight: $weight-medium; line-height: $leading-tight; letter-spacing: 0.04em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap"),
+      Css.slot("section-header-action", "flex-shrink: 0; color: $primary; font-size: $text-sm; font-weight: $weight-medium"),
+      Css.rule("[data-slot=\"section-header-action\"] a", "color: inherit; text-decoration: none"),
+      Css.rule("[data-slot=\"section-header-action\"] a:hover", "text-decoration: underline; text-underline-offset: 3px"),
+      Css.rule("[data-slot=\"section-header-action\"] a:focus-visible", "outline: 2px solid $ring; outline-offset: 2px; border-radius: $radius-sm")
+    ])
+}

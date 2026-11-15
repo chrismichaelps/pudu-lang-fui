@@ -52,6 +52,7 @@ export fn style() -> Css.Block
 ## Edge Cases
 
 - A broken image renders transparent over the initials.
+- The status mark sits on the avatar's edge and is never clipped: the image and fallback carry the round clip, not the avatar.
 
 ## Depth
 

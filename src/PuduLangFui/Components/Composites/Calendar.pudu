@@ -195,7 +195,7 @@ export fn style() -> Css.Block {
       Css.slot("calendar-dropdown", "position: absolute; inset: 0; opacity: 0; cursor: pointer"),
       Css.slot("calendar-caption-label", "display: flex; align-items: center; gap: $unit; font-size: $text-sm"),
       Css.slot("calendar-grid", "border-collapse: separate; border-spacing: 0 $space-2; margin-block-start: calc($space-2 * -1)"),
-      Css.slot("calendar-weekday", "inline-size: var(--cell-size); padding: 0; font-size: 0.8rem; font-weight: $weight-normal; color: $muted-foreground"),
+      Css.slot("calendar-weekday", "inline-size: var(--cell-size); padding: 0; font-size: 0.8125rem; font-weight: $weight-normal; color: $muted-foreground"),
       Css.slot("calendar-cell", "padding: 0; text-align: center"),
       Css.slot("calendar-day", "display: flex; align-items: center; justify-content: center; color: inherit; border-radius: var(--cell-radius); font-size: $text-sm; text-decoration: none"),
       Css.slotWhen("calendar-day", ":hover", "background: $muted; color: $foreground"),

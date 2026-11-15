@@ -42,7 +42,7 @@ pudu run tools/Layers.pudu
 pudu test tools/LayersTest.pudu
 ```
 
-Changes to logic also run mutation testing:
+Mutation testing takes over an hour, so it is not part of the local loop or of pull request checks. It runs weekly in CI and on demand from the Actions tab (the `ci` workflow's "Run workflow" button):
 
 ```bash
 pudu run tools/Mutate.pudu --pure --threshold 80

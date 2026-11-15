@@ -1,0 +1,31 @@
+/** @Fui.Theme.Looks.Shared.Module — the rules every look carries */
+module PuduLangFui.Theme.Looks.Shared
+
+/// The ring drawn around a part focused by keyboard.
+const RING: Str = "outline: 2px solid var(--fui-ring); outline-offset: 2px"
+
+/// The ring drawn inside a part that sits in a row or a bar.
+const INNER_RING: Str = "outline: 2px solid var(--fui-ring); outline-offset: -2px"
+
+/// The hit area a button gains on a coarse pointer, centered on it and at least 44 pixels each way.
+const HIT_AREA: Str = "content: ''; position: absolute; inset-block: min(0px, calc((100% - 2.75rem) / 2)); inset-inline: min(0px, calc((100% - 2.75rem) / 2))"
+
+/// Keyboard focus where no look draws one, pressed feedback, and touch hit areas.
+export const RULES: Array[(Str, Str, Str, Str)] = [
+  ("breadcrumb-link", "[data-slot=\"breadcrumb-link\"]:focus-visible", RING + "; border-radius: 4px", ""),
+  ("data-table-sort", "[data-slot=\"data-table-sort\"]:focus-visible", RING + "; border-radius: 4px", ""),
+  ("sources-link", "[data-slot=\"sources-link\"]:focus-visible", RING + "; border-radius: 4px", ""),
+  ("inline-citation", "[data-slot=\"inline-citation\"]:focus-visible", RING + "; border-radius: 4px", ""),
+  ("message-scroller-jump", "[data-slot=\"message-scroller-jump\"]:focus-visible", RING, ""),
+  ("calendar-dropdown", "[data-slot=\"calendar-dropdown\"]:focus-visible", RING, ""),
+  ("select-trigger", "[data-slot=\"select-trigger\"]:focus-visible", RING, ""),
+  ("toast-action", "[data-slot=\"toast-action\"]:focus-visible", RING, ""),
+  ("toast-cancel", "[data-slot=\"toast-cancel\"]:focus-visible", RING, ""),
+  ("toast-close", "[data-slot=\"toast-close\"]:focus-visible", RING, ""),
+  ("menubar-trigger", "[data-slot=\"menubar-trigger\"]:focus-visible", INNER_RING, ""),
+  ("file-tree-name", "[data-slot=\"file-tree-name\"]:focus-visible", INNER_RING, ""),
+  ("button", "[data-slot=\"button\"]:active:not(:disabled, [aria-disabled=\"true\"])", "scale: 0.97", ""),
+  ("button", "[data-slot=\"button\"]:active:not(:disabled, [aria-disabled=\"true\"])", "scale: 1", "@media (prefers-reduced-motion: reduce)"),
+  ("button", ":where([data-slot=\"button\"])", "position: relative", "@media (pointer: coarse)"),
+  ("button", ":where([data-slot=\"button\"])::after", HIT_AREA, "@media (pointer: coarse)")
+]

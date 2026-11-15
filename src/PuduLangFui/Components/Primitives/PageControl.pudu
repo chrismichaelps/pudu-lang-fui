@@ -1,0 +1,33 @@
+/** @Fui.PageControl.Component — dots for the pages of a paged view */
+module PuduLangFui.Components.Primitives.PageControl
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The row of dots, named for assistive software.
+export fn control(caption: Str) -> H.Node { Core.part("page-control").role("radiogroup").label(caption) }
+
+/// The dot of page `index`, counted from one, in the group `name`.
+export fn page(name: Str, index: Int, current: Bool = false) -> H.Node {
+  let radio = H.input().kind("radio").name(name).value(show(index)).flagIf(current, "checked")
+
+  radio.slot("page-control-dot").label("Page " + show(index))
+}
+
+/// The styles of a page control.
+export fn style() -> Css.Block {
+  Css.block("page-control", [
+      Css.base("--page-dot: calc($unit * 2); display: inline-flex; align-items: center; justify-content: center; gap: $space-2; min-block-size: calc($unit * 6); padding-inline: $space-3; border-radius: $radius-full; transition: background-color $duration-base $ease-standard"),
+      Css.when(":is(:hover, :focus-within)", "background: color-mix(in oklab, $foreground 8%, transparent)"),
+      Css.slot("page-control-dot", "appearance: none; position: relative; flex-shrink: 0; inline-size: var(--page-dot); block-size: var(--page-dot); margin: 0; background: $foreground; border-radius: $radius-full; opacity: 0.3; cursor: pointer; outline: none; transition: opacity $duration-base $ease-standard, scale $duration-base $ease-standard"),
+      Css.slotWhen("page-control-dot", "::after", "content: ''; position: absolute; inset: calc($space-2 * -1)"),
+      Css.slotWhen("page-control-dot", ":hover", "opacity: 0.55"),
+      Css.slotWhen("page-control-dot", ":checked", "opacity: 1"),
+      Css.slotWhen("page-control-dot", ":active", "scale: 0.85"),
+      Css.slotWhen("page-control-dot", ":focus-visible", "box-shadow: 0 0 0 2px $background, 0 0 0 4px $ring"),
+      Css.slotWhen("page-control-dot", ":disabled", "cursor: not-allowed"),
+      Css.within("@media (pointer: coarse)", "[data-slot=\"page-control\"]", "min-block-size: 2.75rem"),
+      Css.within("@media (prefers-reduced-motion: reduce)", "[data-slot=\"page-control-dot\"]", "transition: none")
+    ])
+}

@@ -60,7 +60,7 @@ export fn at(density: Density) -> Spacing
 
 ## Edge Cases
 
-- None.
+- Every density's unit is a whole number of pixels at the default root size (3, 4 and 5), so sizes measured in units land on the pixel grid.
 
 ## Depth
 

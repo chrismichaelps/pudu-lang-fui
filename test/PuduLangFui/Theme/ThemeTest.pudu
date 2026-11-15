@@ -93,7 +93,7 @@ fn main() -> Int {
       Test.that("a color token comes from its field", valueOf(&base, "primary-foreground") != None),
       Test.that("a digit field keeps its number", valueOf(&base, "chart-1") != None),
       Test.equals("the radius sets the base", &valueOf(&tuned, "radius"), &Some("0")),
-      Test.equals("density sets the unit", &valueOf(&tuned, "unit"), &Some("0.2rem")),
+      Test.equals("density sets the unit", &valueOf(&tuned, "unit"), &Some("0.1875rem")),
       Test.equals("fonts set the family", &valueOf(&tuned, "font-sans"), &Some("Inter")),
       Test.equals("the heading has its own family", &valueOf(&tuned, "font-heading"), &Some("Serif")),
       Test.equals("the base size is set", &valueOf(&tuned, "text-base"), &Some("15px")),

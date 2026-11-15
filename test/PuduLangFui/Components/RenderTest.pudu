@@ -4,14 +4,18 @@ module PuduLangFui.Components.RenderTest
 import Std.Html.Build as H
 import Std.Io as Io
 import Std.Test as Test
+import PuduLangFui.Components.Composites.ActionSheet as ActionSheet
 import PuduLangFui.Components.Composites.Calendar as Calendar
 import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.Chip as Chip
 import PuduLangFui.Components.Composites.Combobox as Combobox
 import PuduLangFui.Components.Composites.Dialog as Dialog
 import PuduLangFui.Components.Composites.Drawer as Drawer
 import PuduLangFui.Components.Composites.Field as Field
 import PuduLangFui.Components.Composites.InputOtp as InputOtp
 import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.SearchField as SearchField
+import PuduLangFui.Components.Composites.Stepper as Stepper
 import PuduLangFui.Components.Composites.Toast as Toast
 import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
 import PuduLangFui.Components.Composites.Trace as Trace
@@ -20,8 +24,13 @@ import PuduLangFui.Components.Patterns.Command as Command
 import PuduLangFui.Components.Primitives.Alert as Alert
 import PuduLangFui.Components.Primitives.Button as Button
 import PuduLangFui.Components.Primitives.Checkbox as Checkbox
+import PuduLangFui.Components.Primitives.Image as Image
+import PuduLangFui.Components.Primitives.PageControl as PageControl
 import PuduLangFui.Components.Primitives.Resizable as Resizable
+import PuduLangFui.Components.Primitives.SectionHeader as SectionHeader
+import PuduLangFui.Components.Primitives.SegmentedControl as SegmentedControl
 import PuduLangFui.Components.Primitives.Slider as Slider
+import PuduLangFui.Components.Primitives.Toolbar as Toolbar
 import PuduLangFui.Components.Primitives.Typography as Typography
 import PuduLangFui.Core.Styling as Core
 import PuduLangFui.Domain.Css as Css
@@ -110,6 +119,24 @@ fn main() -> Int {
       Test.that("a drawer has the spec's close threshold", text(Drawer.drawer("d", "n", Drawer.props(), [])).contains("data-close-threshold=\"0.25\"")),
       Test.that("a handle can be removed", !text(Drawer.drawer("d", "n", Drawer.props().withoutHandle(), [])).contains("drawer-handle")),
       Test.that("a non-modal drawer has its own opener", text(Drawer.opensBeside("d", Button.props())).contains("--fui-show")),
+      Test.that("a stepper at its floor cannot go lower", text(Stepper.stepper("n", 0)).contains("aria-label=\"Decrease\" disabled=\"disabled\"") && !text(Stepper.stepper("n", 0)).contains("aria-label=\"Increase\" disabled")),
+      Test.that("a stepper at its ceiling cannot go higher", text(Stepper.stepper("n", 8, 1, 8)).contains("aria-label=\"Increase\" disabled=\"disabled\"")),
+      Test.that("a stepper between its bounds moves both ways", !text(Stepper.stepper("n", 5)).contains("disabled")),
+      Test.that("a stepper carries its bounds and step", text(Stepper.stepper("n", 4, 2, 10, 2)).contains("min=\"2\" max=\"10\" step=\"2\"")),
+      Test.that("a chosen segment is checked", text(SegmentedControl.segment("v", "a", true)).contains("type=\"radio\"") && text(SegmentedControl.segment("v", "a", true)).contains(" checked=\"checked\"")),
+      Test.that("segments are one radio group", text(SegmentedControl.control("View")).contains("role=\"radiogroup\"")),
+      Test.that("a segmented control grows for touch", Css.render(&[SegmentedControl.style()]).contains("pointer: coarse")),
+      Test.that("a search field clears by reset", text(SearchField.field("q", "Search")).contains("type=\"reset\"") && text(SearchField.field("q", "Search")).contains("role=\"search\"")),
+      Test.that("a search field without a hint still tracks emptiness", text(SearchField.field("q", "")).contains("placeholder=\" \"")),
+      Test.that("a chip choice is a checkbox", text(Chip.choice("f", "a", true)).contains("type=\"checkbox\"") && text(Chip.choice("f", "a", true)).contains("data-kind=\"choice\"")),
+      Test.that("a chip's remove button is named", text(Chip.remove("Remove Design")).contains("aria-label=\"Remove Design\"")),
+      Test.that("a section title is a heading", text(SectionHeader.title()).startsWith("<h3")),
+      Test.that("a toolbar is named", text(Toolbar.toolbar("Inbox")).contains("role=\"toolbar\"") && text(Toolbar.toolbar("Inbox")).contains("aria-label=\"Inbox\"")),
+      Test.that("every action sheet choice closes it", text(ActionSheet.destructive("s")).contains("data-role=\"destructive\"") && text(ActionSheet.cancel("s")).contains("command=\"close\"")),
+      Test.that("an action sheet closes from outside", text(ActionSheet.sheet("s", "Options")).contains("closedby=\"any\"")),
+      Test.that("an image is described and framed", text(Image.image("a.png", "A hill", "16 / 9")).contains("alt=\"A hill\"") && text(Image.image("a.png", "A hill", "16 / 9")).contains("--image-ratio: 16 / 9")),
+      Test.that("an image loads lazily", text(Image.image("a.png", "A hill")).contains("loading=\"lazy\"")),
+      Test.that("a page dot is named and current", text(PageControl.page("p", 2, true)).contains("aria-label=\"Page 2\"") && text(PageControl.page("p", 2, true)).contains(" checked=\"checked\"")),
       Test.that("source links are hardened", text(Sources.sources([Sources.source("a", "https://x")])).contains("noopener"))
     ])
   let report = Test.run(&checks)

@@ -17,11 +17,13 @@ import PuduLangFui.Catalog.Catalog as Catalog
 import PuduLangFui.Cli.Model.Item as Item
 import PuduLangFui.Cli.Workspace.Registry as Registry
 import PuduLangFui.Components.Composites.Accordion as Accordion
+import PuduLangFui.Components.Composites.ActionSheet as ActionSheet
 import PuduLangFui.Components.Composites.AlertDialog as AlertDialog
 import PuduLangFui.Components.Composites.Attachment as Attachment
 import PuduLangFui.Components.Composites.Breadcrumb as Breadcrumb
 import PuduLangFui.Components.Composites.Calendar as Calendar
 import PuduLangFui.Components.Composites.Carousel as Carousel
+import PuduLangFui.Components.Composites.Chip as Chip
 import PuduLangFui.Components.Composites.CodeBlock as CodeBlock
 import PuduLangFui.Components.Composites.Combobox as Combobox
 import PuduLangFui.Components.Composites.ContextMenu as ContextMenu
@@ -35,9 +37,11 @@ import PuduLangFui.Components.Composites.Message as Message
 import PuduLangFui.Components.Composites.MessageScroller as MessageScroller
 import PuduLangFui.Components.Composites.NavigationMenu as NavigationMenu
 import PuduLangFui.Components.Composites.Pagination as Pagination
+import PuduLangFui.Components.Composites.SearchField as SearchField
 import PuduLangFui.Components.Composites.Select as Select
 import PuduLangFui.Components.Composites.Sheet as Sheet
 import PuduLangFui.Components.Composites.Spinner as Spinner
+import PuduLangFui.Components.Composites.Stepper as Stepper
 import PuduLangFui.Components.Composites.Toast as Toast
 import PuduLangFui.Components.Composites.ToggleGroup as ToggleGroup
 import PuduLangFui.Components.Composites.Trace as Trace
@@ -64,17 +68,21 @@ import PuduLangFui.Components.Primitives.Effects as Effects
 import PuduLangFui.Components.Primitives.Empty as Empty
 import PuduLangFui.Components.Primitives.HoverCard as HoverCard
 import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Components.Primitives.Image as Image
 import PuduLangFui.Components.Primitives.Input as Input
 import PuduLangFui.Components.Primitives.Item as Row
 import PuduLangFui.Components.Primitives.Kbd as Kbd
 import PuduLangFui.Components.Primitives.Label as Label
 import PuduLangFui.Components.Primitives.Marker as Marker
 import PuduLangFui.Components.Primitives.NativeSelect as NativeSelect
+import PuduLangFui.Components.Primitives.PageControl as PageControl
 import PuduLangFui.Components.Primitives.Popover as Popover
 import PuduLangFui.Components.Primitives.Progress as Progress
 import PuduLangFui.Components.Primitives.RadioGroup as RadioGroup
 import PuduLangFui.Components.Primitives.Resizable as Resizable
 import PuduLangFui.Components.Primitives.ScrollArea as ScrollArea
+import PuduLangFui.Components.Primitives.SectionHeader as SectionHeader
+import PuduLangFui.Components.Primitives.SegmentedControl as SegmentedControl
 import PuduLangFui.Components.Primitives.Separator as Separator
 import PuduLangFui.Components.Primitives.Skeleton as Skeleton
 import PuduLangFui.Components.Primitives.Slider as Slider
@@ -83,6 +91,7 @@ import PuduLangFui.Components.Primitives.Table as Table
 import PuduLangFui.Components.Primitives.Tabs as Tabs
 import PuduLangFui.Components.Primitives.Textarea as Textarea
 import PuduLangFui.Components.Primitives.Toggle as Toggle
+import PuduLangFui.Components.Primitives.Toolbar as Toolbar
 import PuduLangFui.Components.Primitives.Tooltip as Tooltip
 import PuduLangFui.Components.Primitives.Typeset as Typeset
 import PuduLangFui.Components.Primitives.Typography as Typography
@@ -164,20 +173,80 @@ fn sizeField(name: Str, caption: Str, value: Str) -> H.Node {
 
 /// Every component's demonstration.
 const DEMOS: Map[Str, fn() -> H.Node] = mapOf([
-    ("accordion", demoAccordion), ("alert", demoAlert), ("alert-dialog", demoAlertDialog), ("aspect-ratio", demoAspectRatio), ("attachment", demoAttachment), ("avatar", demoAvatar), ("badge", demoBadge),
+    ("accordion", demoAccordion), ("action-sheet", demoActionSheet), ("alert", demoAlert), ("alert-dialog", demoAlertDialog), ("aspect-ratio", demoAspectRatio), ("attachment", demoAttachment), ("avatar", demoAvatar), ("badge", demoBadge),
     ("breadcrumb", demoBreadcrumb), ("bubble", demoBubble), ("button", demoButton), ("button-group", demoButtonGroup), ("calendar", demoCalendar), ("card", demoCard), ("carousel", demoCarousel), ("chart", demoChart),
-    ("checkbox", demoCheckbox), ("code-block", demoCodeBlock), ("collapsible", demoCollapsible), ("combobox", demoCombobox), ("command", demoCommand), ("context-menu", demoContextMenu), ("data-table", demoDataTable),
+    ("checkbox", demoCheckbox), ("chip", demoChip), ("code-block", demoCodeBlock), ("collapsible", demoCollapsible), ("combobox", demoCombobox), ("command", demoCommand), ("context-menu", demoContextMenu), ("data-table", demoDataTable),
     ("date-picker", demoDatePicker), ("dialog", demoDialog), ("direction", demoDirection), ("drawer", demoDrawer), ("dropdown-menu", demoDropdownMenu), ("effects", demoEffects), ("empty", demoEmpty), ("field", demoField), ("form", demoForm),
-    ("hover-card", demoHoverCard), ("icon", demoIcon), ("input", demoInput), ("input-group", demoInputGroup), ("input-otp", demoInputOtp), ("item", demoItem), ("kbd", demoKbd), ("label", demoLabel), ("marker", demoMarker),
-    ("menubar", demoMenubar), ("message", demoMessage), ("message-scroller", demoMessageScroller), ("native-select", demoNativeSelect), ("navigation-menu", demoNavigationMenu), ("pagination", demoPagination), ("popover", demoPopover),
-    ("progress", demoProgress), ("questionnaire", demoQuestionnaire), ("radio-group", demoRadioGroup), ("resizable", demoResizable), ("scroll-area", demoScrollArea), ("select", demoSelect), ("separator", demoSeparator), ("sheet", demoSheet),
-    ("sidebar", demoSidebar), ("skeleton", demoSkeleton), ("slider", demoSlider), ("spinner", demoSpinner), ("switch", demoSwitch), ("table", demoTable), ("tabs", demoTabs), ("textarea", demoTextarea), ("toast", demoToast), ("toggle", demoToggle),
-    ("toggle-group", demoToggleGroup), ("tooltip", demoTooltip), ("trace", demoTrace), ("typeset", demoTypeset), ("typography", demoTypography),
+    ("hover-card", demoHoverCard), ("icon", demoIcon), ("image", demoImage), ("input", demoInput), ("input-group", demoInputGroup), ("input-otp", demoInputOtp), ("item", demoItem), ("kbd", demoKbd), ("label", demoLabel), ("marker", demoMarker),
+    ("menubar", demoMenubar), ("message", demoMessage), ("message-scroller", demoMessageScroller), ("native-select", demoNativeSelect), ("navigation-menu", demoNavigationMenu), ("page-control", demoPageControl), ("pagination", demoPagination), ("popover", demoPopover),
+    ("progress", demoProgress), ("questionnaire", demoQuestionnaire), ("radio-group", demoRadioGroup), ("resizable", demoResizable), ("scroll-area", demoScrollArea), ("search-field", demoSearchField), ("section-header", demoSectionHeader), ("segmented-control", demoSegmentedControl), ("select", demoSelect), ("separator", demoSeparator), ("sheet", demoSheet),
+    ("sidebar", demoSidebar), ("skeleton", demoSkeleton), ("slider", demoSlider), ("spinner", demoSpinner), ("stepper", demoStepper), ("switch", demoSwitch), ("table", demoTable), ("tabs", demoTabs), ("textarea", demoTextarea), ("toast", demoToast), ("toggle", demoToggle),
+    ("toggle-group", demoToggleGroup), ("toolbar", demoToolbar), ("tooltip", demoTooltip), ("trace", demoTrace), ("typeset", demoTypeset), ("typography", demoTypography),
     ("chain-of-thought", demoChainOfThought), ("chat", demoChat), ("checkpoint", demoCheckpoint), ("confirmation", demoConfirmation), ("context", demoContext), ("file-tree", demoFileTree), ("inline-citation", demoInlineCitation), ("model-selector", demoModelSelector),
     ("plan", demoPlan), ("prompt-input", demoPromptInput), ("queue", demoQueue), ("reasoning", demoReasoning), ("sources", demoSources), ("stack-trace", demoStackTrace), ("subagent", demoSubagent), ("suggestion", demoSuggestion),
     ("task", demoTask), ("terminal", demoTerminal), ("test-results", demoTestResults), ("tool", demoTool), ("turn", demoTurn),
     ("dashboard", demoDashboard), ("login", demoLogin), ("pricing", demoPricing), ("settings", demoSettings), ("signup", demoSignup)
   ])
+
+fn demoStepper() -> H.Node { Stepper.stepper("guests", 2, 1, 8) }
+
+fn demoSegmentedControl() -> H.Node {
+  SegmentedControl.control("View").holding([
+      SegmentedControl.segment("view", "day").says("Day"),
+      SegmentedControl.segment("view", "week", true).says("Week"),
+      SegmentedControl.segment("view", "month").says("Month")
+    ])
+}
+
+fn demoSearchField() -> H.Node { SearchField.field("query", "Search").css("inline-size", "20rem") }
+
+fn demoChip() -> H.Node {
+  H.div().css("display", "flex").css("flex-wrap", "wrap").css("gap", "var(--fui-space-2)").holding([
+      Chip.chip().says("Draft"),
+      Chip.choice("filter", "unread", true).says("Unread"),
+      Chip.choice("filter", "flagged").says("Flagged"),
+      Chip.chip().holding([H.words("Design"), Chip.remove("Remove Design")])
+    ])
+}
+
+fn demoSectionHeader() -> H.Node {
+  SectionHeader.header().css("inline-size", "20rem").holding([SectionHeader.title().says("Recent"), SectionHeader.action().holding([H.a().href("#").says("See all")])])
+}
+
+fn demoToolbar() -> H.Node {
+  let quiet = Button.props().variant(Button.Ghost).size(Button.IconMedium)
+
+  Toolbar.toolbar("Inbox").css("inline-size", "22rem").holding([
+      Toolbar.leading().holding([Button.button(quiet).label("Back").holding([Icon.icon(Icon.ChevronLeft)])]),
+      Toolbar.title().says("Inbox"),
+      Toolbar.trailing().holding([Button.button(quiet).label("Compose").holding([Icon.icon(Icon.Edit)])])
+    ])
+}
+
+fn demoActionSheet() -> H.Node {
+  H.div().holding([
+      ActionSheet.trigger("photo-actions", Button.props().variant(Button.Outline)).says("Photo options"),
+      ActionSheet.sheet("photo-actions", "Photo options").holding([
+          ActionSheet.group().holding([
+              ActionSheet.heading().says("This photo is shared with three people."),
+              ActionSheet.action("photo-actions").says("Save to library"),
+              ActionSheet.action("photo-actions").says("Copy link"),
+              ActionSheet.destructive("photo-actions").says("Delete photo")
+            ]),
+          ActionSheet.group().holding([ActionSheet.cancel("photo-actions").says("Cancel")])
+        ])
+    ])
+}
+
+fn demoImage() -> H.Node {
+  let picture = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'%3E%3Crect width='16' height='9' fill='%237c8aa5'/%3E%3Ccircle cx='12' cy='3' r='1.5' fill='%23f4d58d'/%3E%3Cpath d='M0 9l5-5 4 3 3-2 4 4z' fill='%234a5a78'/%3E%3C/svg%3E"
+
+  Image.image(picture, "Hills under a low sun", "16 / 9").css("inline-size", "20rem").holding([Image.caption().says("Framed at sixteen by nine.")])
+}
+
+fn demoPageControl() -> H.Node {
+  PageControl.control("Onboarding pages").holding([PageControl.page("onboarding", 1), PageControl.page("onboarding", 2, true), PageControl.page("onboarding", 3), PageControl.page("onboarding", 4)])
+}
 
 fn demoAccordion() -> H.Node {
   column("24rem", [Accordion.accordion().holding([

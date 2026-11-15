@@ -8,6 +8,7 @@ import PuduLangFui.Theme.Looks.Compact as Compact
 import PuduLangFui.Theme.Looks.Editorial as Editorial
 import PuduLangFui.Theme.Looks.Gentle as Gentle
 import PuduLangFui.Theme.Looks.Round as Round
+import PuduLangFui.Theme.Looks.Shared as Shared
 import PuduLangFui.Theme.Looks.Sharp as Sharp
 import PuduLangFui.Theme.Looks.Soft as Soft
 import PuduLangFui.Theme.Looks.Standard as Standard
@@ -27,8 +28,12 @@ const LOOKS: Map[Str, Array[Css.LookRule]] = mapOf([
     ("standard", Standard.RULES)
   ])
 
-/// The rules of a named look, if there is one.
-export fn named(name: Str) -> Option[Array[Css.LookRule]] { LOOKS.get(name) }
+/// The rules of a named look followed by the shared rules, if there is such a look.
+export fn named(name: Str) -> Option[Array[Css.LookRule]] {
+  let rules = LOOKS.get(name) ?
+
+  Some(rules.concat(Shared.RULES))
+}
 
 /// Every look's name.
 export fn names() -> Array[Str] { Map.keys(&LOOKS) }
