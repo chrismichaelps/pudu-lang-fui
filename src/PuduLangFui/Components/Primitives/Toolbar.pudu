@@ -1,0 +1,31 @@
+/** @Fui.Toolbar.Component — a bar with leading, title and trailing regions */
+module PuduLangFui.Components.Primitives.Toolbar
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A bar named for assistive software.
+export fn toolbar(caption: Str) -> H.Node { Core.part("toolbar").role("toolbar").label(caption) }
+
+/// The region at the bar's start.
+export fn leading() -> H.Node { Core.part("toolbar-leading") }
+
+/// The bar's centered title.
+export fn title() -> H.Node { Core.part("toolbar-title") }
+
+/// The region at the bar's end.
+export fn trailing() -> H.Node { Core.part("toolbar-trailing") }
+
+/// The styles of a toolbar.
+export fn style() -> Css.Block {
+  let side = "display: flex; align-items: center; gap: $space-1; min-inline-size: 0"
+
+  Css.block("toolbar", [
+      Css.base("display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: $space-2; min-block-size: calc($unit * 11); padding-inline: $space-2; background: color-mix(in oklab, $background 80%, transparent); backdrop-filter: saturate(180%) blur(20px); border-block-end: $border-width solid $border; color: $foreground"),
+      Css.slot("toolbar-leading", side + "; justify-content: flex-start"),
+      Css.slot("toolbar-title", "grid-column: 2; min-inline-size: 0; overflow: hidden; font-size: $text-md; font-weight: $weight-semibold; line-height: $leading-tight; text-align: center; text-overflow: ellipsis; white-space: nowrap"),
+      Css.slot("toolbar-trailing", side + "; grid-column: 3; justify-content: flex-end"),
+      Css.within("@supports not (backdrop-filter: blur(1px))", "[data-slot=\"toolbar\"]", "background: $background")
+    ])
+}

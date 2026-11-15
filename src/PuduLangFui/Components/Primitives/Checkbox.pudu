@@ -49,7 +49,7 @@ export fn checkbox(name: Str, given: Props) -> H.Node {
 export fn style() -> Css.Block {
   Css.block("checkbox", [
       Css.base("appearance: none; display: inline-grid; place-content: center; flex-shrink: 0; inline-size: 1rem; block-size: 1rem; margin: 0; background: transparent; cursor: pointer; outline: none; transition: box-shadow $duration-fast $ease-standard"),
-      Css.when("::after", "content: ''; inline-size: 0.7rem; block-size: 0.7rem; background: $primary-foreground; clip-path: polygon(14% 44%, 0 65%, 40% 100%, 100% 16%, 80% 0, 39% 62%); scale: 0; transition: scale $duration-fast $ease-enter"),
+      Css.when("::after", "content: ''; inline-size: 0.75rem; block-size: 0.75rem; background: $primary-foreground; clip-path: polygon(14% 44%, 0 65%, 40% 100%, 100% 16%, 80% 0, 39% 62%); scale: 0; transition: scale $duration-fast $ease-enter"),
       Css.when(":is(:checked, [aria-checked=\"mixed\"])", "background: $primary; border-color: $primary"),
       Css.when(":checked::after", "scale: 1"),
       Css.when("[aria-checked=\"mixed\"]::after", "clip-path: inset(42% 8%); scale: 1"),

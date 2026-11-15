@@ -28,7 +28,7 @@ export type Spacing = {
 fn units(count: Str) -> Str { "calc(var(--fui-unit) * " + count + ")" }
 
 /// The unit each density picks.
-const UNITS: Map[Str, Str] = mapOf([("Compact", "0.2rem"), ("Comfortable", "0.25rem"), ("Spacious", "0.3rem")])
+const UNITS: Map[Str, Str] = mapOf([("Compact", "0.1875rem"), ("Comfortable", "0.25rem"), ("Spacious", "0.3125rem")])
 
 /// The unit a density picks.
 export fn unitOf(density: Density) -> Str { Option.unwrapOr(UNITS.get(show(density)), "0.25rem") }

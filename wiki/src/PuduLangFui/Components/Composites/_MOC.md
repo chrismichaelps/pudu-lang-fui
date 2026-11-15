@@ -6,11 +6,13 @@ tags: [moc]
 # Composites
 
 - [[src/PuduLangFui/Components/Composites/Accordion]] — Sections of which at most one is open.
+- [[src/PuduLangFui/Components/Composites/ActionSheet]] — Choices from the bottom edge.
 - [[src/PuduLangFui/Components/Composites/AlertDialog]] — A modal asking for a decision.
 - [[src/PuduLangFui/Components/Composites/Attachment]] — A file or image with metadata and upload state.
 - [[src/PuduLangFui/Components/Composites/Breadcrumb]] — Where a page sits in a hierarchy.
 - [[src/PuduLangFui/Components/Composites/Calendar]] — A month as a grid of links.
 - [[src/PuduLangFui/Components/Composites/Carousel]] — Content scrolling one slide at a time.
+- [[src/PuduLangFui/Components/Composites/Chip]] — A compact label that may be chosen or removed.
 - [[src/PuduLangFui/Components/Composites/CodeBlock]] — Code, terminal output, or a diff, with a header and copy button.
 - [[src/PuduLangFui/Components/Composites/Combobox]] — A field with suggestions.
 - [[src/PuduLangFui/Components/Composites/ContextMenu]] — A menu opened with the secondary button.
@@ -24,9 +26,11 @@ tags: [moc]
 - [[src/PuduLangFui/Components/Composites/MessageScroller]] — A thread that stays at the newest message.
 - [[src/PuduLangFui/Components/Composites/NavigationMenu]] — Site navigation with fly-out panels.
 - [[src/PuduLangFui/Components/Composites/Pagination]] — Links between pages of results.
+- [[src/PuduLangFui/Components/Composites/SearchField]] — A field for a query.
 - [[src/PuduLangFui/Components/Composites/Select]] — A select with a themed popup.
 - [[src/PuduLangFui/Components/Composites/Sheet]] — A panel sliding in from an edge.
 - [[src/PuduLangFui/Components/Composites/Spinner]] — An indeterminate activity indicator.
+- [[src/PuduLangFui/Components/Composites/Stepper]] — A number moved by a step.
 - [[src/PuduLangFui/Components/Composites/Toast]] — Stacked messages outside the flow, in six kinds and six positions.
 - [[src/PuduLangFui/Components/Composites/ToggleGroup]] — A set of toggles allowing one or many.
 - [[src/PuduLangFui/Components/Composites/Trace]] — A list of steps, the building block every agent element shares.

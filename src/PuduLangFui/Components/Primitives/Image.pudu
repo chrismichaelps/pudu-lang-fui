@@ -1,0 +1,25 @@
+/** @Fui.Image.Component — a framed picture */
+module PuduLangFui.Components.Primitives.Image
+
+import Std.Html.Build as H
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A picture framed at `ratio`, such as `16 / 9`, and described for assistive software.
+export fn image(source: Str, description: Str, ratio: Str = "auto") -> H.Node {
+  let picture = H.img().src(source).alt(description).at("loading", "lazy").at("decoding", "async")
+
+  H.figure().slot("image").css("--image-ratio", ratio).holding([picture])
+}
+
+/// A line under the picture.
+export fn caption() -> H.Node { H.figcaption().slot("image-caption") }
+
+/// The styles of an image.
+export fn style() -> Css.Block {
+  Css.block("image", [
+      Css.base("--image-radius: $radius-lg; display: flex; flex-direction: column; gap: $space-2; min-inline-size: 0; margin: 0"),
+      Css.inside("> img", "display: block; inline-size: 100%; block-size: auto; aspect-ratio: var(--image-ratio, auto); object-fit: cover; background: $muted; border-radius: var(--image-radius); outline: $border-width solid color-mix(in oklab, $foreground 8%, transparent); outline-offset: calc($border-width * -1)"),
+      Css.slot("image-caption", "color: $muted-foreground; font-size: $text-xs; line-height: $leading-tight")
+    ])
+}

@@ -71,7 +71,7 @@ export fn renderScoped(theme: &Theme, selector: Str) -> Str
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Theme/Aspects/Elevation]] · [[src/PuduLangFui/Theme/Aspects/Iconography]] · [[src/PuduLangFui/Theme/Aspects/Motion]] · [[src/PuduLangFui/Theme/Aspects/Palette]] · [[src/PuduLangFui/Theme/Aspects/Shape]] · [[src/PuduLangFui/Theme/Aspects/Spacing]] · [[src/PuduLangFui/Theme/Aspects/Typography]] · [[src/PuduLangFui/Theme/Base/Tokens]] · [[src/PuduLangFui/Theme/Looks/Gentle]]
+- **Requires:** [[src/PuduLangFui/Constants/Css]] · [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Theme/Aspects/Elevation]] · [[src/PuduLangFui/Theme/Aspects/Iconography]] · [[src/PuduLangFui/Theme/Aspects/Motion]] · [[src/PuduLangFui/Theme/Aspects/Palette]] · [[src/PuduLangFui/Theme/Aspects/Shape]] · [[src/PuduLangFui/Theme/Aspects/Spacing]] · [[src/PuduLangFui/Theme/Aspects/Typography]] · [[src/PuduLangFui/Theme/Base/Tokens]] · [[src/PuduLangFui/Theme/Looks/Gentle]] · [[src/PuduLangFui/Theme/Looks/Shared]]
 
 ## Algorithm
 

@@ -45,7 +45,11 @@ export const COMMAND_KEYS: Str
 export const PROMPT: Str
 
 export const MODEL_MENU: Str
+
+export const STEPPER: Str
 ```
+
+`STEPPER`: Steps a stepper's field and disables a button at its bound.
 
 ### Linkage
 
@@ -75,4 +79,4 @@ DEPTH 0.67 (MEDIUM). Part of [[subsystems/Components]], under [[grammar/pudu]].
 
 ## Referenced by
 
-[[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/Carousel]] · [[src/PuduLangFui/Components/Composites/Combobox]] · [[src/PuduLangFui/Components/Composites/ContextMenu]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/InputOtp]] · [[src/PuduLangFui/Components/Patterns/Command]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Primitives/Resizable]] · [[src/PuduLangFui/Components/Primitives/Slider]] · [[src/PuduLangFui/Constants/_MOC]]
+[[src/PuduLangFui/Components/Composites/Calendar]] · [[src/PuduLangFui/Components/Composites/Carousel]] · [[src/PuduLangFui/Components/Composites/Combobox]] · [[src/PuduLangFui/Components/Composites/ContextMenu]] · [[src/PuduLangFui/Components/Composites/DropdownMenu]] · [[src/PuduLangFui/Components/Composites/InputOtp]] · [[src/PuduLangFui/Components/Composites/Stepper]] · [[src/PuduLangFui/Components/Patterns/Command]] · [[src/PuduLangFui/Components/Patterns/DataTable]] · [[src/PuduLangFui/Components/Patterns/DatePicker]] · [[src/PuduLangFui/Components/Primitives/Resizable]] · [[src/PuduLangFui/Components/Primitives/Slider]] · [[src/PuduLangFui/Constants/_MOC]]

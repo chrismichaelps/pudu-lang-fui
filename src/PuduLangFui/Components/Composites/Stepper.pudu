@@ -1,0 +1,60 @@
+/** @Fui.Stepper.Component — a number moved by a step */
+module PuduLangFui.Components.Composites.Stepper
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Constants.WidgetScripts as Script
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// One of the stepper's two buttons, disabled at its bound.
+fn mover(part: Str, caption: Str, glyph: Icon.Glyph, spent: Bool) -> H.Node {
+  let button = H.button().kind("button").slot(part).label(caption).flagIf(spent, "disabled")
+
+  button.holding([Icon.sized(glyph, Icon.Small)])
+}
+
+/// The number field between the buttons.
+fn field(name: Str, value: Int, minimum: Int, maximum: Int, step: Int) -> H.Node {
+  let bounded = H.input().kind("number").at("min", show(minimum)).at("max", show(maximum)).at("step", show(step))
+
+  bounded.slot("stepper-value").id(name).name(name).value(show(value))
+}
+
+/// A stepper with the given name, between `minimum` and `maximum`, moving by `step`.
+export fn stepper(name: Str, value: Int, minimum: Int = 0, maximum: Int = 100, step: Int = 1) -> H.Node {
+  Core.part("stepper").role("group").holding([
+      mover("stepper-decrement", "Decrease", Icon.Minus, value <= minimum),
+      field(name, value, minimum, maximum, step),
+      mover("stepper-increment", "Increase", Icon.Plus, value >= maximum)
+    ])
+}
+
+/// The styles of a stepper.
+export fn style() -> Css.Block {
+  let button = "display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; color: $foreground; cursor: pointer; outline: none; transition: background-color $duration-fast $ease-standard"
+  let hovered = "background: color-mix(in oklab, $foreground 8%, transparent)"
+  let pressed = "background: color-mix(in oklab, $foreground 14%, transparent)"
+  let focused = "box-shadow: inset 0 0 0 2px $ring"
+  let spent = "opacity: 0.35; cursor: not-allowed; background: transparent"
+
+  Css.block("stepper", [
+      Css.base("--stepper-side: $control-md; display: inline-grid; grid-template-columns: var(--stepper-side) minmax(3ch, auto) var(--stepper-side); align-items: stretch; block-size: var(--stepper-side); background: $muted; border-radius: $radius-lg; overflow: hidden"),
+      Css.slot("stepper-value", "appearance: textfield; inline-size: 6ch; min-inline-size: 0; margin: 0; padding: 0; border: 0; border-inline: $border-width solid $border; border-radius: 0; background: transparent; color: $foreground; font: inherit; font-size: $text-sm; font-variant-numeric: tabular-nums; text-align: center; outline: none"),
+      Css.slotWhen("stepper-value", "::-webkit-inner-spin-button", "appearance: none; margin: 0"),
+      Css.slotWhen("stepper-value", "::-webkit-outer-spin-button", "appearance: none; margin: 0"),
+      Css.slotWhen("stepper-value", ":focus-visible", focused),
+      Css.slot("stepper-decrement", button),
+      Css.slot("stepper-increment", button),
+      Css.slotWhen("stepper-decrement", ":hover", hovered),
+      Css.slotWhen("stepper-increment", ":hover", hovered),
+      Css.slotWhen("stepper-decrement", ":active", pressed),
+      Css.slotWhen("stepper-increment", ":active", pressed),
+      Css.slotWhen("stepper-decrement", ":focus-visible", focused),
+      Css.slotWhen("stepper-increment", ":focus-visible", focused),
+      Css.slotWhen("stepper-decrement", ":disabled", spent),
+      Css.slotWhen("stepper-increment", ":disabled", spent),
+      Css.within("@media (pointer: coarse)", "[data-slot=\"stepper\"]", "--stepper-side: 2.75rem"),
+      Css.behavior(Script.STEPPER)
+    ])
+}

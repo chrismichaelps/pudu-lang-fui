@@ -1,0 +1,62 @@
+/** @Fui.ActionSheet.Component — choices from the bottom edge */
+module PuduLangFui.Components.Composites.ActionSheet
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Button as Button
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// A button that opens the action sheet `id`.
+export fn trigger(id: Str, given: Button.Props) -> H.Node {
+  Button.button(given).at("commandfor", id).at("command", "show-modal")
+}
+
+/// An action sheet named for assistive software.
+export fn sheet(id: Str, name: Str) -> H.Node {
+  H.dialog().slot("action-sheet").id(id).at("closedby", "any").label(name)
+}
+
+/// Choices drawn as one surface.
+export fn group() -> H.Node { Core.part("action-sheet-group") }
+
+/// What the choices are about, at the top of a group.
+export fn heading() -> H.Node { Core.part("action-sheet-heading") }
+
+/// A choice of the given role that closes the sheet `id`.
+fn closing(id: Str, role: Str) -> H.Node {
+  let button = H.button().kind("button").slot("action-sheet-action").data("role", role)
+
+  button.at("commandfor", id).at("command", "close")
+}
+
+/// A choice that closes the sheet `id`.
+export fn action(id: Str) -> H.Node { closing(id, "default") }
+
+/// A choice that removes or cannot be undone.
+export fn destructive(id: Str) -> H.Node { closing(id, "destructive") }
+
+/// The choice that leaves things as they were; it belongs in the last group.
+export fn cancel(id: Str) -> H.Node { closing(id, "cancel") }
+
+/// The styles of an action sheet.
+export fn style() -> Css.Block {
+  Css.block("action-sheet", [
+      Css.keyframes("fui-action-sheet-rise", [("from", "translate: 0 100%")]),
+      Css.keyframes("fui-action-sheet-fade", [("from", "opacity: 0")]),
+      Css.base("position: fixed; inset-block: auto 0; inset-inline: 0; inline-size: min(28rem, 100vw); max-inline-size: none; max-block-size: 100dvh; margin-block: 0; margin-inline: auto; padding: $space-2; padding-block-end: max($space-2, env(safe-area-inset-bottom)); overflow-y: auto; background: transparent; border: 0; color: $popover-foreground"),
+      Css.when("[open]", "display: flex; flex-direction: column; gap: $space-2; animation: fui-action-sheet-rise $duration-slow $ease-enter"),
+      Css.when("::backdrop", "background: $backdrop"),
+      Css.when("[open]::backdrop", "animation: fui-action-sheet-fade $duration-slow $ease-enter"),
+      Css.slot("action-sheet-group", "display: flex; flex-direction: column; overflow: hidden; background: $popover; border-radius: $radius-xl; box-shadow: $shadow-xl"),
+      Css.slot("action-sheet-heading", "padding: $space-3 $space-4; color: $muted-foreground; font-size: $text-xs; line-height: $leading-tight; text-align: center"),
+      Css.slot("action-sheet-action", "display: flex; align-items: center; justify-content: center; gap: $space-2; min-block-size: calc($unit * 14); padding: $space-2 $space-4; border: 0; background: transparent; color: $primary; font: inherit; font-size: $text-md; cursor: pointer; outline: none; transition: background-color $duration-fast $ease-standard"),
+      Css.rule("[data-slot=\"action-sheet-group\"] > * + *", "border-block-start: $border-width solid $border"),
+      Css.slotWhen("action-sheet-action", "[data-role=\"destructive\"]", "color: $destructive"),
+      Css.slotWhen("action-sheet-action", "[data-role=\"cancel\"]", "font-weight: $weight-semibold"),
+      Css.slotWhen("action-sheet-action", ":hover", "background: color-mix(in oklab, $foreground 6%, transparent)"),
+      Css.slotWhen("action-sheet-action", ":active", "background: color-mix(in oklab, $foreground 12%, transparent)"),
+      Css.slotWhen("action-sheet-action", ":focus-visible", "box-shadow: inset 0 0 0 2px $ring"),
+      Css.slotWhen("action-sheet-action", ":disabled", "opacity: 0.5; cursor: not-allowed"),
+      Css.within("@media (prefers-reduced-motion: reduce)", "[data-slot=\"action-sheet\"][open]", "animation: none")
+    ])
+}

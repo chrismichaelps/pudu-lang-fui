@@ -11,6 +11,7 @@ tags: [moc]
 - [[src/PuduLangFui/Theme/Looks/Editorial]] — Every part's appearance in the editorial look: typographic restraint.
 - [[src/PuduLangFui/Theme/Looks/Gentle]] — Every part's appearance in the gentle look: soft rounded controls on tinted fields, the default.
 - [[src/PuduLangFui/Theme/Looks/Round]] — Every part's appearance in the round look: full rounding and airy controls.
+- [[src/PuduLangFui/Theme/Looks/Shared]] — Rules every look carries: keyboard focus, pressed feedback, and a coarse-pointer hit area.
 - [[src/PuduLangFui/Theme/Looks/Sharp]] — Every part's appearance in the sharp look: square corners and tight type.
 - [[src/PuduLangFui/Theme/Looks/Soft]] — Every part's appearance in the soft look: large rounding and generous padding.
 - [[src/PuduLangFui/Theme/Looks/Standard]] — Every part's appearance in the standard look: even, familiar proportions.

@@ -31,11 +31,12 @@ export fn names() -> Array[Str]
 
 ### Linkage
 
-- **Requires:** [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Theme/Looks/Classic]] · [[src/PuduLangFui/Theme/Looks/Compact]] · [[src/PuduLangFui/Theme/Looks/Editorial]] · [[src/PuduLangFui/Theme/Looks/Gentle]] · [[src/PuduLangFui/Theme/Looks/Round]] · [[src/PuduLangFui/Theme/Looks/Sharp]] · [[src/PuduLangFui/Theme/Looks/Soft]] · [[src/PuduLangFui/Theme/Looks/Standard]]
+- **Requires:** [[src/PuduLangFui/Domain/Css]] · [[src/PuduLangFui/Theme/Looks/Classic]] · [[src/PuduLangFui/Theme/Looks/Compact]] · [[src/PuduLangFui/Theme/Looks/Editorial]] · [[src/PuduLangFui/Theme/Looks/Gentle]] · [[src/PuduLangFui/Theme/Looks/Round]] · [[src/PuduLangFui/Theme/Looks/Shared]] · [[src/PuduLangFui/Theme/Looks/Sharp]] · [[src/PuduLangFui/Theme/Looks/Soft]] · [[src/PuduLangFui/Theme/Looks/Standard]]
 
 ## Algorithm
 
 1. A constant table maps each name to its rules.
+2. A named look answers its own rules followed by the shared rules.
 
 ## Negative Logic (Prohibited Paths)
 

@@ -17,7 +17,7 @@ export const LOOK_LAYER: Str = "fui.looks"
 export const COMPONENT_LAYER: Str = "fui.components"
 
 /// The rules every page gets: box sizing, page color, and reduced motion.
-export const BASE_LAYER: Str = "@layer fui.base \{\n[data-slot], [data-slot]::before, [data-slot]::after \{ box-sizing: border-box; \}\nbody \{ margin: 0; background: var(--fui-background); color: var(--fui-foreground); font-family: var(--fui-font-sans); font-size: var(--fui-text-base); line-height: var(--fui-leading); \}\n@media (prefers-reduced-motion: reduce) \{ :root \{ --fui-duration-fast: 0ms; --fui-duration-base: 0ms; --fui-duration-slow: 0ms; \} \}\n\}"
+export const BASE_LAYER: Str = "@layer fui.base \{\n[data-slot], [data-slot]::before, [data-slot]::after \{ box-sizing: border-box; \}\nbody \{ margin: 0; background: var(--fui-background); color: var(--fui-foreground); font-family: var(--fui-font-sans); font-size: var(--fui-text-base); line-height: var(--fui-leading); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; \}\n[data-slot]:focus-visible \{ outline: 2px solid var(--fui-ring); outline-offset: 2px; \}\n:where(button, a, input, select, textarea, summary, label)[data-slot] \{ touch-action: manipulation; \}\n@media (prefers-reduced-motion: reduce) \{ :root \{ --fui-duration-fast: 0ms; --fui-duration-base: 0ms; --fui-duration-slow: 0ms; \} \}\n\}"
 
 /// The shared focus ring, for a condition's declarations.
 export const FOCUS_RING: Str = "outline: 2px solid transparent; border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"

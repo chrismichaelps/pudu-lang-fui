@@ -1,0 +1,43 @@
+/** @Fui.SearchField.Component — a field for a query */
+module PuduLangFui.Components.Composites.SearchField
+
+import Std.Html.Build as H
+import PuduLangFui.Components.Primitives.Icon as Icon
+import PuduLangFui.Core.Styling as Core
+import PuduLangFui.Domain.Css as Css
+
+/// The button that empties the field.
+fn clear() -> H.Node {
+  let button = H.button().kind("reset").slot("search-field-clear").label("Clear")
+
+  button.holding([Icon.sized(Icon.X, Icon.Small)])
+}
+
+/// A search form sending `name` to `action`; `hint` is shown while the field is empty.
+export fn field(name: Str, hint: Str, action: Str = "") -> H.Node {
+  let shown = if hint.isEmpty() { " " } else { hint }
+  let input = H.input().kind("search").id(name).name(name).placeholder(shown).label(shown.trim())
+  let form = H.form().slot("search-field").role("search").method("get").action(action)
+
+  form.holding([Icon.sized(Icon.Search, Icon.Small), input.slot("search-field-input").at("autocomplete", "off"), clear()])
+}
+
+/// The styles of a search field.
+export fn style() -> Css.Block {
+  let empty = "[data-slot=\"search-field\"]:has([data-slot=\"search-field-input\"]:placeholder-shown) [data-slot=\"search-field-clear\"]"
+
+  Css.block("search-field", [
+      Css.base("--search-clear: calc($unit * 6); display: flex; align-items: center; gap: $space-2; block-size: $control-md; margin: 0; padding-inline: $space-3 $space-1; background: $muted; color: $muted-foreground; border: $border-width solid transparent; border-radius: $radius-full; transition: border-color $duration-fast $ease-standard, box-shadow $duration-fast $ease-standard"),
+      Css.when(":focus-within", "border-color: $ring; box-shadow: 0 0 0 3px color-mix(in oklab, $ring 30%, transparent)"),
+      Css.inside("> svg", "flex-shrink: 0"),
+      Css.slot("search-field-input", "appearance: none; flex: 1; min-inline-size: 0; margin: 0; padding: 0; border: 0; background: transparent; color: $foreground; font: inherit; font-size: $text-sm; outline: none"),
+      Css.slotWhen("search-field-input", "::placeholder", "color: $muted-foreground"),
+      Css.slotWhen("search-field-input", "::-webkit-search-cancel-button", "appearance: none"),
+      Css.slotWhen("search-field-input", "::-webkit-search-decoration", "appearance: none"),
+      Css.slot("search-field-clear", "display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; inline-size: var(--search-clear); block-size: var(--search-clear); padding: 0; border: 0; border-radius: $radius-full; background: transparent; color: $muted-foreground; cursor: pointer; outline: none; transition: background-color $duration-fast $ease-standard, color $duration-fast $ease-standard"),
+      Css.slotWhen("search-field-clear", ":hover", "background: color-mix(in oklab, $foreground 8%, transparent); color: $foreground"),
+      Css.slotWhen("search-field-clear", ":focus-visible", "box-shadow: 0 0 0 2px $ring; color: $foreground"),
+      Css.rule(empty, "visibility: hidden"),
+      Css.within("@media (pointer: coarse)", "[data-slot=\"search-field\"]", "--search-clear: 2.25rem; block-size: 2.75rem")
+    ])
+}
